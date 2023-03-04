@@ -42,8 +42,8 @@ Cílem je vytvořit emulátor platformy RISC-V včetně grafického rozhraní.
 Grafické rozhraní by mělo zahrnovat jednoduchý debugger. K implementaci backendu
 (emulace instrukcí) zadavatel preferuje využití některé již existující knihovny. 
 Emulátor by měl emulovat i některé periférie, v tomto případě by emulovaná
-periférní zařízení měla fungovat přesně tak, jako na mikrokontrolleru 
-*Sipeed Longan Nano GD32VF103CBT6*.
+periferní zařízení měla fungovat přesně tak, jako na mikrokontroleru
+[*Sipeed Longan Nano GD32VF103CBT6*](https://www.seeedstudio.com/Sipeed-Longan-Nano-V1-1-p-5118.html).
 
 ### Požadovaná funkcionalita
 * **Grafické rozhraní (frontend)**
@@ -52,11 +52,11 @@ periférní zařízení měla fungovat přesně tak, jako na mikrokontrolleru
   * Tlačítka debuggeru
   * Zobrazení registrů (včetně možnosti přepnutí mezi Hex / Decimal)
   * Zobrazení paměti
-  * Prostor pro zobrazení periferií (Buď nějaká samostatná okna, nebo "tabView" s záložkami)
+  * Prostor pro zobrazení periferií (Buď nějaká samostatná okna, nebo "tabView" se záložkami)
   * Záhlaví okna včetně položek File, Edit, Help, Settings, ...
   * V Settings **možnost editace konfiguračního souboru** 
     * Pro konfigurační soubor zřejmě použít JSON nebo něco podobného
-    * Konfigurační soubor bude obsahovat informace o periferiích, apod.
+    * Konfigurační soubor bude obsahovat informace o periferiích apod.
   * Případná další rozšíření:
     * File explorer
     * Možnost přepínat mezi více soubory
@@ -92,7 +92,7 @@ periférní zařízení měla fungovat přesně tak, jako na mikrokontrolleru
 | GUI           | GUI plně implementováno               | ❌        |
 | GUI           | Konfigurační soubor                   | ❌        |
 | GUI           | Implementovány reakce na události GUI | ❌        |
-| Interface     | Impmentována základní funkcionalita   | ❌        |
+| Interface     | Implementována základní funkcionalita | ❌        |
 | Interface     | Kompletně implementováno              | ❌        |
 | Emulátor      | Inicializace emulátoru                | ❌        |
 | Emulátor      | Dekódování a provedení instrukcí      | ❌        |
