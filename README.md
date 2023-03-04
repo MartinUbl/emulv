@@ -1,5 +1,5 @@
 # Modulární emulátor platformy RISC-V
-## Popis zadání:
+## Veřejné zadání:
 
 Pro potřeby výuky vznikla potřeba mít emulátor hardwarové platformy RISC-V. V
 předmětu KIV/OS momentálně používáme hardware založený na ARM procesorech,
@@ -27,3 +27,85 @@ implementačním jazykem je C++.
 > Kontakt: Martin Úbl, ublm@kiv.zcu.cz
 
 ---
+
+## Analýza problému a informace o projektu
+
+### Autoři
+| **Jméno**        | **Role**                                            |
+|------------------|-----------------------------------------------------|
+| Stanislav Kafara | vedoucí týmu, programátor                           |
+| Jonáš Dufek      | programátor, tvůrce dokumentace, RV ISA specialista |
+| Hynek Moudrý     | programátor, tester                                 |
+
+### Stručné zadání
+Cílem je vytvořit emulátor platformy RISC-V včetně grafického rozhraní.
+Grafické rozhraní by mělo zahrnovat jednoduchý debugger. K implementaci backendu
+(emulace instrukcí) zadavatel preferuje využití některé již existující knihovny. 
+Emulátor by měl emulovat i některé periférie, v tomto případě by emulovaná
+periférní zařízení měla fungovat přesně tak, jako na mikrokontrolleru 
+*Sipeed Longan Nano GD32VF103CBT6*.
+
+### Požadovaná funkcionalita
+* **Grafické rozhraní (frontend)**
+  * Možnost importování souboru se strojovým kódem
+  * Prostor pro zobrazení instrukcí programu (disassembly)
+  * Tlačítka debuggeru
+  * Zobrazení registrů (včetně možnosti přepnutí mezi Hex / Decimal)
+  * Zobrazení paměti
+  * Prostor pro zobrazení periferií (Buď nějaká samostatná okna, nebo "tabView" s záložkami)
+  * Záhlaví okna včetně položek File, Edit, Help, Settings, ...
+  * V Settings **možnost editace konfiguračního souboru** 
+    * Pro konfigurační soubor zřejmě použít JSON nebo něco podobného
+    * Konfigurační soubor bude obsahovat informace o periferiích, apod.
+  * Případná další rozšíření:
+    * File explorer
+    * Možnost přepínat mezi více soubory
+    * Terminal podokno
+    * Run podokno
+    
+
+* **Interface (komunikační rozhraní mezi GUI a Emulátorem instrukcí)**
+  * Načtení programu
+  * Nástroj pro sledování registrů
+  * Nástroj pro čtení paměti
+  * Komunikace periferií
+  * Zajištění komunikace debuggeru (?)
+  * Výstupy programu (?)
+  
+
+* **Emulace instrukcí (backend)**
+  * Inicializace emulátoru
+  * Zajistit dekódování a provedení instrukcí (pomocí knihovny)
+  * Mapování periferií a jejich správná funkčnost
+    * GPIO piny
+    * UART
+    * Případně další:
+      * Timer
+      * ADC
+      * DMA controller (?)
+
+### Aktuální stav projektu
+
+| **Kategorie** | **Úkol**                              | **Stav** |
+|---------------|---------------------------------------|----------|
+| GUI           | GUI navrhnuto                         | ❌        |
+| GUI           | GUI plně implementováno               | ❌        |
+| GUI           | Konfigurační soubor                   | ❌        |
+| GUI           | Implementovány reakce na události GUI | ❌        |
+| Interface     | Impmentována základní funkcionalita   | ❌        |
+| Interface     | Kompletně implementováno              | ❌        |
+| Emulátor      | Inicializace emulátoru                | ❌        |
+| Emulátor      | Dekódování a provedení instrukcí      | ❌        |
+| Emulátor      | GPIO                                  | ❌        |
+| Emulátor      | UART                                  | ❌        |
+
+### Použité technologie a knihovny
+
+* Programovací jazyk: C++
+* Programová dokumentace: Doxygen
+* Knihovna pro tvorbu GUI: Qt6
+* Knihovna pro emulaci ISA: [libriscv](https://github.com/fwsGonzo/libriscv)
+
+### Přibližný diagram
+
+![diagram](./doc/priblizny_diagram.svg)
