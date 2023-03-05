@@ -1,0 +1,14 @@
+# Target labels
+ libriscv-populate
+# Source files and their labels
+/mnt/c/Users/xPC/Documents/GitHub/emulv/emulator/cmake-build-debug/_deps/libriscv-subbuild/CMakeFiles/libriscv-populate
+/mnt/c/Users/xPC/Documents/GitHub/emulv/emulator/cmake-build-debug/_deps/libriscv-subbuild/CMakeFiles/libriscv-populate.rule
+/mnt/c/Users/xPC/Documents/GitHub/emulv/emulator/cmake-build-debug/_deps/libriscv-subbuild/CMakeFiles/libriscv-populate-complete.rule
+/mnt/c/Users/xPC/Documents/GitHub/emulv/emulator/cmake-build-debug/_deps/libriscv-subbuild/libriscv-populate-prefix/src/libriscv-populate-stamp/libriscv-populate-build.rule
+/mnt/c/Users/xPC/Documents/GitHub/emulv/emulator/cmake-build-debug/_deps/libriscv-subbuild/libriscv-populate-prefix/src/libriscv-populate-stamp/libriscv-populate-configure.rule
+/mnt/c/Users/xPC/Documents/GitHub/emulv/emulator/cmake-build-debug/_deps/libriscv-subbuild/libriscv-populate-prefix/src/libriscv-populate-stamp/libriscv-populate-download.rule
+/mnt/c/Users/xPC/Documents/GitHub/emulv/emulator/cmake-build-debug/_deps/libriscv-subbuild/libriscv-populate-prefix/src/libriscv-populate-stamp/libriscv-populate-install.rule
+/mnt/c/Users/xPC/Documents/GitHub/emulv/emulator/cmake-build-debug/_deps/libriscv-subbuild/libriscv-populate-prefix/src/libriscv-populate-stamp/libriscv-populate-mkdir.rule
+/mnt/c/Users/xPC/Documents/GitHub/emulv/emulator/cmake-build-debug/_deps/libriscv-subbuild/libriscv-populate-prefix/src/libriscv-populate-stamp/libriscv-populate-patch.rule
+/mnt/c/Users/xPC/Documents/GitHub/emulv/emulator/cmake-build-debug/_deps/libriscv-subbuild/libriscv-populate-prefix/src/libriscv-populate-stamp/libriscv-populate-test.rule
+/mnt/c/Users/xPC/Documents/GitHub/emulv/emulator/cmake-build-debug/_deps/libriscv-subbuild/libriscv-populate-prefix/src/libriscv-populate-stamp/libriscv-populate-update.rule

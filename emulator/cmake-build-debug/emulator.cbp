@@ -1,0 +1,242 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CodeBlocks_project_file>
+	<FileVersion major="1" minor="6"/>
+	<Project>
+		<Option title="emulator"/>
+		<Option makefile_is_custom="1"/>
+		<Option compiler="gcc"/>
+		<Option virtualFolders="CMake Files\;CMake Files\cmake-build-debug\;CMake Files\cmake-build-debug\_deps\;CMake Files\cmake-build-debug\_deps\libriscv-src\;CMake Files\cmake-build-debug\_deps\libriscv-src\lib\;"/>
+		<Build>
+			<Target title="all">
+				<Option working_dir="/mnt/c/Users/xPC/Documents/GitHub/emulv/emulator/cmake-build-debug"/>
+				<Option type="4"/>
+				<MakeCommands>
+					<Build command="/usr/bin/gmake -j8 -f &quot;/mnt/c/Users/xPC/Documents/GitHub/emulv/emulator/cmake-build-debug/Makefile&quot;  VERBOSE=1 all"/>
+					<CompileFile command="/usr/bin/gmake -j8 -f &quot;/mnt/c/Users/xPC/Documents/GitHub/emulv/emulator/cmake-build-debug/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/gmake -j8 -f &quot;/mnt/c/Users/xPC/Documents/GitHub/emulv/emulator/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/gmake -j8 -f &quot;/mnt/c/Users/xPC/Documents/GitHub/emulv/emulator/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="emulator">
+				<Option output="/mnt/c/Users/xPC/Documents/GitHub/emulv/emulator/cmake-build-debug/emulator" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="/mnt/c/Users/xPC/Documents/GitHub/emulv/emulator/cmake-build-debug"/>
+				<Option object_output="./"/>
+				<Option type="1"/>
+				<Option compiler="gcc"/>
+				<Compiler>
+					<Add option="-DRISCV_EXT_ATOMICS=1"/>
+					<Add option="-DRISCV_EXT_COMPRESSED=1"/>
+					<Add option="-DRISCV_MEMORY_TRAPS=1"/>
+					<Add directory="/mnt/c/Users/xPC/Documents/GitHub/emulv/emulator/cmake-build-debug/_deps/libriscv-src/lib/."/>
+					<Add directory="/usr/include/c++/11"/>
+					<Add directory="/usr/include/x86_64-linux-gnu/c++/11"/>
+					<Add directory="/usr/include/c++/11/backward"/>
+					<Add directory="/usr/lib/gcc/x86_64-linux-gnu/11/include"/>
+					<Add directory="/usr/local/include"/>
+					<Add directory="/usr/include/x86_64-linux-gnu"/>
+					<Add directory="/usr/include"/>
+				</Compiler>
+				<MakeCommands>
+					<Build command="/usr/bin/gmake -j8 -f &quot;/mnt/c/Users/xPC/Documents/GitHub/emulv/emulator/cmake-build-debug/Makefile&quot;  VERBOSE=1 emulator"/>
+					<CompileFile command="/usr/bin/gmake -j8 -f &quot;/mnt/c/Users/xPC/Documents/GitHub/emulv/emulator/cmake-build-debug/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/gmake -j8 -f &quot;/mnt/c/Users/xPC/Documents/GitHub/emulv/emulator/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/gmake -j8 -f &quot;/mnt/c/Users/xPC/Documents/GitHub/emulv/emulator/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="emulator/fast">
+				<Option output="/mnt/c/Users/xPC/Documents/GitHub/emulv/emulator/cmake-build-debug/emulator" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="/mnt/c/Users/xPC/Documents/GitHub/emulv/emulator/cmake-build-debug"/>
+				<Option object_output="./"/>
+				<Option type="1"/>
+				<Option compiler="gcc"/>
+				<Compiler>
+					<Add option="-DRISCV_EXT_ATOMICS=1"/>
+					<Add option="-DRISCV_EXT_COMPRESSED=1"/>
+					<Add option="-DRISCV_MEMORY_TRAPS=1"/>
+					<Add directory="/mnt/c/Users/xPC/Documents/GitHub/emulv/emulator/cmake-build-debug/_deps/libriscv-src/lib/."/>
+					<Add directory="/usr/include/c++/11"/>
+					<Add directory="/usr/include/x86_64-linux-gnu/c++/11"/>
+					<Add directory="/usr/include/c++/11/backward"/>
+					<Add directory="/usr/lib/gcc/x86_64-linux-gnu/11/include"/>
+					<Add directory="/usr/local/include"/>
+					<Add directory="/usr/include/x86_64-linux-gnu"/>
+					<Add directory="/usr/include"/>
+				</Compiler>
+				<MakeCommands>
+					<Build command="/usr/bin/gmake -j8 -f &quot;/mnt/c/Users/xPC/Documents/GitHub/emulv/emulator/cmake-build-debug/Makefile&quot;  VERBOSE=1 emulator/fast"/>
+					<CompileFile command="/usr/bin/gmake -j8 -f &quot;/mnt/c/Users/xPC/Documents/GitHub/emulv/emulator/cmake-build-debug/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/gmake -j8 -f &quot;/mnt/c/Users/xPC/Documents/GitHub/emulv/emulator/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/gmake -j8 -f &quot;/mnt/c/Users/xPC/Documents/GitHub/emulv/emulator/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="edit_cache">
+				<Option working_dir="/mnt/c/Users/xPC/Documents/GitHub/emulv/emulator/cmake-build-debug"/>
+				<Option type="4"/>
+				<MakeCommands>
+					<Build command="/usr/bin/gmake -j8 -f &quot;/mnt/c/Users/xPC/Documents/GitHub/emulv/emulator/cmake-build-debug/Makefile&quot;  VERBOSE=1 edit_cache"/>
+					<CompileFile command="/usr/bin/gmake -j8 -f &quot;/mnt/c/Users/xPC/Documents/GitHub/emulv/emulator/cmake-build-debug/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/gmake -j8 -f &quot;/mnt/c/Users/xPC/Documents/GitHub/emulv/emulator/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/gmake -j8 -f &quot;/mnt/c/Users/xPC/Documents/GitHub/emulv/emulator/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="rebuild_cache">
+				<Option working_dir="/mnt/c/Users/xPC/Documents/GitHub/emulv/emulator/cmake-build-debug"/>
+				<Option type="4"/>
+				<MakeCommands>
+					<Build command="/usr/bin/gmake -j8 -f &quot;/mnt/c/Users/xPC/Documents/GitHub/emulv/emulator/cmake-build-debug/Makefile&quot;  VERBOSE=1 rebuild_cache"/>
+					<CompileFile command="/usr/bin/gmake -j8 -f &quot;/mnt/c/Users/xPC/Documents/GitHub/emulv/emulator/cmake-build-debug/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/gmake -j8 -f &quot;/mnt/c/Users/xPC/Documents/GitHub/emulv/emulator/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/gmake -j8 -f &quot;/mnt/c/Users/xPC/Documents/GitHub/emulv/emulator/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="riscv">
+				<Option output="/mnt/c/Users/xPC/Documents/GitHub/emulv/emulator/cmake-build-debug/_deps/libriscv-build/lib/libriscv.a" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="/mnt/c/Users/xPC/Documents/GitHub/emulv/emulator/cmake-build-debug/_deps/libriscv-build/lib"/>
+				<Option object_output="./"/>
+				<Option type="2"/>
+				<Option compiler="gcc"/>
+				<Compiler>
+					<Add option="-DRISCV_EXT_ATOMICS=1"/>
+					<Add option="-DRISCV_EXT_COMPRESSED=1"/>
+					<Add option="-DRISCV_MEMORY_TRAPS=1"/>
+					<Add directory="/mnt/c/Users/xPC/Documents/GitHub/emulv/emulator/cmake-build-debug/_deps/libriscv-src/lib/."/>
+					<Add directory="/usr/include/c++/11"/>
+					<Add directory="/usr/include/x86_64-linux-gnu/c++/11"/>
+					<Add directory="/usr/include/c++/11/backward"/>
+					<Add directory="/usr/lib/gcc/x86_64-linux-gnu/11/include"/>
+					<Add directory="/usr/local/include"/>
+					<Add directory="/usr/include/x86_64-linux-gnu"/>
+					<Add directory="/usr/include"/>
+				</Compiler>
+				<MakeCommands>
+					<Build command="/usr/bin/gmake -j8 -f &quot;/mnt/c/Users/xPC/Documents/GitHub/emulv/emulator/cmake-build-debug/_deps/libriscv-build/lib/Makefile&quot;  VERBOSE=1 riscv"/>
+					<CompileFile command="/usr/bin/gmake -j8 -f &quot;/mnt/c/Users/xPC/Documents/GitHub/emulv/emulator/cmake-build-debug/_deps/libriscv-build/lib/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/gmake -j8 -f &quot;/mnt/c/Users/xPC/Documents/GitHub/emulv/emulator/cmake-build-debug/_deps/libriscv-build/lib/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/gmake -j8 -f &quot;/mnt/c/Users/xPC/Documents/GitHub/emulv/emulator/cmake-build-debug/_deps/libriscv-build/lib/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="riscv/fast">
+				<Option output="/mnt/c/Users/xPC/Documents/GitHub/emulv/emulator/cmake-build-debug/_deps/libriscv-build/lib/libriscv.a" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="/mnt/c/Users/xPC/Documents/GitHub/emulv/emulator/cmake-build-debug/_deps/libriscv-build/lib"/>
+				<Option object_output="./"/>
+				<Option type="2"/>
+				<Option compiler="gcc"/>
+				<Compiler>
+					<Add option="-DRISCV_EXT_ATOMICS=1"/>
+					<Add option="-DRISCV_EXT_COMPRESSED=1"/>
+					<Add option="-DRISCV_MEMORY_TRAPS=1"/>
+					<Add directory="/mnt/c/Users/xPC/Documents/GitHub/emulv/emulator/cmake-build-debug/_deps/libriscv-src/lib/."/>
+					<Add directory="/usr/include/c++/11"/>
+					<Add directory="/usr/include/x86_64-linux-gnu/c++/11"/>
+					<Add directory="/usr/include/c++/11/backward"/>
+					<Add directory="/usr/lib/gcc/x86_64-linux-gnu/11/include"/>
+					<Add directory="/usr/local/include"/>
+					<Add directory="/usr/include/x86_64-linux-gnu"/>
+					<Add directory="/usr/include"/>
+				</Compiler>
+				<MakeCommands>
+					<Build command="/usr/bin/gmake -j8 -f &quot;/mnt/c/Users/xPC/Documents/GitHub/emulv/emulator/cmake-build-debug/_deps/libriscv-build/lib/Makefile&quot;  VERBOSE=1 riscv/fast"/>
+					<CompileFile command="/usr/bin/gmake -j8 -f &quot;/mnt/c/Users/xPC/Documents/GitHub/emulv/emulator/cmake-build-debug/_deps/libriscv-build/lib/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/gmake -j8 -f &quot;/mnt/c/Users/xPC/Documents/GitHub/emulv/emulator/cmake-build-debug/_deps/libriscv-build/lib/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/gmake -j8 -f &quot;/mnt/c/Users/xPC/Documents/GitHub/emulv/emulator/cmake-build-debug/_deps/libriscv-build/lib/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+		</Build>
+		<Unit filename="/mnt/c/Users/xPC/Documents/GitHub/emulv/emulator/cmake-build-debug/_deps/libriscv-src/lib/libriscv/bytecode_dispatch.cpp">
+			<Option target="riscv"/>
+		</Unit>
+		<Unit filename="/mnt/c/Users/xPC/Documents/GitHub/emulv/emulator/cmake-build-debug/_deps/libriscv-src/lib/libriscv/cpu.cpp">
+			<Option target="riscv"/>
+		</Unit>
+		<Unit filename="/mnt/c/Users/xPC/Documents/GitHub/emulv/emulator/cmake-build-debug/_deps/libriscv-src/lib/libriscv/cpu.hpp">
+			<Option target="riscv"/>
+		</Unit>
+		<Unit filename="/mnt/c/Users/xPC/Documents/GitHub/emulv/emulator/cmake-build-debug/_deps/libriscv-src/lib/libriscv/debug.cpp">
+			<Option target="riscv"/>
+		</Unit>
+		<Unit filename="/mnt/c/Users/xPC/Documents/GitHub/emulv/emulator/cmake-build-debug/_deps/libriscv-src/lib/libriscv/debug.hpp">
+			<Option target="riscv"/>
+		</Unit>
+		<Unit filename="/mnt/c/Users/xPC/Documents/GitHub/emulv/emulator/cmake-build-debug/_deps/libriscv-src/lib/libriscv/decode_bytecodes.cpp">
+			<Option target="riscv"/>
+		</Unit>
+		<Unit filename="/mnt/c/Users/xPC/Documents/GitHub/emulv/emulator/cmake-build-debug/_deps/libriscv-src/lib/libriscv/decoder_cache.cpp">
+			<Option target="riscv"/>
+		</Unit>
+		<Unit filename="/mnt/c/Users/xPC/Documents/GitHub/emulv/emulator/cmake-build-debug/_deps/libriscv-src/lib/libriscv/decoder_cache.hpp">
+			<Option target="riscv"/>
+		</Unit>
+		<Unit filename="/mnt/c/Users/xPC/Documents/GitHub/emulv/emulator/cmake-build-debug/_deps/libriscv-src/lib/libriscv/linux/system_calls.cpp">
+			<Option target="riscv"/>
+		</Unit>
+		<Unit filename="/mnt/c/Users/xPC/Documents/GitHub/emulv/emulator/cmake-build-debug/_deps/libriscv-src/lib/libriscv/machine.cpp">
+			<Option target="riscv"/>
+		</Unit>
+		<Unit filename="/mnt/c/Users/xPC/Documents/GitHub/emulv/emulator/cmake-build-debug/_deps/libriscv-src/lib/libriscv/machine.hpp">
+			<Option target="riscv"/>
+		</Unit>
+		<Unit filename="/mnt/c/Users/xPC/Documents/GitHub/emulv/emulator/cmake-build-debug/_deps/libriscv-src/lib/libriscv/memory.cpp">
+			<Option target="riscv"/>
+		</Unit>
+		<Unit filename="/mnt/c/Users/xPC/Documents/GitHub/emulv/emulator/cmake-build-debug/_deps/libriscv-src/lib/libriscv/memory.hpp">
+			<Option target="riscv"/>
+		</Unit>
+		<Unit filename="/mnt/c/Users/xPC/Documents/GitHub/emulv/emulator/cmake-build-debug/_deps/libriscv-src/lib/libriscv/memory_elf.cpp">
+			<Option target="riscv"/>
+		</Unit>
+		<Unit filename="/mnt/c/Users/xPC/Documents/GitHub/emulv/emulator/cmake-build-debug/_deps/libriscv-src/lib/libriscv/memory_rw.cpp">
+			<Option target="riscv"/>
+		</Unit>
+		<Unit filename="/mnt/c/Users/xPC/Documents/GitHub/emulv/emulator/cmake-build-debug/_deps/libriscv-src/lib/libriscv/multiprocessing.cpp">
+			<Option target="riscv"/>
+		</Unit>
+		<Unit filename="/mnt/c/Users/xPC/Documents/GitHub/emulv/emulator/cmake-build-debug/_deps/libriscv-src/lib/libriscv/multiprocessing.hpp">
+			<Option target="riscv"/>
+		</Unit>
+		<Unit filename="/mnt/c/Users/xPC/Documents/GitHub/emulv/emulator/cmake-build-debug/_deps/libriscv-src/lib/libriscv/native_libc.cpp">
+			<Option target="riscv"/>
+		</Unit>
+		<Unit filename="/mnt/c/Users/xPC/Documents/GitHub/emulv/emulator/cmake-build-debug/_deps/libriscv-src/lib/libriscv/native_threads.cpp">
+			<Option target="riscv"/>
+		</Unit>
+		<Unit filename="/mnt/c/Users/xPC/Documents/GitHub/emulv/emulator/cmake-build-debug/_deps/libriscv-src/lib/libriscv/posix/minimal.cpp">
+			<Option target="riscv"/>
+		</Unit>
+		<Unit filename="/mnt/c/Users/xPC/Documents/GitHub/emulv/emulator/cmake-build-debug/_deps/libriscv-src/lib/libriscv/posix/signals.cpp">
+			<Option target="riscv"/>
+		</Unit>
+		<Unit filename="/mnt/c/Users/xPC/Documents/GitHub/emulv/emulator/cmake-build-debug/_deps/libriscv-src/lib/libriscv/posix/signals.hpp">
+			<Option target="riscv"/>
+		</Unit>
+		<Unit filename="/mnt/c/Users/xPC/Documents/GitHub/emulv/emulator/cmake-build-debug/_deps/libriscv-src/lib/libriscv/posix/socket_calls.cpp">
+			<Option target="riscv"/>
+		</Unit>
+		<Unit filename="/mnt/c/Users/xPC/Documents/GitHub/emulv/emulator/cmake-build-debug/_deps/libriscv-src/lib/libriscv/posix/threads.cpp">
+			<Option target="riscv"/>
+		</Unit>
+		<Unit filename="/mnt/c/Users/xPC/Documents/GitHub/emulv/emulator/cmake-build-debug/_deps/libriscv-src/lib/libriscv/rv32i.cpp">
+			<Option target="riscv"/>
+		</Unit>
+		<Unit filename="/mnt/c/Users/xPC/Documents/GitHub/emulv/emulator/cmake-build-debug/_deps/libriscv-src/lib/libriscv/rv64i.cpp">
+			<Option target="riscv"/>
+		</Unit>
+		<Unit filename="/mnt/c/Users/xPC/Documents/GitHub/emulv/emulator/cmake-build-debug/_deps/libriscv-src/lib/libriscv/serialize.cpp">
+			<Option target="riscv"/>
+		</Unit>
+		<Unit filename="/mnt/c/Users/xPC/Documents/GitHub/emulv/emulator/cmake-build-debug/_deps/libriscv-src/lib/libriscv/util/crc32c.cpp">
+			<Option target="riscv"/>
+		</Unit>
+		<Unit filename="/mnt/c/Users/xPC/Documents/GitHub/emulv/emulator/program.cpp">
+			<Option target="emulator"/>
+		</Unit>
+		<Unit filename="/mnt/c/Users/xPC/Documents/GitHub/emulv/emulator/CMakeLists.txt">
+			<Option virtualFolder="CMake Files\"/>
+		</Unit>
+		<Unit filename="/mnt/c/Users/xPC/Documents/GitHub/emulv/emulator/cmake-build-debug/_deps/libriscv-src/CMakeLists.txt">
+			<Option virtualFolder="CMake Files\cmake-build-debug\_deps\libriscv-src\"/>
+		</Unit>
+		<Unit filename="/mnt/c/Users/xPC/Documents/GitHub/emulv/emulator/cmake-build-debug/_deps/libriscv-src/lib/CMakeLists.txt">
+			<Option virtualFolder="CMake Files\cmake-build-debug\_deps\libriscv-src\lib\"/>
+		</Unit>
+	</Project>
+</CodeBlocks_project_file>
