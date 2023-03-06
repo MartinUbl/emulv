@@ -142,6 +142,30 @@ riscv/fast:
 	$(MAKE) $(MAKESILENT) -f _deps/libriscv-build/lib/CMakeFiles/riscv.dir/build.make _deps/libriscv-build/lib/CMakeFiles/riscv.dir/build
 .PHONY : riscv/fast
 
+EmulatorUnit.o: EmulatorUnit.cpp.o
+.PHONY : EmulatorUnit.o
+
+# target to build an object file
+EmulatorUnit.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/emulator.dir/build.make CMakeFiles/emulator.dir/EmulatorUnit.cpp.o
+.PHONY : EmulatorUnit.cpp.o
+
+EmulatorUnit.i: EmulatorUnit.cpp.i
+.PHONY : EmulatorUnit.i
+
+# target to preprocess a source file
+EmulatorUnit.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/emulator.dir/build.make CMakeFiles/emulator.dir/EmulatorUnit.cpp.i
+.PHONY : EmulatorUnit.cpp.i
+
+EmulatorUnit.s: EmulatorUnit.cpp.s
+.PHONY : EmulatorUnit.s
+
+# target to generate assembly for a file
+EmulatorUnit.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/emulator.dir/build.make CMakeFiles/emulator.dir/EmulatorUnit.cpp.s
+.PHONY : EmulatorUnit.cpp.s
+
 program.o: program.cpp.o
 .PHONY : program.o
 
@@ -176,6 +200,9 @@ help:
 	@echo "... rebuild_cache"
 	@echo "... emulator"
 	@echo "... riscv"
+	@echo "... EmulatorUnit.o"
+	@echo "... EmulatorUnit.i"
+	@echo "... EmulatorUnit.s"
 	@echo "... program.o"
 	@echo "... program.i"
 	@echo "... program.s"

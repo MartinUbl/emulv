@@ -14,5 +14,5 @@ FetchContent_Declare(libriscv
 
 FetchContent_MakeAvailable(libriscv)
 
-add_executable(emulator program.cpp)
+add_executable(emulator program.cpp EmulatorUnit.h EmulatorUnit.cpp)
 target_link_libraries(emulator riscv)

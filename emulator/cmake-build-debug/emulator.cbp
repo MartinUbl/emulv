@@ -142,6 +142,12 @@
 				</MakeCommands>
 			</Target>
 		</Build>
+		<Unit filename="/mnt/c/Users/xPC/Documents/GitHub/emulv/emulator/EmulatorUnit.cpp">
+			<Option target="emulator"/>
+		</Unit>
+		<Unit filename="/mnt/c/Users/xPC/Documents/GitHub/emulv/emulator/EmulatorUnit.h">
+			<Option target="emulator"/>
+		</Unit>
 		<Unit filename="/mnt/c/Users/xPC/Documents/GitHub/emulv/emulator/cmake-build-debug/_deps/libriscv-src/lib/libriscv/bytecode_dispatch.cpp">
 			<Option target="riscv"/>
 		</Unit>
