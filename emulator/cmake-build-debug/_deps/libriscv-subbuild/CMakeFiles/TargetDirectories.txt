@@ -1,3 +1,0 @@
-/mnt/c/Users/xPC/Documents/GitHub/emulv/emulator/cmake-build-debug/_deps/libriscv-subbuild/CMakeFiles/libriscv-populate.dir
-/mnt/c/Users/xPC/Documents/GitHub/emulv/emulator/cmake-build-debug/_deps/libriscv-subbuild/CMakeFiles/edit_cache.dir
-/mnt/c/Users/xPC/Documents/GitHub/emulv/emulator/cmake-build-debug/_deps/libriscv-subbuild/CMakeFiles/rebuild_cache.dir

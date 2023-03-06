@@ -1,3 +1,0 @@
-repository='https://github.com/fwsGonzo/libriscv'
-module=''
-tag='origin'
