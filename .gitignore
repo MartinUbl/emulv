@@ -1,2 +1,4 @@
 /.idea/
-/emulator/cmake-build-debug/
+/src/cmake-build-debug/
+/.vscode/
+/build/
