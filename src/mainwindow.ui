@@ -21,7 +21,7 @@
        <enum>Qt::Vertical</enum>
       </property>
       <property name="opaqueResize">
-       <bool>false</bool>
+       <bool>true</bool>
       </property>
       <property name="childrenCollapsible">
        <bool>false</bool>
@@ -31,7 +31,7 @@
         <enum>Qt::Vertical</enum>
        </property>
        <property name="opaqueResize">
-        <bool>false</bool>
+        <bool>true</bool>
        </property>
        <property name="childrenCollapsible">
         <bool>false</bool>
@@ -50,7 +50,7 @@
          <enum>Qt::Horizontal</enum>
         </property>
         <property name="opaqueResize">
-         <bool>false</bool>
+         <bool>true</bool>
         </property>
         <property name="childrenCollapsible">
          <bool>false</bool>
@@ -189,7 +189,7 @@ bubsort:
            <enum>Qt::Horizontal</enum>
           </property>
           <property name="opaqueResize">
-           <bool>false</bool>
+           <bool>true</bool>
           </property>
           <property name="childrenCollapsible">
            <bool>false</bool>
@@ -225,15 +225,21 @@ bubsort:
                </spacer>
               </item>
               <item>
-               <widget class="QSpinBox" name="spinBox_2">
+               <widget class="QSpinBox" name="spinBoxMemoryFrom">
+                <property name="sizePolicy">
+                 <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                  <horstretch>0</horstretch>
+                  <verstretch>0</verstretch>
+                 </sizepolicy>
+                </property>
                 <property name="minimumSize">
                  <size>
-                  <width>60</width>
+                  <width>80</width>
                   <height>0</height>
                  </size>
                 </property>
                 <property name="suffix">
-                 <string>_</string>
+                 <string>0</string>
                 </property>
                 <property name="prefix">
                  <string>0x</string>
@@ -260,15 +266,15 @@ bubsort:
                </widget>
               </item>
               <item>
-               <widget class="QSpinBox" name="spinBox">
+               <widget class="QSpinBox" name="spinBoxMemoryTo">
                 <property name="minimumSize">
                  <size>
-                  <width>60</width>
+                  <width>80</width>
                   <height>0</height>
                  </size>
                 </property>
                 <property name="suffix">
-                 <string>_</string>
+                 <string>0</string>
                 </property>
                 <property name="prefix">
                  <string>0x</string>
@@ -277,7 +283,7 @@ bubsort:
                  <number>4095</number>
                 </property>
                 <property name="value">
-                 <number>12</number>
+                 <number>4095</number>
                 </property>
                 <property name="displayIntegerBase">
                  <number>16</number>
@@ -285,7 +291,7 @@ bubsort:
                </widget>
               </item>
               <item>
-               <widget class="QToolButton" name="toolButton">
+               <widget class="QToolButton" name="btnSelectMemory">
                 <property name="toolTip">
                  <string>Confirm range</string>
                 </property>
@@ -299,7 +305,7 @@ bubsort:
                </widget>
               </item>
               <item>
-               <widget class="QToolButton" name="toolButton_2">
+               <widget class="QToolButton" name="btnRestoreMemory">
                 <property name="toolTip">
                  <string>Restore</string>
                 </property>
@@ -315,7 +321,7 @@ bubsort:
              </layout>
             </item>
             <item>
-             <widget class="QPlainTextEdit" name="plainTextEdit_3">
+             <widget class="QPlainTextEdit" name="textEditMemory">
               <property name="font">
                <font>
                 <family>NotoSansMono Nerd Font Mono</family>
@@ -329,20 +335,7 @@ bubsort:
                <bool>true</bool>
               </property>
               <property name="plainText">
-               <string>       00 01 02 03 04 05 06 07 08 09 0A 0B 0C 0D 0E 0F
-0000   00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
-0010   00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
-0020   00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
-0030   00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
-0040   00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
-0050   00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
-0060   00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
-0070   00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
-0080   00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
-0090   00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
-00A0   00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
-00B0   00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
-00C0   00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00</string>
+               <string/>
               </property>
              </widget>
             </item>
@@ -353,7 +346,7 @@ bubsort:
             <bool>true</bool>
            </property>
            <property name="currentIndex">
-            <number>2</number>
+            <number>0</number>
            </property>
            <property name="tabsClosable">
             <bool>false</bool>
@@ -451,11 +444,6 @@ bubsort:
     </property>
     <addaction name="action_Open"/>
    </widget>
-   <widget class="QMenu" name="menu_Edit">
-    <property name="title">
-     <string>&amp;Edit</string>
-    </property>
-   </widget>
    <widget class="QMenu" name="menu_Tools">
     <property name="title">
      <string>&amp;Tools</string>
@@ -476,6 +464,11 @@ bubsort:
     <addaction name="action_GPIO"/>
     <addaction name="action_Output"/>
    </widget>
+   <widget class="QMenu" name="menu_Edit">
+    <property name="title">
+     <string>&amp;Edit</string>
+    </property>
+   </widget>
    <addaction name="menu_File"/>
    <addaction name="menu_Edit"/>
    <addaction name="menuView"/>
@@ -495,7 +488,7 @@ bubsort:
    </attribute>
    <addaction name="actionRun"/>
    <addaction name="actionStep"/>
-   <addaction name="actionCurrent_instruction"/>
+   <addaction name="actionPause"/>
   </widget>
   <action name="action_Open">
    <property name="icon">
@@ -515,7 +508,7 @@ bubsort:
      <normaloff>.</normaloff>.</iconset>
    </property>
    <property name="text">
-    <string>&amp;About RISCVEmulator</string>
+    <string>&amp;About RISC-V Emulator</string>
    </property>
   </action>
   <action name="actionRun">
@@ -548,16 +541,16 @@ bubsort:
     <string>F6</string>
    </property>
   </action>
-  <action name="actionCurrent_instruction">
+  <action name="actionPause">
    <property name="icon">
-    <iconset theme="format-justify-fill">
+    <iconset theme="media-playback-pause">
      <normaloff>.</normaloff>.</iconset>
    </property>
    <property name="text">
-    <string>Current instruction</string>
+    <string>Pause</string>
    </property>
    <property name="toolTip">
-    <string>Go to current debug line</string>
+    <string>Pause</string>
    </property>
   </action>
   <action name="action_Serial_monitor">

@@ -2,6 +2,7 @@
 #define MAINWINDOW_H
 
 #include <QMainWindow>
+#include <QFileDialog>
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class MainWindow; }
@@ -16,14 +17,28 @@ public:
     ~MainWindow();
 
 private slots:
-    void showMessageBox();
     void setUARTTabVisible();
     void setGPIOTabVisible();
     void setOutputTabVisible();
-    void showAbout();
+
+    void on_action_Open_triggered();
+    void on_action_About_RISCVEmulator_triggered();
+
+    void on_spinBoxMemoryFrom_valueChanged(int arg1);
+
+    void on_spinBoxMemoryTo_valueChanged(int arg1);
+
+    void on_btnRestoreMemory_clicked();
+
+    void on_btnSelectMemory_clicked();
 
 private:
     Ui::MainWindow *ui;
+    int memoryFrom = 0, memoryTo = 0xfff;
+
     void updatePeripheralTabWidgetVisible();
+    void updateMemorySpinBoxes();
+    void updateMemoryButtons();
+    void updateTextEditMemory();
 };
 #endif // MAINWINDOW_H
