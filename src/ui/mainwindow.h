@@ -32,6 +32,8 @@ private slots:
 
     void on_btnSelectMemory_clicked();
 
+    void on_lineEdit_textChanged(const QString &arg1);
+
 private:
     Ui::MainWindow *ui;
     int memoryFrom = 0, memoryTo = 0xfff;

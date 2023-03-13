@@ -153,3 +153,8 @@ void MainWindow::on_btnSelectMemory_clicked()
     MainWindow::updateTextEditMemory();
 }
 
+void MainWindow::on_lineEdit_textChanged(const QString &arg1)
+{
+
+}
+
