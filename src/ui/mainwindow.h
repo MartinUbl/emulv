@@ -32,7 +32,7 @@ private slots:
 
     void on_btnSelectMemory_clicked();
 
-    void on_lineEdit_textChanged(const QString &arg1);
+    void on_lineEditSendMessage_textChanged(const QString &arg1);
 
 private:
     Ui::MainWindow *ui;

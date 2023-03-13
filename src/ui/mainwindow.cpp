@@ -153,8 +153,8 @@ void MainWindow::on_btnSelectMemory_clicked()
     MainWindow::updateTextEditMemory();
 }
 
-void MainWindow::on_lineEdit_textChanged(const QString &arg1)
+void MainWindow::on_lineEditSendMessage_textChanged(const QString &arg1)
 {
-
+    ui->btnSendMessage->setEnabled(!ui->lineEditSendMessage->text().isEmpty());
 }
 

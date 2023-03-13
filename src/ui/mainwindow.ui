@@ -390,7 +390,7 @@ bubsort:
              <item>
               <layout class="QHBoxLayout" name="horizontalLayout_4">
                <item>
-                <widget class="QLineEdit" name="lineEdit">
+                <widget class="QLineEdit" name="lineEditSendMessage">
                  <property name="placeholderText">
                   <string>Send message...</string>
                  </property>
@@ -408,7 +408,8 @@ bubsort:
                   <string/>
                  </property>
                  <property name="icon">
-                  <iconset theme="go-next"/>
+                  <iconset theme="go-next">
+                   <normaloff>.</normaloff>.</iconset>
                  </property>
                 </widget>
                </item>
