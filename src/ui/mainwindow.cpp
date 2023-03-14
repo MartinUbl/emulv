@@ -41,7 +41,8 @@ MainWindow::MainWindow(QWidget *parent)
     connect(ui->action_Output, SIGNAL(toggled(bool)), this, SLOT(setOutputTabVisible()));
     connect(ui->action_About_RISCVEmulator, SIGNAL(triggered(bool)), this, SLOT(showAbout()));
 
-    MainWindow::on_btnRestoreMemory_clicked();
+    on_btnRestoreMemory_clicked();
+    updateToolBarButtons();
 }
 
 MainWindow::~MainWindow()
@@ -87,12 +88,20 @@ void MainWindow::updateMemoryButtons() {
 }
 
 void MainWindow::updateTextEditMemory() {
-    std::string s = "       00 01 02 03 04 05 06 07 08 09 0A 0B 0C 0D 0E 0F\n";
+    if (this->running && !this->debug) {
+        ui->memoryWidget->setEnabled(false);
+        return;
+    }
+
+    ui->memoryWidget->setEnabled(true);
+
+    std::string s = "";
 
     for (int i = this->memoryFrom; i <= this->memoryTo; ++i) {
         std::stringstream ss;
-        ss << std::uppercase << std::hex << std::setw(3) << std::setfill('0') << i;
-        s += ss.str() + "0  ";
+        ss << std::uppercase << std::hex << std::setw(7) << std::setfill('0') << i;
+        s += ss.str() + "0";
+
         for (int j = 0; j < 16; ++j) {
             std::stringstream ssByte;
             ssByte << std::uppercase << std::hex << std::setw(2) << std::setfill('0') << (rand() % 16);
@@ -110,6 +119,19 @@ void MainWindow::updateMemorySpinBoxes() {
     ui->spinBoxMemoryTo->setValue(this->memoryTo);
 }
 
+void MainWindow::updateToolBarButtons() {
+    ui->btnRun->setEnabled(!running);
+    ui->btnRun->setVisible(!running);
+
+    ui->btnDebug->setEnabled(!running);
+    ui->btnDebug->setVisible(!running);
+
+    ui->btnStep->setEnabled(debug);
+    ui->btnStep->setVisible(debug);
+
+    ui->btnTerminate->setEnabled(running);
+    ui->btnTerminate->setVisible(running);
+}
 
 void MainWindow::on_action_Open_triggered()
 {
@@ -128,19 +150,18 @@ void MainWindow::on_action_About_RISCVEmulator_triggered()
 void MainWindow::on_spinBoxMemoryFrom_valueChanged(int arg1)
 {
     ui->spinBoxMemoryTo->setMinimum(ui->spinBoxMemoryFrom->value());
-    MainWindow::updateMemoryButtons();
+    updateMemoryButtons();
 }
 
 void MainWindow::on_spinBoxMemoryTo_valueChanged(int arg1)
 {
     ui->spinBoxMemoryFrom->setMaximum(ui->spinBoxMemoryTo->value());
-    MainWindow::updateMemoryButtons();
+    updateMemoryButtons();
 }
 
 void MainWindow::on_btnRestoreMemory_clicked()
 {
-    MainWindow::updateMemorySpinBoxes();
-    MainWindow::updateTextEditMemory();
+    updateMemorySpinBoxes();
 }
 
 void MainWindow::on_btnSelectMemory_clicked()
@@ -148,13 +169,44 @@ void MainWindow::on_btnSelectMemory_clicked()
     this->memoryFrom = ui->spinBoxMemoryFrom->value();
     this->memoryTo = ui->spinBoxMemoryTo->value();
 
-    MainWindow::updateMemorySpinBoxes();
-    MainWindow::updateMemoryButtons();
-    MainWindow::updateTextEditMemory();
+    updateMemorySpinBoxes();
+    updateMemoryButtons();
+    updateTextEditMemory();
 }
 
 void MainWindow::on_lineEditSendMessage_textChanged(const QString &arg1)
 {
     ui->btnSendMessage->setEnabled(!ui->lineEditSendMessage->text().isEmpty());
+}
+
+void MainWindow::on_btnRun_clicked()
+{
+    this->running = true;
+    updateToolBarButtons();
+    updateTextEditMemory();
+}
+
+
+void MainWindow::on_btnDebug_clicked()
+{
+    this->running = true;
+    this->debug = true;
+    updateToolBarButtons();
+    updateTextEditMemory();
+}
+
+
+void MainWindow::on_btnStep_clicked()
+{
+
+}
+
+
+void MainWindow::on_btnTerminate_clicked()
+{
+    this->running = false;
+    this->debug = false;
+    updateToolBarButtons();
+    updateTextEditMemory();
 }
 

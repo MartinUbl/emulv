@@ -23,24 +23,30 @@ private slots:
 
     void on_action_Open_triggered();
     void on_action_About_RISCVEmulator_triggered();
-
     void on_spinBoxMemoryFrom_valueChanged(int arg1);
-
     void on_spinBoxMemoryTo_valueChanged(int arg1);
-
     void on_btnRestoreMemory_clicked();
-
     void on_btnSelectMemory_clicked();
-
     void on_lineEditSendMessage_textChanged(const QString &arg1);
+
+    void on_btnRun_clicked();
+
+    void on_btnDebug_clicked();
+
+    void on_btnStep_clicked();
+
+    void on_btnTerminate_clicked();
 
 private:
     Ui::MainWindow *ui;
     int memoryFrom = 0, memoryTo = 0xfff;
+    bool running = false;
+    bool debug = false;
 
     void updatePeripheralTabWidgetVisible();
     void updateMemorySpinBoxes();
     void updateMemoryButtons();
     void updateTextEditMemory();
+    void updateToolBarButtons();
 };
 #endif // MAINWINDOW_H
