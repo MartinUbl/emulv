@@ -28,14 +28,14 @@ private slots:
     void on_btnRestoreMemory_clicked();
     void on_btnSelectMemory_clicked();
     void on_lineEditSendMessage_textChanged(const QString &arg1);
-
     void on_btnRun_clicked();
-
     void on_btnDebug_clicked();
-
     void on_btnStep_clicked();
-
     void on_btnTerminate_clicked();
+    void on_rbMemoryDec_clicked();
+    void on_rbMemoryHex_clicked();
+    void on_rbRegistersDec_clicked();
+    void on_rbRegistersHex_clicked();
 
 private:
     Ui::MainWindow *ui;
@@ -43,10 +43,13 @@ private:
     bool running = false;
     bool debug = false;
 
+    void updateMemoryWidgetEnabled();
+    void updateRegistersWidgetEnabled();
     void updatePeripheralTabWidgetVisible();
     void updateMemorySpinBoxes();
     void updateMemoryButtons();
     void updateTextEditMemory();
+    void updateListViewRegisters();
     void updateToolBarButtons();
 };
 #endif // MAINWINDOW_H

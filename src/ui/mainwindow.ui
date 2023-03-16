@@ -14,7 +14,22 @@
    <string>RISC-V Emulator</string>
   </property>
   <widget class="QWidget" name="centralwidget">
-   <layout class="QVBoxLayout" name="verticalLayout_19">
+   <layout class="QVBoxLayout" name="verticalLayout_13">
+    <property name="spacing">
+     <number>0</number>
+    </property>
+    <property name="leftMargin">
+     <number>0</number>
+    </property>
+    <property name="topMargin">
+     <number>2</number>
+    </property>
+    <property name="rightMargin">
+     <number>0</number>
+    </property>
+    <property name="bottomMargin">
+     <number>2</number>
+    </property>
     <item>
      <widget class="QWidget" name="toolBar" native="true">
       <property name="styleSheet">
@@ -78,7 +93,8 @@ QToolButton {
             <string>Run</string>
            </property>
            <property name="icon">
-            <iconset theme="media-playback-start"/>
+            <iconset theme="media-playback-start">
+             <normaloff>.</normaloff>.</iconset>
            </property>
            <property name="iconSize">
             <size>
@@ -103,7 +119,8 @@ QToolButton {
             <string>Debug</string>
            </property>
            <property name="icon">
-            <iconset theme="media-seek-forward"/>
+            <iconset theme="media-seek-forward">
+             <normaloff>.</normaloff>.</iconset>
            </property>
            <property name="iconSize">
             <size>
@@ -113,31 +130,6 @@ QToolButton {
            </property>
            <property name="shortcut">
             <string>F6</string>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <widget class="QToolButton" name="btnStep">
-           <property name="toolTip">
-            <string>Step (F7)</string>
-           </property>
-           <property name="styleSheet">
-            <string notr="true"/>
-           </property>
-           <property name="text">
-            <string>Step</string>
-           </property>
-           <property name="icon">
-            <iconset theme="go-down"/>
-           </property>
-           <property name="iconSize">
-            <size>
-             <width>14</width>
-             <height>14</height>
-            </size>
-           </property>
-           <property name="shortcut">
-            <string>F7</string>
            </property>
           </widget>
          </item>
@@ -153,7 +145,8 @@ QToolButton {
             <string>Terminate</string>
            </property>
            <property name="icon">
-            <iconset theme="media-playback-stop"/>
+            <iconset theme="media-playback-stop">
+             <normaloff>.</normaloff>.</iconset>
            </property>
            <property name="iconSize">
             <size>
@@ -163,6 +156,32 @@ QToolButton {
            </property>
            <property name="shortcut">
             <string>Shift+F5</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QToolButton" name="btnStep">
+           <property name="toolTip">
+            <string>Step (F7)</string>
+           </property>
+           <property name="styleSheet">
+            <string notr="true"/>
+           </property>
+           <property name="text">
+            <string>Step</string>
+           </property>
+           <property name="icon">
+            <iconset theme="go-down">
+             <normaloff>.</normaloff>.</iconset>
+           </property>
+           <property name="iconSize">
+            <size>
+             <width>14</width>
+             <height>14</height>
+            </size>
+           </property>
+           <property name="shortcut">
+            <string>F7</string>
            </property>
           </widget>
          </item>
@@ -192,72 +211,64 @@ QToolButton {
      </widget>
     </item>
     <item>
-     <widget class="QSplitter" name="splitter_4">
+     <widget class="QSplitter" name="splitterMain">
       <property name="orientation">
        <enum>Qt::Vertical</enum>
-      </property>
-      <property name="opaqueResize">
-       <bool>true</bool>
       </property>
       <property name="childrenCollapsible">
        <bool>false</bool>
       </property>
-      <widget class="QSplitter" name="splitter_2">
+      <widget class="QSplitter" name="splitterTop">
        <property name="orientation">
-        <enum>Qt::Vertical</enum>
-       </property>
-       <property name="opaqueResize">
-        <bool>true</bool>
+        <enum>Qt::Horizontal</enum>
        </property>
        <property name="childrenCollapsible">
         <bool>false</bool>
        </property>
-       <widget class="QSplitter" name="splitter">
-        <property name="frameShape">
-         <enum>QFrame::Box</enum>
-        </property>
-        <property name="lineWidth">
-         <number>0</number>
-        </property>
-        <property name="midLineWidth">
-         <number>1</number>
-        </property>
-        <property name="orientation">
-         <enum>Qt::Horizontal</enum>
-        </property>
-        <property name="opaqueResize">
-         <bool>true</bool>
-        </property>
-        <property name="childrenCollapsible">
-         <bool>false</bool>
-        </property>
-        <widget class="QWidget" name="layoutWidget">
-         <layout class="QVBoxLayout" name="verticalLayout">
-          <property name="leftMargin">
-           <number>6</number>
-          </property>
-          <item>
-           <widget class="QLabel" name="label">
-            <property name="text">
-             <string>Disassembly</string>
-            </property>
-           </widget>
-          </item>
-          <item>
-           <widget class="QPlainTextEdit" name="plainTextEdit">
-            <property name="font">
-             <font>
-              <family>NotoSansMono Nerd Font Mono</family>
-             </font>
-            </property>
-            <property name="lineWrapMode">
-             <enum>QPlainTextEdit::NoWrap</enum>
-            </property>
-            <property name="readOnly">
-             <bool>true</bool>
-            </property>
-            <property name="plainText">
-             <string>.section .text
+       <widget class="QWidget" name="disassemblyWidget" native="true">
+        <layout class="QVBoxLayout" name="verticalLayout_10">
+         <property name="spacing">
+          <number>0</number>
+         </property>
+         <property name="leftMargin">
+          <number>6</number>
+         </property>
+         <property name="topMargin">
+          <number>0</number>
+         </property>
+         <property name="rightMargin">
+          <number>0</number>
+         </property>
+         <property name="bottomMargin">
+          <number>0</number>
+         </property>
+         <item>
+          <layout class="QVBoxLayout" name="verticalLayout">
+           <property name="leftMargin">
+            <number>6</number>
+           </property>
+           <item>
+            <widget class="QLabel" name="label">
+             <property name="text">
+              <string>Disassembly</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QPlainTextEdit" name="plainTextEdit">
+             <property name="font">
+              <font>
+               <family>NotoSansMono Nerd Font Mono</family>
+              </font>
+             </property>
+             <property name="lineWrapMode">
+              <enum>QPlainTextEdit::NoWrap</enum>
+             </property>
+             <property name="readOnly">
+              <bool>true</bool>
+             </property>
+             <property name="plainText">
+              <string>.section .text
 .global bubsort
 bubsort:
     # a0 = long *list
@@ -284,65 +295,85 @@ bubsort:
 2: # bottom of do loop body
     bne t0, zero, 1b  # loop if swapped = true
     jalr    zero, 0(ra) # return via return address register</string>
-            </property>
-           </widget>
-          </item>
-         </layout>
-        </widget>
-        <widget class="QWidget" name="layoutWidget">
-         <layout class="QVBoxLayout" name="verticalLayout_2">
-          <property name="rightMargin">
-           <number>6</number>
-          </property>
-          <item>
-           <layout class="QHBoxLayout" name="horizontalLayout_3">
-            <item>
-             <widget class="QLabel" name="label_2">
-              <property name="text">
-               <string>Registers</string>
-              </property>
-             </widget>
-            </item>
-            <item>
-             <spacer name="horizontalSpacer_2">
-              <property name="orientation">
-               <enum>Qt::Horizontal</enum>
-              </property>
-              <property name="sizeHint" stdset="0">
-               <size>
-                <width>40</width>
-                <height>20</height>
-               </size>
-              </property>
-             </spacer>
-            </item>
-            <item>
-             <widget class="QRadioButton" name="radioButton">
-              <property name="text">
-               <string>Dec</string>
-              </property>
-              <property name="checked">
-               <bool>false</bool>
-              </property>
-             </widget>
-            </item>
-            <item>
-             <widget class="QRadioButton" name="radioButton_2">
-              <property name="text">
-               <string>Hex</string>
-              </property>
-              <property name="checked">
-               <bool>true</bool>
-              </property>
-             </widget>
-            </item>
-           </layout>
-          </item>
-          <item>
-           <widget class="QListView" name="listView"/>
-          </item>
-         </layout>
-        </widget>
+             </property>
+            </widget>
+           </item>
+          </layout>
+         </item>
+        </layout>
+       </widget>
+       <widget class="QWidget" name="registersWidget" native="true">
+        <layout class="QVBoxLayout" name="verticalLayout_2">
+         <property name="spacing">
+          <number>0</number>
+         </property>
+         <property name="leftMargin">
+          <number>0</number>
+         </property>
+         <property name="topMargin">
+          <number>0</number>
+         </property>
+         <property name="rightMargin">
+          <number>6</number>
+         </property>
+         <property name="bottomMargin">
+          <number>0</number>
+         </property>
+         <item>
+          <layout class="QHBoxLayout" name="horizontalLayout_3">
+           <item>
+            <widget class="QLabel" name="label_2">
+             <property name="text">
+              <string>Registers</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <spacer name="horizontalSpacer_2">
+             <property name="orientation">
+              <enum>Qt::Horizontal</enum>
+             </property>
+             <property name="sizeHint" stdset="0">
+              <size>
+               <width>40</width>
+               <height>20</height>
+              </size>
+             </property>
+            </spacer>
+           </item>
+           <item>
+            <widget class="QRadioButton" name="rbRegistersDec">
+             <property name="text">
+              <string>Dec</string>
+             </property>
+             <property name="checked">
+              <bool>false</bool>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QRadioButton" name="rbRegistersHex">
+             <property name="text">
+              <string>Hex</string>
+             </property>
+             <property name="checked">
+              <bool>true</bool>
+             </property>
+            </widget>
+           </item>
+          </layout>
+         </item>
+         <item>
+          <widget class="QListView" name="listViewRegisters">
+           <property name="font">
+            <font>
+             <family>NotoSansMono Nerd Font Mono</family>
+             <bold>true</bold>
+            </font>
+           </property>
+          </widget>
+         </item>
+        </layout>
        </widget>
       </widget>
       <widget class="QGroupBox" name="groupBox">
@@ -352,26 +383,29 @@ bubsort:
        <property name="flat">
         <bool>true</bool>
        </property>
-       <layout class="QVBoxLayout" name="verticalLayout_18">
+       <layout class="QVBoxLayout" name="verticalLayout_12">
         <property name="spacing">
          <number>0</number>
         </property>
         <property name="leftMargin">
-         <number>0</number>
+         <number>6</number>
         </property>
         <property name="topMargin">
          <number>0</number>
         </property>
         <property name="rightMargin">
-         <number>0</number>
+         <number>6</number>
         </property>
         <property name="bottomMargin">
          <number>0</number>
         </property>
         <item>
-         <widget class="QSplitter" name="splitter_5">
+         <widget class="QSplitter" name="splitterBottom">
           <property name="orientation">
            <enum>Qt::Horizontal</enum>
+          </property>
+          <property name="childrenCollapsible">
+           <bool>false</bool>
           </property>
           <widget class="QWidget" name="memoryWidget" native="true">
            <layout class="QVBoxLayout" name="verticalLayout_5">
@@ -416,6 +450,23 @@ bubsort:
                    </size>
                   </property>
                  </spacer>
+                </item>
+                <item>
+                 <widget class="QRadioButton" name="rbMemoryDec">
+                  <property name="text">
+                   <string>Dec</string>
+                  </property>
+                 </widget>
+                </item>
+                <item>
+                 <widget class="QRadioButton" name="rbMemoryHex">
+                  <property name="text">
+                   <string>Hex</string>
+                  </property>
+                  <property name="checked">
+                   <bool>true</bool>
+                  </property>
+                 </widget>
                 </item>
                 <item>
                  <widget class="QSpinBox" name="spinBoxMemoryFrom">
@@ -526,8 +577,8 @@ bubsort:
                   <rect>
                    <x>0</x>
                    <y>0</y>
-                   <width>672</width>
-                   <height>264</height>
+                   <width>652</width>
+                   <height>284</height>
                   </rect>
                  </property>
                  <layout class="QVBoxLayout" name="verticalLayout_7">
@@ -596,7 +647,7 @@ padding-bottom: -5px;</string>
                        <widget class="QPlainTextEdit" name="textEditMemory">
                         <property name="minimumSize">
                          <size>
-                          <width>480</width>
+                          <width>600</width>
                           <height>0</height>
                          </size>
                         </property>
@@ -647,116 +698,143 @@ padding-bottom: -5px;</string>
             </item>
            </layout>
           </widget>
-          <widget class="QTabWidget" name="tabWidget">
-           <property name="enabled">
-            <bool>true</bool>
-           </property>
-           <property name="currentIndex">
-            <number>0</number>
-           </property>
-           <property name="tabsClosable">
-            <bool>false</bool>
-           </property>
-           <property name="movable">
-            <bool>false</bool>
-           </property>
-           <widget class="QWidget" name="tabUart">
-            <attribute name="title">
-             <string>UART</string>
-            </attribute>
-            <layout class="QVBoxLayout" name="verticalLayout_3">
-             <property name="spacing">
-              <number>3</number>
-             </property>
-             <property name="leftMargin">
-              <number>0</number>
-             </property>
-             <property name="topMargin">
-              <number>0</number>
-             </property>
-             <property name="rightMargin">
-              <number>0</number>
-             </property>
-             <property name="bottomMargin">
-              <number>0</number>
-             </property>
-             <item>
-              <widget class="QPlainTextEdit" name="plainTextEdit_2">
-               <property name="frameShape">
-                <enum>QFrame::NoFrame</enum>
-               </property>
-               <property name="frameShadow">
-                <enum>QFrame::Plain</enum>
-               </property>
-               <property name="lineWidth">
-                <number>0</number>
-               </property>
+          <widget class="QWidget" name="peripheralWidget" native="true">
+           <layout class="QVBoxLayout" name="verticalLayout_11">
+            <property name="spacing">
+             <number>0</number>
+            </property>
+            <property name="leftMargin">
+             <number>0</number>
+            </property>
+            <property name="topMargin">
+             <number>0</number>
+            </property>
+            <property name="rightMargin">
+             <number>0</number>
+            </property>
+            <property name="bottomMargin">
+             <number>0</number>
+            </property>
+            <item>
+             <widget class="QTabWidget" name="tabWidget">
+              <property name="enabled">
+               <bool>true</bool>
+              </property>
+              <property name="currentIndex">
+               <number>0</number>
+              </property>
+              <property name="tabsClosable">
+               <bool>false</bool>
+              </property>
+              <property name="movable">
+               <bool>false</bool>
+              </property>
+              <widget class="QWidget" name="tabUart">
+               <attribute name="title">
+                <string>UART</string>
+               </attribute>
+               <layout class="QVBoxLayout" name="verticalLayout_3">
+                <property name="spacing">
+                 <number>3</number>
+                </property>
+                <property name="leftMargin">
+                 <number>0</number>
+                </property>
+                <property name="topMargin">
+                 <number>0</number>
+                </property>
+                <property name="rightMargin">
+                 <number>0</number>
+                </property>
+                <property name="bottomMargin">
+                 <number>0</number>
+                </property>
+                <item>
+                 <widget class="QPlainTextEdit" name="plainTextEdit_2">
+                  <property name="frameShape">
+                   <enum>QFrame::NoFrame</enum>
+                  </property>
+                  <property name="frameShadow">
+                   <enum>QFrame::Plain</enum>
+                  </property>
+                  <property name="lineWidth">
+                   <number>0</number>
+                  </property>
+                  <property name="lineWrapMode">
+                   <enum>QPlainTextEdit::NoWrap</enum>
+                  </property>
+                 </widget>
+                </item>
+                <item>
+                 <layout class="QHBoxLayout" name="horizontalLayout_4">
+                  <item>
+                   <widget class="QLineEdit" name="lineEditSendMessage">
+                    <property name="placeholderText">
+                     <string>Send message...</string>
+                    </property>
+                    <property name="clearButtonEnabled">
+                     <bool>true</bool>
+                    </property>
+                   </widget>
+                  </item>
+                  <item>
+                   <widget class="QPushButton" name="btnSendMessage">
+                    <property name="enabled">
+                     <bool>false</bool>
+                    </property>
+                    <property name="toolTip">
+                     <string>Send</string>
+                    </property>
+                    <property name="text">
+                     <string/>
+                    </property>
+                    <property name="icon">
+                     <iconset theme="go-next">
+                      <normaloff>.</normaloff>.</iconset>
+                    </property>
+                   </widget>
+                  </item>
+                 </layout>
+                </item>
+               </layout>
               </widget>
-             </item>
-             <item>
-              <layout class="QHBoxLayout" name="horizontalLayout_4">
-               <item>
-                <widget class="QLineEdit" name="lineEditSendMessage">
-                 <property name="placeholderText">
-                  <string>Send message...</string>
-                 </property>
-                 <property name="clearButtonEnabled">
-                  <bool>true</bool>
-                 </property>
-                </widget>
-               </item>
-               <item>
-                <widget class="QPushButton" name="btnSendMessage">
-                 <property name="toolTip">
-                  <string>Send</string>
-                 </property>
-                 <property name="text">
-                  <string/>
-                 </property>
-                 <property name="icon">
-                  <iconset theme="go-next">
-                   <normaloff>.</normaloff>.</iconset>
-                 </property>
-                </widget>
-               </item>
-              </layout>
-             </item>
-            </layout>
-           </widget>
-           <widget class="QWidget" name="tabGPIO">
-            <attribute name="title">
-             <string>GPIO</string>
-            </attribute>
-           </widget>
-           <widget class="QWidget" name="tabOutput">
-            <attribute name="title">
-             <string>Output</string>
-            </attribute>
-            <layout class="QVBoxLayout" name="verticalLayout_6">
-             <property name="leftMargin">
-              <number>0</number>
-             </property>
-             <property name="topMargin">
-              <number>0</number>
-             </property>
-             <property name="rightMargin">
-              <number>0</number>
-             </property>
-             <property name="bottomMargin">
-              <number>0</number>
-             </property>
-             <item>
-              <widget class="QPlainTextEdit" name="plainTextEdit_4">
-               <property name="frameShape">
-                <enum>QFrame::NoFrame</enum>
-               </property>
-               <property name="frameShadow">
-                <enum>QFrame::Plain</enum>
-               </property>
+              <widget class="QWidget" name="tabGPIO">
+               <attribute name="title">
+                <string>GPIO</string>
+               </attribute>
               </widget>
-             </item>
-            </layout>
-           </widget>
+              <widget class="QWidget" name="tabOutput">
+               <attribute name="title">
+                <string>Output</string>
+               </attribute>
+               <layout class="QVBoxLayout" name="verticalLayout_6">
+                <property name="leftMargin">
+                 <number>0</number>
+                </property>
+                <property name="topMargin">
+                 <number>0</number>
+                </property>
+                <property name="rightMargin">
+                 <number>0</number>
+                </property>
+                <property name="bottomMargin">
+                 <number>0</number>
+                </property>
+                <item>
+                 <widget class="QPlainTextEdit" name="plainTextEdit_4">
+                  <property name="frameShape">
+                   <enum>QFrame::NoFrame</enum>
+                  </property>
+                  <property name="frameShadow">
+                   <enum>QFrame::Plain</enum>
+                  </property>
+                 </widget>
+                </item>
+               </layout>
+              </widget>
+             </widget>
+            </item>
+           </layout>
           </widget>
          </widget>
         </item>
@@ -869,9 +947,9 @@ padding-bottom: -5px;</string>
  </widget>
  <tabstops>
   <tabstop>plainTextEdit</tabstop>
-  <tabstop>listView</tabstop>
-  <tabstop>radioButton</tabstop>
-  <tabstop>radioButton_2</tabstop>
+  <tabstop>listViewRegisters</tabstop>
+  <tabstop>rbRegistersDec</tabstop>
+  <tabstop>rbRegistersHex</tabstop>
   <tabstop>spinBoxMemoryFrom</tabstop>
   <tabstop>spinBoxMemoryTo</tabstop>
   <tabstop>btnSelectMemory</tabstop>
