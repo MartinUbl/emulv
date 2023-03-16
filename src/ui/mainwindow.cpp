@@ -15,33 +15,21 @@ MainWindow::MainWindow(QWidget *parent)
 {
     ui->setupUi(this);
 
-    ui->splitter->setStretchFactor(0, 1);
-    ui->splitter->setStretchFactor(1, 0);
+    ui->splitterTop->setStretchFactor(0, 1);
+    ui->splitterTop->setStretchFactor(1, 0);
 
-    ui->splitter_4->setStretchFactor(0, 2);
-    ui->splitter_4->setStretchFactor(1, 1);
+    ui->splitterBottom->setStretchFactor(0, 2);
+    ui->splitterBottom->setStretchFactor(1, 5);
 
-    ui->splitter_2->setStretchFactor(0, 3);
-    ui->splitter_2->setStretchFactor(1, 1);
-
-    auto model = new QStringListModel(this);
-
-    QStringList list;
-    list << "R0:   40 00 bf 1a";
-    list << "R1:   40 00 bf 1a";
-    list << "R2:   40 00 bf 1a";
-    list << "R3:   40 00 bf 1a";
-    model->setStringList(list);
-
-    ui->listView->setModel(model);
-    ui->listView->setEditTriggers(QAbstractItemView::NoEditTriggers);
+    ui->splitterMain->setStretchFactor(0, 3);
+    ui->splitterMain->setStretchFactor(1, 1);
 
     connect(ui->action_Serial_monitor, SIGNAL(toggled(bool)), this, SLOT(setUARTTabVisible()));
     connect(ui->action_GPIO, SIGNAL(toggled(bool)), this, SLOT(setGPIOTabVisible()));
     connect(ui->action_Output, SIGNAL(toggled(bool)), this, SLOT(setOutputTabVisible()));
     connect(ui->action_About_RISCVEmulator, SIGNAL(triggered(bool)), this, SLOT(showAbout()));
 
-    on_btnRestoreMemory_clicked();
+    updateMemorySpinBoxes();
     updateToolBarButtons();
 }
 
@@ -68,9 +56,33 @@ void MainWindow::setOutputTabVisible()
     updatePeripheralTabWidgetVisible();
 }
 
-void MainWindow::updatePeripheralTabWidgetVisible() {
-    for (int i = 0; i < ui->tabWidget->count(); ++i) {
-        if (ui->tabWidget->isTabVisible(i)) {
+
+void MainWindow::updateMemoryWidgetEnabled() {
+    if (this->running && !this->debug)
+    {
+        ui->memoryWidget->setEnabled(false);
+        return;
+    }
+
+    ui->memoryWidget->setEnabled(true);
+}
+
+void MainWindow::updateRegistersWidgetEnabled() {
+    if (this->running && !this->debug)
+    {
+        ui->registersWidget->setEnabled(false);
+        return;
+    }
+
+    ui->registersWidget->setEnabled(true);
+}
+
+void MainWindow::updatePeripheralTabWidgetVisible()
+{
+    for (int i = 0; i < ui->tabWidget->count(); ++i)
+    {
+        if (ui->tabWidget->isTabVisible(i))
+        {
             ui->tabWidget->setVisible(true);
             return;
         }
@@ -79,7 +91,8 @@ void MainWindow::updatePeripheralTabWidgetVisible() {
     ui->tabWidget->setVisible(false);
 }
 
-void MainWindow::updateMemoryButtons() {
+void MainWindow::updateMemoryButtons()
+{
     bool enabled = ui->spinBoxMemoryFrom->value() != this->memoryFrom ||
                    ui->spinBoxMemoryTo->value() != this->memoryTo;
 
@@ -87,24 +100,39 @@ void MainWindow::updateMemoryButtons() {
     ui->btnRestoreMemory->setEnabled(enabled);
 }
 
-void MainWindow::updateTextEditMemory() {
-    if (this->running && !this->debug) {
-        ui->memoryWidget->setEnabled(false);
-        return;
-    }
-
-    ui->memoryWidget->setEnabled(true);
-
+void MainWindow::updateTextEditMemory()
+{
     std::string s = "";
 
-    for (int i = this->memoryFrom; i <= this->memoryTo; ++i) {
+    if (ui->rbMemoryDec->isChecked())
+    {
+        ui->lineEditMemoryHeader->setText("          00  01  02  03  04  05  06  07  08  09  0A  0B  0C  0D  0E  0F");
+        ui->textEditMemory->setMinimumWidth(600);
+    }
+    else
+    {
+        ui->lineEditMemoryHeader->setText("         00 01 02 03 04 05 06 07 08 09 0A 0B 0C 0D 0E 0F");
+        ui->textEditMemory->setMinimumWidth(480);
+    }
+
+    for (int i = this->memoryFrom; i <= this->memoryTo; ++i)
+    {
         std::stringstream ss;
         ss << std::uppercase << std::hex << std::setw(7) << std::setfill('0') << i;
         s += ss.str() + "0";
 
-        for (int j = 0; j < 16; ++j) {
+        for (int j = 0; j < 16; ++j)
+        {
             std::stringstream ssByte;
-            ssByte << std::uppercase << std::hex << std::setw(2) << std::setfill('0') << (rand() % 16);
+            if (ui->rbMemoryDec->isChecked())
+            {
+                ssByte << std::setw(3) << std::setfill('0') << (rand() % 256);
+            }
+            else
+            {
+                ssByte << std::uppercase << std::hex << std::setw(2) << std::setfill('0') << (rand() % 256);
+            }
+
             s += " " + ssByte.str();
         }
         s += "\n";
@@ -114,12 +142,45 @@ void MainWindow::updateTextEditMemory() {
     ui->textEditMemory->setPlainText(str);
 }
 
-void MainWindow::updateMemorySpinBoxes() {
+void MainWindow::updateListViewRegisters()
+{
+    auto model = new QStringListModel(this);
+
+    QStringList list;
+
+    for (int i = 0; i < 32; ++i) {
+        std::string s = "R" + std::to_string(i) + ":  ";
+
+        for (int j = 0; j < 4; ++j) {
+            std::stringstream ssByte;
+            if (ui->rbRegistersDec->isChecked())
+            {
+                ssByte << std::setw(3) << std::setfill('0') << (rand() % 256);
+            }
+            else
+            {
+                ssByte << std::uppercase << std::hex << std::setw(2) << std::setfill('0') << (rand() % 256);
+            }
+            s += " " + ssByte.str();
+        }
+
+        QString str = QString::fromStdString(s);
+        list << str;
+    }
+
+    model->setStringList(list);
+    ui->listViewRegisters->setModel(model);
+    ui->listViewRegisters->setEditTriggers(QAbstractItemView::NoEditTriggers);
+}
+
+void MainWindow::updateMemorySpinBoxes()
+{
     ui->spinBoxMemoryFrom->setValue(this->memoryFrom);
     ui->spinBoxMemoryTo->setValue(this->memoryTo);
 }
 
-void MainWindow::updateToolBarButtons() {
+void MainWindow::updateToolBarButtons()
+{
     ui->btnRun->setEnabled(!running);
     ui->btnRun->setVisible(!running);
 
@@ -138,7 +199,6 @@ void MainWindow::on_action_Open_triggered()
     QString fileName = QFileDialog::getOpenFileName(this, "Select binary file", ".");
     ui->statusbar->showMessage(fileName);
 }
-
 
 void MainWindow::on_action_About_RISCVEmulator_triggered()
 {
@@ -183,30 +243,52 @@ void MainWindow::on_btnRun_clicked()
 {
     this->running = true;
     updateToolBarButtons();
-    updateTextEditMemory();
+    updateMemoryWidgetEnabled();
+    updateRegistersWidgetEnabled();
 }
-
 
 void MainWindow::on_btnDebug_clicked()
 {
     this->running = true;
     this->debug = true;
     updateToolBarButtons();
+    updateMemoryWidgetEnabled();
+    updateRegistersWidgetEnabled();
     updateTextEditMemory();
+    updateListViewRegisters();
 }
-
 
 void MainWindow::on_btnStep_clicked()
 {
-
+    updateTextEditMemory();
+    updateListViewRegisters();
 }
-
 
 void MainWindow::on_btnTerminate_clicked()
 {
     this->running = false;
     this->debug = false;
     updateToolBarButtons();
+    updateMemoryWidgetEnabled();
+    updateRegistersWidgetEnabled();
+}
+
+void MainWindow::on_rbMemoryDec_clicked()
+{
     updateTextEditMemory();
 }
 
+void MainWindow::on_rbMemoryHex_clicked()
+{
+    updateTextEditMemory();
+}
+
+void MainWindow::on_rbRegistersDec_clicked()
+{
+    updateListViewRegisters();
+}
+
+void MainWindow::on_rbRegistersHex_clicked()
+{
+    updateListViewRegisters();
+}
