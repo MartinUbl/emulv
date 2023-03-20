@@ -12,6 +12,7 @@
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
     , ui(new Ui::MainWindow)
+    , disassemblyView(new DisassemblyView)
 {
     ui->setupUi(this);
 
@@ -24,6 +25,9 @@ MainWindow::MainWindow(QWidget *parent)
     ui->splitterMain->setStretchFactor(0, 3);
     ui->splitterMain->setStretchFactor(1, 1);
 
+    ui->runningIndicator->setVisible(false);
+    ui->debugIndicator->setVisible(false);
+
     connect(ui->action_Serial_monitor, SIGNAL(toggled(bool)), this, SLOT(setUARTTabVisible()));
     connect(ui->action_GPIO, SIGNAL(toggled(bool)), this, SLOT(setGPIOTabVisible()));
     connect(ui->action_Output, SIGNAL(toggled(bool)), this, SLOT(setOutputTabVisible()));
@@ -31,11 +35,31 @@ MainWindow::MainWindow(QWidget *parent)
 
     updateMemorySpinBoxes();
     updateToolBarButtons();
+
+    ui->disassemblyLayout->addWidget(disassemblyView);
+
+    disassemblyView->appendPlainText(""
+        "addi t0, zero, 0\n"
+        "addi t1, zero, 1\n"
+        "bge  t1, a1, 2f\n"
+        "slli t3, t1, 3\n"
+        "add  t3, a0, t3\n"
+        "ld   t4, -8(t3)\n"
+        "ld   t5, 0(t3)\n"
+        "ble  t4, t5, 3f\n"
+        "addi t0, zero, 1\n"
+        "sd   t4, 0(t3)\n"
+        "sd   t5, -8(t3)\n"
+        "addi t1, t1, 1\n"
+        "jal  zero, 2b\n"
+        "bne  t0, zero, 1b\n"
+        "jalr zero, 0(ra)");
 }
 
 MainWindow::~MainWindow()
 {
     delete ui;
+    delete disassemblyView;
 }
 
 void MainWindow::setUARTTabVisible()
@@ -56,8 +80,70 @@ void MainWindow::setOutputTabVisible()
     updatePeripheralTabWidgetVisible();
 }
 
+void MainWindow::setRunning(bool running)
+{
+    this->running = running;
 
-void MainWindow::updateMemoryWidgetEnabled() {
+    updateToolBarButtons();
+    updateMemoryWidgetEnabled();
+    updateRegistersWidgetEnabled();
+
+    ui->line->setVisible(!running);
+    ui->runningIndicator->setVisible(running);
+    ui->statusbar->showMessage(running ? "Running ..." : "");
+}
+
+void MainWindow::setDebug(bool debug)
+{
+    this->debug = debug;
+    setRunning(debug);
+
+    updateTextEditMemory();
+    updateListViewRegisters();
+
+    disassemblyView->highlightLine(debug ? 0 : -1);
+
+    if (debug)
+    {
+        ui->runningIndicator->setVisible(false);
+    }
+
+    ui->debugIndicator->setVisible(debug);
+    ui->statusbar->showMessage(debug ? "Running in debug mode ..." : "");
+}
+
+std::string MainWindow::generateByte(bool hex)
+{
+    std::stringstream ssByte;
+
+    if (hex)
+    {
+        ssByte << std::uppercase << std::hex << std::setw(2);
+    }
+    else
+    {
+        ssByte << std::setw(3);
+    }
+
+    ssByte << std::setfill('0') << (rand() % 256);
+
+    return ssByte.str();
+}
+
+std::string MainWindow::generateBytes(int count, bool hex)
+{
+    std::string s = "";
+
+    for (int i = 0; i < count; ++i)
+    {
+        s += " " + generateByte(hex);
+    }
+
+    return s;
+}
+
+void MainWindow::updateMemoryWidgetEnabled()
+{
     if (this->running && !this->debug)
     {
         ui->memoryWidget->setEnabled(false);
@@ -67,7 +153,8 @@ void MainWindow::updateMemoryWidgetEnabled() {
     ui->memoryWidget->setEnabled(true);
 }
 
-void MainWindow::updateRegistersWidgetEnabled() {
+void MainWindow::updateRegistersWidgetEnabled()
+{
     if (this->running && !this->debug)
     {
         ui->registersWidget->setEnabled(false);
@@ -100,10 +187,8 @@ void MainWindow::updateMemoryButtons()
     ui->btnRestoreMemory->setEnabled(enabled);
 }
 
-void MainWindow::updateTextEditMemory()
+void MainWindow::updateMemoryHeader()
 {
-    std::string s = "";
-
     if (ui->rbMemoryDec->isChecked())
     {
         ui->lineEditMemoryHeader->setText("          00  01  02  03  04  05  06  07  08  09  0A  0B  0C  0D  0E  0F");
@@ -114,27 +199,19 @@ void MainWindow::updateTextEditMemory()
         ui->lineEditMemoryHeader->setText("         00 01 02 03 04 05 06 07 08 09 0A 0B 0C 0D 0E 0F");
         ui->textEditMemory->setMinimumWidth(480);
     }
+}
+
+void MainWindow::updateTextEditMemory()
+{
+    std::string s = "";
 
     for (int i = this->memoryFrom; i <= this->memoryTo; ++i)
     {
         std::stringstream ss;
         ss << std::uppercase << std::hex << std::setw(7) << std::setfill('0') << i;
+
         s += ss.str() + "0";
-
-        for (int j = 0; j < 16; ++j)
-        {
-            std::stringstream ssByte;
-            if (ui->rbMemoryDec->isChecked())
-            {
-                ssByte << std::setw(3) << std::setfill('0') << (rand() % 256);
-            }
-            else
-            {
-                ssByte << std::uppercase << std::hex << std::setw(2) << std::setfill('0') << (rand() % 256);
-            }
-
-            s += " " + ssByte.str();
-        }
+        s += generateBytes(16, ui->rbMemoryHex->isChecked());
         s += "\n";
     }
 
@@ -150,20 +227,7 @@ void MainWindow::updateListViewRegisters()
 
     for (int i = 0; i < 32; ++i) {
         std::string s = "R" + std::to_string(i) + ":  ";
-
-        for (int j = 0; j < 4; ++j) {
-            std::stringstream ssByte;
-            if (ui->rbRegistersDec->isChecked())
-            {
-                ssByte << std::setw(3) << std::setfill('0') << (rand() % 256);
-            }
-            else
-            {
-                ssByte << std::uppercase << std::hex << std::setw(2) << std::setfill('0') << (rand() % 256);
-            }
-            s += " " + ssByte.str();
-        }
-
+        s += generateBytes(4, ui->rbRegistersHex->isChecked());
         QString str = QString::fromStdString(s);
         list << str;
     }
@@ -241,45 +305,41 @@ void MainWindow::on_lineEditSendMessage_textChanged(const QString &arg1)
 
 void MainWindow::on_btnRun_clicked()
 {
-    this->running = true;
-    updateToolBarButtons();
-    updateMemoryWidgetEnabled();
-    updateRegistersWidgetEnabled();
+    setRunning(true);
 }
 
 void MainWindow::on_btnDebug_clicked()
 {
-    this->running = true;
-    this->debug = true;
-    updateToolBarButtons();
-    updateMemoryWidgetEnabled();
-    updateRegistersWidgetEnabled();
-    updateTextEditMemory();
-    updateListViewRegisters();
+    setDebug(true);
 }
 
 void MainWindow::on_btnStep_clicked()
 {
     updateTextEditMemory();
     updateListViewRegisters();
+
+    disassemblyView->highlightLine(disassemblyView->getHighlightedLine() + 1);
+
+    if (disassemblyView->getHighlightedLine() == disassemblyView->blockCount())
+    {
+        on_btnTerminate_clicked();
+    }
 }
 
 void MainWindow::on_btnTerminate_clicked()
 {
-    this->running = false;
-    this->debug = false;
-    updateToolBarButtons();
-    updateMemoryWidgetEnabled();
-    updateRegistersWidgetEnabled();
+    setDebug(false);
 }
 
 void MainWindow::on_rbMemoryDec_clicked()
 {
+    updateMemoryHeader();
     updateTextEditMemory();
 }
 
 void MainWindow::on_rbMemoryHex_clicked()
 {
+    updateMemoryHeader();
     updateTextEditMemory();
 }
 
