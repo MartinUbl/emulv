@@ -14,6 +14,11 @@
    <string>RISC-V Emulator</string>
   </property>
   <widget class="QWidget" name="centralwidget">
+   <property name="styleSheet">
+    <string notr="true">.QFrame {
+	border-color: rgb(255, 128, 0);
+}</string>
+   </property>
    <layout class="QVBoxLayout" name="verticalLayout_13">
     <property name="spacing">
      <number>0</number>
@@ -87,7 +92,9 @@ QToolButton {
             <string>Run (F5)</string>
            </property>
            <property name="styleSheet">
-            <string notr="true"/>
+            <string notr="true">#btnRun {
+	color: green;
+}</string>
            </property>
            <property name="text">
             <string>Run</string>
@@ -139,7 +146,9 @@ QToolButton {
             <string>Terminate (Shift+F5)</string>
            </property>
            <property name="styleSheet">
-            <string notr="true"/>
+            <string notr="true">#btnTerminate {
+	color: red;
+}</string>
            </property>
            <property name="text">
             <string>Terminate</string>
@@ -204,14 +213,111 @@ QToolButton {
      </widget>
     </item>
     <item>
+     <widget class="QFrame" name="debugIndicator">
+      <property name="maximumSize">
+       <size>
+        <width>16777215</width>
+        <height>3</height>
+       </size>
+      </property>
+      <property name="styleSheet">
+       <string notr="true">#debugIndicator {
+	border: 3px solid rgb(255, 128, 0);
+}</string>
+      </property>
+      <property name="frameShape">
+       <enum>QFrame::Box</enum>
+      </property>
+      <property name="frameShadow">
+       <enum>QFrame::Plain</enum>
+      </property>
+      <property name="lineWidth">
+       <number>0</number>
+      </property>
+      <layout class="QVBoxLayout" name="verticalLayout_14">
+       <property name="spacing">
+        <number>0</number>
+       </property>
+       <property name="leftMargin">
+        <number>0</number>
+       </property>
+       <property name="topMargin">
+        <number>0</number>
+       </property>
+       <property name="rightMargin">
+        <number>0</number>
+       </property>
+       <property name="bottomMargin">
+        <number>0</number>
+       </property>
+      </layout>
+     </widget>
+    </item>
+    <item>
      <widget class="Line" name="line">
+      <property name="frameShadow">
+       <enum>QFrame::Plain</enum>
+      </property>
       <property name="orientation">
        <enum>Qt::Horizontal</enum>
       </property>
      </widget>
     </item>
     <item>
+     <widget class="QFrame" name="runningIndicator">
+      <property name="enabled">
+       <bool>true</bool>
+      </property>
+      <property name="minimumSize">
+       <size>
+        <width>0</width>
+        <height>0</height>
+       </size>
+      </property>
+      <property name="maximumSize">
+       <size>
+        <width>16777215</width>
+        <height>3</height>
+       </size>
+      </property>
+      <property name="styleSheet">
+       <string notr="true">#runningIndicator {
+	border: 3px solid green;
+}</string>
+      </property>
+      <property name="frameShape">
+       <enum>QFrame::Box</enum>
+      </property>
+      <property name="frameShadow">
+       <enum>QFrame::Plain</enum>
+      </property>
+      <property name="lineWidth">
+       <number>0</number>
+      </property>
+      <layout class="QVBoxLayout" name="verticalLayout">
+       <property name="spacing">
+        <number>0</number>
+       </property>
+       <property name="leftMargin">
+        <number>0</number>
+       </property>
+       <property name="topMargin">
+        <number>0</number>
+       </property>
+       <property name="rightMargin">
+        <number>0</number>
+       </property>
+       <property name="bottomMargin">
+        <number>0</number>
+       </property>
+      </layout>
+     </widget>
+    </item>
+    <item>
      <widget class="QSplitter" name="splitterMain">
+      <property name="lineWidth">
+       <number>1</number>
+      </property>
       <property name="orientation">
        <enum>Qt::Vertical</enum>
       </property>
@@ -231,7 +337,7 @@ QToolButton {
           <number>0</number>
          </property>
          <property name="leftMargin">
-          <number>6</number>
+          <number>0</number>
          </property>
          <property name="topMargin">
           <number>0</number>
@@ -243,7 +349,7 @@ QToolButton {
           <number>0</number>
          </property>
          <item>
-          <layout class="QVBoxLayout" name="verticalLayout">
+          <layout class="QVBoxLayout" name="disassemblyLayout">
            <property name="leftMargin">
             <number>6</number>
            </property>
@@ -251,50 +357,6 @@ QToolButton {
             <widget class="QLabel" name="label">
              <property name="text">
               <string>Disassembly</string>
-             </property>
-            </widget>
-           </item>
-           <item>
-            <widget class="QPlainTextEdit" name="plainTextEdit">
-             <property name="font">
-              <font>
-               <family>NotoSansMono Nerd Font Mono</family>
-              </font>
-             </property>
-             <property name="lineWrapMode">
-              <enum>QPlainTextEdit::NoWrap</enum>
-             </property>
-             <property name="readOnly">
-              <bool>true</bool>
-             </property>
-             <property name="plainText">
-              <string>.section .text
-.global bubsort
-bubsort:
-    # a0 = long *list
-    # a1 = size
-    # t0 = swapped
-    # t1 = i
-1: # do loop
-    addi t0, zero, 0  # swapped = false
-    addi t1, zero, 1  # i = 1
-2: # for loop
-    bge t1, a1, 2f    # break if i &gt;= size
-    slli t3, t1, 3    # scale i by 8 (for long)
-    add t3, a0, t3    # new scaled memory address
-    ld  t4, -8(t3)    # load list[i-1] into t4
-    ld  t5, 0(t3)     # load list[i] into t5
-    ble t4, t5, 3f    # if list[i-1] &lt; list[i], it's in position
-    # if we get here, we need to swap
-    addi t0, zero, 1  # swapped = true
-    sd  t4, 0(t3)     # list[i] = list[i-1]
-    sd  t5, -8(t3)    # list[i-1] = list[i]
-3: # bottom of for loop body
-    addi t1, t1, 1    # i++
-    jal zero, 2b      # loop again
-2: # bottom of do loop body
-    bne t0, zero, 1b  # loop if swapped = true
-    jalr    zero, 0(ra) # return via return address register</string>
              </property>
             </widget>
            </item>
@@ -377,6 +439,9 @@ bubsort:
        </widget>
       </widget>
       <widget class="QGroupBox" name="groupBox">
+       <property name="styleSheet">
+        <string notr="true">#groupBox { border: 0px; }</string>
+       </property>
        <property name="title">
         <string/>
        </property>
@@ -388,7 +453,7 @@ bubsort:
          <number>0</number>
         </property>
         <property name="leftMargin">
-         <number>6</number>
+         <number>3</number>
         </property>
         <property name="topMargin">
          <number>0</number>
@@ -577,8 +642,8 @@ bubsort:
                   <rect>
                    <x>0</x>
                    <y>0</y>
-                   <width>652</width>
-                   <height>284</height>
+                   <width>719</width>
+                   <height>278</height>
                   </rect>
                  </property>
                  <layout class="QVBoxLayout" name="verticalLayout_7">
@@ -946,7 +1011,6 @@ padding-bottom: -5px;</string>
   </action>
  </widget>
  <tabstops>
-  <tabstop>plainTextEdit</tabstop>
   <tabstop>listViewRegisters</tabstop>
   <tabstop>rbRegistersDec</tabstop>
   <tabstop>rbRegistersHex</tabstop>
