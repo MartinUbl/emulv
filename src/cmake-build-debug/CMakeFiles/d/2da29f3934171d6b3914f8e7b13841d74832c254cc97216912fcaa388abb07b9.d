@@ -1,0 +1,31 @@
+_deps/libriscv-build/lib/riscv_autogen/timestamp: \
+  _deps/libriscv-src/lib/CMakeLists.txt \
+  _deps/libriscv-src/lib/libriscv/bytecode_dispatch.cpp \
+  _deps/libriscv-src/lib/libriscv/cpu.cpp \
+  _deps/libriscv-src/lib/libriscv/cpu.hpp \
+  _deps/libriscv-src/lib/libriscv/debug.cpp \
+  _deps/libriscv-src/lib/libriscv/debug.hpp \
+  _deps/libriscv-src/lib/libriscv/decode_bytecodes.cpp \
+  _deps/libriscv-src/lib/libriscv/decoder_cache.cpp \
+  _deps/libriscv-src/lib/libriscv/decoder_cache.hpp \
+  _deps/libriscv-src/lib/libriscv/machine.cpp \
+  _deps/libriscv-src/lib/libriscv/machine.hpp \
+  _deps/libriscv-src/lib/libriscv/memory.cpp \
+  _deps/libriscv-src/lib/libriscv/memory.hpp \
+  _deps/libriscv-src/lib/libriscv/memory_elf.cpp \
+  _deps/libriscv-src/lib/libriscv/memory_rw.cpp \
+  _deps/libriscv-src/lib/libriscv/multiprocessing.cpp \
+  _deps/libriscv-src/lib/libriscv/multiprocessing.hpp \
+  _deps/libriscv-src/lib/libriscv/native_libc.cpp \
+  _deps/libriscv-src/lib/libriscv/native_threads.cpp \
+  _deps/libriscv-src/lib/libriscv/posix/minimal.cpp \
+  _deps/libriscv-src/lib/libriscv/posix/signals.cpp \
+  _deps/libriscv-src/lib/libriscv/posix/signals.hpp \
+  _deps/libriscv-src/lib/libriscv/posix/socket_calls.cpp \
+  _deps/libriscv-src/lib/libriscv/posix/threads.cpp \
+  _deps/libriscv-src/lib/libriscv/rv32i.cpp \
+  _deps/libriscv-src/lib/libriscv/rv64i.cpp \
+  _deps/libriscv-src/lib/libriscv/serialize.cpp \
+  _deps/libriscv-src/lib/libriscv/util/crc32c.cpp \
+  _deps/libriscv-src/lib/libriscv/win32/system_calls.cpp \
+  C:/Program\ Files/JetBrains/CLion\ 2022.3.2/bin/cmake/win/x64/bin/cmake.exe
