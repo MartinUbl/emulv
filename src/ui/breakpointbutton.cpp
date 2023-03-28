@@ -1,7 +1,10 @@
 #include "breakpointbutton.h"
+#include <QString>
 
 BreakpointButton::BreakpointButton(QWidget *parent, QString address)
 {
+    setStyleSheet("BreakpointButton { border: 0px; background-color: transparent; }");
+
     updateVisibility();
     connect(this, SIGNAL(clicked(bool)), this, SLOT(onClicked()));
 }
@@ -16,11 +19,10 @@ void BreakpointButton::updateVisibility()
 {
     if (active)
     {
-        setStyleSheet("BreakpointButton { border: 1px solid red; background-color: rgba(255, 0, 0, 100); border-radius: 7px;}");
+        setIcon(QIcon(":img/breakpoint.png"));
     }
     else
     {
-        setStyleSheet("BreakpointButton { border: 1px solid transparent; background-color: rgba(255, 0, 0, 0); border-radius: 7px;}"
-                      "BreakpointButton:hover { border: 1px solid transparent; background-color: rgba(255, 0, 0, 40); border-radius: 7px;}");
+        setIcon(QIcon());
     }
 }

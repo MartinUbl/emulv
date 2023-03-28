@@ -39,11 +39,15 @@
      <widget class="QWidget" name="toolBar" native="true">
       <property name="styleSheet">
        <string notr="true">QWidget#toolBar {
-	background-color: rgba(99, 99, 99, 25);
+	background-color: rgba(100, 100, 100, 25);
 }
 
 QToolButton {
-	padding: 1px 0px 0px 0px;
+	background-color: rgba(100, 100, 100, 0);
+	border: 0px;
+}
+QToolButton:hover {
+	background-color: rgba(100, 100, 100, 100);
 }</string>
       </property>
       <layout class="QVBoxLayout" name="verticalLayout_9">
@@ -91,23 +95,8 @@ QToolButton {
            <property name="toolTip">
             <string>Run (F5)</string>
            </property>
-           <property name="styleSheet">
-            <string notr="true">#btnRun {
-	color: green;
-}</string>
-           </property>
            <property name="text">
             <string>Run</string>
-           </property>
-           <property name="icon">
-            <iconset theme="media-playback-start">
-             <normaloff>.</normaloff>.</iconset>
-           </property>
-           <property name="iconSize">
-            <size>
-             <width>14</width>
-             <height>14</height>
-            </size>
            </property>
            <property name="shortcut">
             <string>F5</string>
@@ -125,16 +114,6 @@ QToolButton {
            <property name="text">
             <string>Debug</string>
            </property>
-           <property name="icon">
-            <iconset theme="media-seek-forward">
-             <normaloff>.</normaloff>.</iconset>
-           </property>
-           <property name="iconSize">
-            <size>
-             <width>14</width>
-             <height>14</height>
-            </size>
-           </property>
            <property name="shortcut">
             <string>F6</string>
            </property>
@@ -145,23 +124,8 @@ QToolButton {
            <property name="toolTip">
             <string>Terminate (Shift+F5)</string>
            </property>
-           <property name="styleSheet">
-            <string notr="true">#btnTerminate {
-	color: red;
-}</string>
-           </property>
            <property name="text">
             <string>Terminate</string>
-           </property>
-           <property name="icon">
-            <iconset theme="media-playback-stop">
-             <normaloff>.</normaloff>.</iconset>
-           </property>
-           <property name="iconSize">
-            <size>
-             <width>14</width>
-             <height>14</height>
-            </size>
            </property>
            <property name="shortcut">
             <string>Shift+F5</string>
@@ -179,18 +143,21 @@ QToolButton {
            <property name="text">
             <string>Step</string>
            </property>
-           <property name="icon">
-            <iconset theme="go-down">
-             <normaloff>.</normaloff>.</iconset>
-           </property>
-           <property name="iconSize">
-            <size>
-             <width>14</width>
-             <height>14</height>
-            </size>
-           </property>
            <property name="shortcut">
             <string>F7</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QToolButton" name="btnContinue">
+           <property name="toolTip">
+            <string>Continue (F8)</string>
+           </property>
+           <property name="text">
+            <string>Continue</string>
+           </property>
+           <property name="shortcut">
+            <string>F8</string>
            </property>
           </widget>
          </item>
@@ -429,6 +396,7 @@ QToolButton {
           <widget class="QListView" name="listViewRegisters">
            <property name="font">
             <font>
+             <weight>75</weight>
              <bold>true</bold>
             </font>
            </property>
@@ -641,8 +609,8 @@ QToolButton {
                   <rect>
                    <x>0</x>
                    <y>0</y>
-                   <width>719</width>
-                   <height>278</height>
+                   <width>718</width>
+                   <height>275</height>
                   </rect>
                  </property>
                  <layout class="QVBoxLayout" name="verticalLayout_7">
@@ -682,6 +650,7 @@ QToolButton {
                         <property name="font">
                          <font>
                           <family>NotoSansMono Nerd Font Mono</family>
+                          <weight>75</weight>
                           <bold>true</bold>
                          </font>
                         </property>
@@ -718,6 +687,7 @@ padding-bottom: -5px;</string>
                         <property name="font">
                          <font>
                           <family>NotoSansMono Nerd Font Mono</family>
+                          <weight>75</weight>
                           <bold>true</bold>
                          </font>
                         </property>
@@ -914,7 +884,7 @@ padding-bottom: -5px;</string>
      <x>0</x>
      <y>0</y>
      <width>1051</width>
-     <height>22</height>
+     <height>30</height>
     </rect>
    </property>
    <widget class="QMenu" name="menu_File">
