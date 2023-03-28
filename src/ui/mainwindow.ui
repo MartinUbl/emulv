@@ -429,7 +429,6 @@ QToolButton {
           <widget class="QListView" name="listViewRegisters">
            <property name="font">
             <font>
-             <family>NotoSansMono Nerd Font Mono</family>
              <bold>true</bold>
             </font>
            </property>

@@ -16,7 +16,8 @@ set(PROJECT_SOURCES
         main.cpp
         ui/mainwindow.h ui/mainwindow.cpp ui/mainwindow.ui
         ui/aboutwindow.h ui/aboutwindow.cpp ui/aboutwindow.ui
-        ui/disassemblyview.h ui/disassemblyview.cpp
+        ui/disassemblywidget.h ui/disassemblywidget.cpp
+        ui/breakpointbutton.h ui/breakpointbutton.cpp
 )
 
 if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
