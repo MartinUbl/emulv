@@ -18,8 +18,9 @@ set(PROJECT_SOURCES
         main.cpp
         ui/mainwindow.cpp ui/mainwindow.ui
         ui/aboutwindow.h ui/aboutwindow.cpp ui/aboutwindow.ui
-        ui/disassemblyview.h ui/disassemblyview.cpp
-        )
+        ui/disassemblywidget.h ui/disassemblywidget.cpp
+        ui/breakpointbutton.h ui/breakpointbutton.cpp
+)
 
 #################################################################################
 #Download libriscv from github (version v0.20 is selected by GIT_TAG)
