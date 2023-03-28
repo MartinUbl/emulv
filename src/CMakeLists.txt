@@ -33,6 +33,13 @@ FetchContent_Declare(
 )
 FetchContent_MakeAvailable(libriscv)
 
+FetchContent_Declare(
+		riscv-disassembler
+		GIT_REPOSITORY https://github.com/michaeljclark/riscv-disassembler.git
+)
+FetchContent_MakeAvailable(riscv-disassembler)
+include_directories(${riscv-disassembler_SOURCE_DIR}/src)
+
 #################################################################################
 #Define libraries (define all libraries used by the project here)
 #################################################################################
@@ -68,6 +75,8 @@ endif ()
 target_link_libraries(${PROJECT_NAME} PRIVATE riscv)
 #Emulator target depends on riscv
 target_link_libraries(emulator riscv)
+#Emulator target depends on riscv-disassembler
+target_link_libraries(emulator ${riscv-disassembler_SOURCE_DIR}/src/riscv-disas.c)
 #Project target depends on emulator
 target_link_libraries(${PROJECT_NAME} PRIVATE emulator)
 
