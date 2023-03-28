@@ -21,6 +21,26 @@ MainWindow::MainWindow(QWidget *parent)
     ui->listViewRegisters->setFont(font);
     ui->memoryWidget->setFont(font);
 
+    ui->btnTerminate->setIcon(QIcon(":img/terminate.png"));
+    ui->btnContinue->setIcon(QIcon(":img/continue.png"));
+    ui->btnRun->setIcon(QIcon(":img/run.png"));
+    ui->btnDebug->setIcon(QIcon(":img/debug.png"));
+    ui->btnStep->setIcon(QIcon(":img/step.png"));
+
+    QSize btnSize(25, 25);
+    ui->btnTerminate->setFixedSize(btnSize);
+    ui->btnContinue->setFixedSize(btnSize);
+    ui->btnRun->setFixedSize(btnSize);
+    ui->btnDebug->setFixedSize(btnSize);
+    ui->btnStep->setFixedSize(btnSize);
+
+    QSize iconSize(13, 13);
+    ui->btnTerminate->setIconSize(QSize(11, 11));
+    ui->btnContinue->setIconSize(iconSize);
+    ui->btnRun->setIconSize(iconSize);
+    ui->btnDebug->setIconSize(QSize(16, 16));
+    ui->btnStep->setIconSize(QSize(16, 16));
+
     ui->splitterTop->setStretchFactor(0, 1);
     ui->splitterTop->setStretchFactor(1, 0);
 
@@ -251,6 +271,9 @@ void MainWindow::updateToolBarButtons()
 
     ui->btnTerminate->setEnabled(running);
     ui->btnTerminate->setVisible(running);
+
+    ui->btnContinue->setEnabled(debug);
+    ui->btnContinue->setVisible(debug);
 }
 
 void MainWindow::on_action_Open_triggered()

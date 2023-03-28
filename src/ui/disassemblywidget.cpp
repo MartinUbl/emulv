@@ -22,13 +22,13 @@ DisassemblyWidget::DisassemblyWidget(QWidget *parent)
     breakpointAreaLayout = new QVBoxLayout(breakpointAreaWidget);
 
     breakpointAreaWidget->setFixedWidth(addressArea->fontMetrics().height());
+    breakpointAreaWidget->setObjectName("breakpointAreaWidget");
+    breakpointAreaWidget->setStyleSheet("#breakpointAreaWidget { background-color: rgba(100, 100, 100, 100); }");
 
     breakpointAreaLayout->setSpacing(4);
     breakpointAreaLayout->setAlignment(Qt::AlignTop);
     breakpointAreaLayout->setContentsMargins(2, 6, 2, 0);
 
-    breakpointScrollArea->setObjectName("breakpointArea");
-    breakpointScrollArea->setStyleSheet("#breakpointArea { background-color: rgba(100, 100, 100, 100); }");
     breakpointScrollArea->setFixedWidth(addressArea->fontMetrics().height());
     breakpointScrollArea->setFrameShape(QFrame::Box);
     breakpointScrollArea->setLineWidth(0);
@@ -45,6 +45,7 @@ DisassemblyWidget::DisassemblyWidget(QWidget *parent)
     addressArea->setFrameShape(QFrame::Box);
     addressArea->setLineWidth(0);
     addressArea->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+    addressArea->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
     addressArea->setWordWrapMode(QTextOption::NoWrap);
 
     instructionArea->setReadOnly(true);
