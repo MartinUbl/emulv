@@ -3,6 +3,8 @@
 
 BreakpointButton::BreakpointButton(QWidget *parent, QString address)
 {
+    this->address = address;
+
     setStyleSheet("BreakpointButton { border: 0px; background-color: transparent; }");
 
     updateVisibility();
@@ -20,6 +22,7 @@ void BreakpointButton::updateVisibility()
     if (active)
     {
         setIcon(QIcon(":img/breakpoint.png"));
+        setIconSize(QSize(height() - 2, height() - 2));
     }
     else
     {
