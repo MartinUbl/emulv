@@ -1,0 +1,10 @@
+<!DOCTYPE RCC><RCC version="1.0">
+    <qresource>
+        <file>img/breakpoint.png</file>
+        <file>img/continue.png</file>
+        <file>img/debug.png</file>
+        <file>img/run.png</file>
+        <file>img/step.png</file>
+        <file>img/terminate.png</file>
+    </qresource>
+</RCC>

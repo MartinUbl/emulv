@@ -12,9 +12,34 @@
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
     , ui(new Ui::MainWindow)
-    , disassemblyView(new DisassemblyView)
+    , disassemblyWidget(new DisassemblyWidget)
 {
     ui->setupUi(this);
+
+    QFont font("Monospace");
+    font.setStyleHint(QFont::TypeWriter);
+    ui->listViewRegisters->setFont(font);
+    ui->memoryWidget->setFont(font);
+
+    ui->btnTerminate->setIcon(QIcon(":img/terminate.png"));
+    ui->btnContinue->setIcon(QIcon(":img/continue.png"));
+    ui->btnRun->setIcon(QIcon(":img/run.png"));
+    ui->btnDebug->setIcon(QIcon(":img/debug.png"));
+    ui->btnStep->setIcon(QIcon(":img/step.png"));
+
+    QSize btnSize(25, 25);
+    ui->btnTerminate->setFixedSize(btnSize);
+    ui->btnContinue->setFixedSize(btnSize);
+    ui->btnRun->setFixedSize(btnSize);
+    ui->btnDebug->setFixedSize(btnSize);
+    ui->btnStep->setFixedSize(btnSize);
+
+    QSize iconSize(13, 13);
+    ui->btnTerminate->setIconSize(QSize(11, 11));
+    ui->btnContinue->setIconSize(iconSize);
+    ui->btnRun->setIconSize(iconSize);
+    ui->btnDebug->setIconSize(QSize(16, 16));
+    ui->btnStep->setIconSize(QSize(16, 16));
 
     ui->splitterTop->setStretchFactor(0, 1);
     ui->splitterTop->setStretchFactor(1, 0);
@@ -31,35 +56,25 @@ MainWindow::MainWindow(QWidget *parent)
     connect(ui->action_Serial_monitor, SIGNAL(toggled(bool)), this, SLOT(setUARTTabVisible()));
     connect(ui->action_GPIO, SIGNAL(toggled(bool)), this, SLOT(setGPIOTabVisible()));
     connect(ui->action_Output, SIGNAL(toggled(bool)), this, SLOT(setOutputTabVisible()));
-    //connect(ui->action_About_RISCVEmulator, SIGNAL(triggered(bool)), this, SLOT(showAbout()));
 
     updateMemorySpinBoxes();
     updateToolBarButtons();
 
-    ui->disassemblyLayout->addWidget(disassemblyView);
+    ui->disassemblyLayout->addWidget(disassemblyWidget);
 
-    disassemblyView->appendPlainText(""
-        "addi t0, zero, 0\n"
-        "addi t1, zero, 1\n"
-        "bge  t1, a1, 2f\n"
-        "slli t3, t1, 3\n"
-        "add  t3, a0, t3\n"
-        "ld   t4, -8(t3)\n"
-        "ld   t5, 0(t3)\n"
-        "ble  t4, t5, 3f\n"
-        "addi t0, zero, 1\n"
-        "sd   t4, 0(t3)\n"
-        "sd   t5, -8(t3)\n"
-        "addi t1, t1, 1\n"
-        "jal  zero, 2b\n"
-        "bne  t0, zero, 1b\n"
-        "jalr zero, 0(ra)");
+    for (int i = 0; i < 25; i++)
+    {
+        disassemblyWidget->addInstruction("401FABC0", "addi t0, zero, 0");
+        disassemblyWidget->addInstruction("401FABC4", "addi t1, zero, 1");
+        disassemblyWidget->addInstruction("401FABC8", "bge  t1, a1, 2f");
+        disassemblyWidget->addInstruction("401FABCC", "slli t3, t1, 3");
+    }
 }
 
 MainWindow::~MainWindow()
 {
     delete ui;
-    delete disassemblyView;
+    delete disassemblyWidget;
 }
 
 void MainWindow::setUARTTabVisible()
@@ -101,7 +116,7 @@ void MainWindow::setDebug(bool debug)
     updateTextEditMemory();
     updateListViewRegisters();
 
-    disassemblyView->highlightLine(debug ? 0 : -1);
+    disassemblyWidget->highlightLine(debug ? 0 : -1);
 
     if (debug)
     {
@@ -256,6 +271,9 @@ void MainWindow::updateToolBarButtons()
 
     ui->btnTerminate->setEnabled(running);
     ui->btnTerminate->setVisible(running);
+
+    ui->btnContinue->setEnabled(debug);
+    ui->btnContinue->setVisible(debug);
 }
 
 void MainWindow::on_action_Open_triggered()
@@ -318,9 +336,9 @@ void MainWindow::on_btnStep_clicked()
     updateTextEditMemory();
     updateListViewRegisters();
 
-    disassemblyView->highlightLine(disassemblyView->getHighlightedLine() + 1);
+    disassemblyWidget->highlightLine(disassemblyWidget->getHighlightedLine() + 1);
 
-    if (disassemblyView->getHighlightedLine() == disassemblyView->blockCount())
+    if (disassemblyWidget->getHighlightedLine() == disassemblyWidget->getInstructionCount())
     {
         on_btnTerminate_clicked();
     }

@@ -3,7 +3,7 @@
 
 #include <QMainWindow>
 #include <QFileDialog>
-#include "disassemblyview.h"
+#include "disassemblywidget.h"
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class MainWindow; }
@@ -40,7 +40,7 @@ private slots:
 
 private:
     Ui::MainWindow *ui;
-    DisassemblyView *disassemblyView;
+    DisassemblyWidget *disassemblyWidget;
     int memoryFrom = 0, memoryTo = 0xfff;
     bool running = false;
     bool debug = false;
