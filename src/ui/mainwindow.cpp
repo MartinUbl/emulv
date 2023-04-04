@@ -1,6 +1,7 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
 #include "aboutwindow.h"
+#include "peripherals/gpio/GPIOPortWidget.h"
 
 #include <QAction>
 #include <QMessageBox>
@@ -12,7 +13,7 @@
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
     , ui(new Ui::MainWindow)
-    , disassemblyWidget(new DisassemblyWidget)
+    , disassemblyWidget(new DisassemblyWidget(this))
 {
     ui->setupUi(this);
 
@@ -75,6 +76,14 @@ MainWindow::MainWindow(QWidget *parent)
     {
         disassemblyWidget->addInstruction("00000", " ");
     }
+
+    QVBoxLayout *gpioLayout = new QVBoxLayout(this);
+    gpioLayout->setAlignment(Qt::AlignTop);
+    ui->scrollAreaGPIOContents->setLayout(gpioLayout);
+
+    addGPIO("PA", {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15});
+    addGPIO("PB", {0, 1,    3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15});
+    addGPIO("PC", {13, 14, 15});
 }
 
 MainWindow::MainWindow(Controller *pController) : MainWindow(){
@@ -88,7 +97,18 @@ MainWindow::MainWindow(QWidget *parent, Controller *pController) : MainWindow(pa
 MainWindow::~MainWindow()
 {
     delete ui;
-    delete disassemblyWidget;
+}
+
+void MainWindow::addGPIO(std::string label, std::vector<int> pin_ids) {
+    QWidget *widget = new QWidget(this);
+    QHBoxLayout *layout = new QHBoxLayout(this);
+    GPIOPortWidget *port = new GPIOPortWidget(widget, label, pin_ids);
+
+    layout->setAlignment(Qt::AlignLeft);
+    widget->setLayout(layout);
+
+    layout->addWidget(port);
+    ui->scrollAreaGPIOContents->layout()->addWidget(widget);
 }
 
 void MainWindow::setUARTTabVisible()

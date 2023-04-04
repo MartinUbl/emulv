@@ -8,5 +8,9 @@
         <file>img/search.png</file>
         <file>img/step.png</file>
         <file>img/terminate.png</file>
+        <file>img/gpio_input_low.svg</file>
+        <file>img/gpio_input_high.svg</file>
+        <file>img/gpio_output_low.svg</file>
+        <file>img/gpio_output_high.svg</file>
     </qresource>
 </RCC>

@@ -51,6 +51,8 @@ private:
     bool running = false;
     bool debug = false;
 
+    void addGPIO(std::string label, std::vector<int> pin_ids);
+
     void setRunning(bool running);
     void setDebug(bool debug);
 
