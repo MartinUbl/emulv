@@ -15,12 +15,12 @@ find_package(QT NAMES Qt6 Qt5 REQUIRED COMPONENTS Widgets)
 find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS Widgets)
 
 set(PROJECT_SOURCES
-        main.cpp resources/resources.qrc
+        main.cpp ui/resources/resources.qrc
         ui/mainwindow.cpp ui/mainwindow.ui
         ui/aboutwindow.h ui/aboutwindow.cpp ui/aboutwindow.ui
         ui/disassemblywidget.h ui/disassemblywidget.cpp
         ui/breakpointbutton.h ui/breakpointbutton.cpp
-)
+		ui/Controller.cpp ui/Controller.h)
 
 #################################################################################
 #Download libriscv from github (version v0.20 is selected by GIT_TAG)
@@ -46,6 +46,7 @@ include_directories(${riscv-disassembler_SOURCE_DIR}/src)
 #################################################################################
 
 add_library(emulator ./emulator/EmulatorUnit.cpp)
+add_library(modules ./modules/PeripheralDevice.h)
 
 #################################################################################
 #Set up project target executable file
@@ -80,6 +81,8 @@ target_link_libraries(emulator riscv)
 target_link_libraries(emulator ${riscv-disassembler_SOURCE_DIR}/src/riscv-disas.c)
 #Project target depends on emulator
 target_link_libraries(${PROJECT_NAME} PRIVATE emulator)
+#Project target depends on modules
+target_link_libraries(${PROJECT_NAME} PRIVATE modules)
 
 #################################################################################
 #Setup QT GUI #2
