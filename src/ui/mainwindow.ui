@@ -396,7 +396,6 @@ QToolButton:hover {
           <widget class="QListView" name="listViewRegisters">
            <property name="font">
             <font>
-             <weight>75</weight>
              <bold>true</bold>
             </font>
            </property>
@@ -502,12 +501,6 @@ QToolButton:hover {
                 </item>
                 <item>
                  <widget class="QSpinBox" name="spinBoxMemoryFrom">
-                  <property name="sizePolicy">
-                   <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-                    <horstretch>0</horstretch>
-                    <verstretch>0</verstretch>
-                   </sizepolicy>
-                  </property>
                   <property name="minimumSize">
                    <size>
                     <width>80</width>
@@ -574,10 +567,6 @@ QToolButton:hover {
                   <property name="text">
                    <string/>
                   </property>
-                  <property name="icon">
-                   <iconset theme="edit-find">
-                    <normaloff>.</normaloff>.</iconset>
-                  </property>
                  </widget>
                 </item>
                 <item>
@@ -587,10 +576,6 @@ QToolButton:hover {
                   </property>
                   <property name="text">
                    <string/>
-                  </property>
-                  <property name="icon">
-                   <iconset theme="edit-undo">
-                    <normaloff>.</normaloff>.</iconset>
                   </property>
                  </widget>
                 </item>
@@ -609,8 +594,8 @@ QToolButton:hover {
                   <rect>
                    <x>0</x>
                    <y>0</y>
-                   <width>718</width>
-                   <height>275</height>
+                   <width>708</width>
+                   <height>279</height>
                   </rect>
                  </property>
                  <layout class="QVBoxLayout" name="verticalLayout_7">
@@ -641,6 +626,12 @@ QToolButton:hover {
                       </property>
                       <item>
                        <widget class="QLineEdit" name="lineEditMemoryHeader">
+                        <property name="sizePolicy">
+                         <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
+                          <horstretch>0</horstretch>
+                          <verstretch>0</verstretch>
+                         </sizepolicy>
+                        </property>
                         <property name="sizeIncrement">
                          <size>
                           <width>0</width>
@@ -650,7 +641,6 @@ QToolButton:hover {
                         <property name="font">
                          <font>
                           <family>NotoSansMono Nerd Font Mono</family>
-                          <weight>75</weight>
                           <bold>true</bold>
                          </font>
                         </property>
@@ -687,7 +677,6 @@ padding-bottom: -5px;</string>
                         <property name="font">
                          <font>
                           <family>NotoSansMono Nerd Font Mono</family>
-                          <weight>75</weight>
                           <bold>true</bold>
                          </font>
                         </property>
@@ -884,7 +873,7 @@ padding-bottom: -5px;</string>
      <x>0</x>
      <y>0</y>
      <width>1051</width>
-     <height>30</height>
+     <height>21</height>
     </rect>
    </property>
    <widget class="QMenu" name="menu_File">

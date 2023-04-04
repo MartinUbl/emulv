@@ -19,13 +19,20 @@ MainWindow::MainWindow(QWidget *parent)
     QFont font("Monospace");
     font.setStyleHint(QFont::TypeWriter);
     ui->listViewRegisters->setFont(font);
-    ui->memoryWidget->setFont(font);
+    ui->lineEditMemoryHeader->setFont(font);
+    ui->textEditMemory->setFont(font);
+    ui->spinBoxMemoryFrom->setFont(font);
+    ui->spinBoxMemoryTo->setFont(font);
+    ui->textEditMemory->setFont(font);
 
     ui->btnTerminate->setIcon(QIcon(":img/terminate.png"));
     ui->btnContinue->setIcon(QIcon(":img/continue.png"));
     ui->btnRun->setIcon(QIcon(":img/run.png"));
     ui->btnDebug->setIcon(QIcon(":img/debug.png"));
     ui->btnStep->setIcon(QIcon(":img/step.png"));
+
+    ui->btnSelectMemory->setIcon(QIcon(":img/search.png"));
+    ui->btnRestoreMemory->setIcon(QIcon(":img/restore.png"));
 
     QSize btnSize(25, 25);
     ui->btnTerminate->setFixedSize(btnSize);
@@ -40,6 +47,8 @@ MainWindow::MainWindow(QWidget *parent)
     ui->btnRun->setIconSize(iconSize);
     ui->btnDebug->setIconSize(QSize(16, 16));
     ui->btnStep->setIconSize(QSize(16, 16));
+    ui->btnSelectMemory->setIconSize(QSize(14, 14));
+    ui->btnRestoreMemory->setIconSize(QSize(14, 14));
 
     ui->splitterTop->setStretchFactor(0, 1);
     ui->splitterTop->setStretchFactor(1, 0);
