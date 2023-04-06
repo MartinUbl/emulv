@@ -14,20 +14,9 @@ MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
     , ui(new Ui::MainWindow)
     , disassemblyWidget(new DisassemblyWidget(this))
-    , gpioWidget(new GPIOWidget(this))
-    , uartWidget(new UARTWidget(this))
+    , peripheralsTabWidget_(new PeripheralsTabWidget(this))
 {
     ui->setupUi(this);
-
-    // Initialize splitter ratio
-    ui->splitterTop->setStretchFactor(0, 1);
-    ui->splitterTop->setStretchFactor(1, 0);
-
-    ui->splitterBottom->setStretchFactor(0, 2);
-    ui->splitterBottom->setStretchFactor(1, 5);
-
-    ui->splitterMain->setStretchFactor(0, 3);
-    ui->splitterMain->setStretchFactor(1, 2);
 
     // Initialize monospace fonts
     QFont font("Monospace");
@@ -71,25 +60,34 @@ MainWindow::MainWindow(QWidget *parent)
     ui->runningIndicator->setVisible(false);
     ui->debugIndicator->setVisible(false);
 
+    // Initialize spin boxes and toolbar button states
     updateMemorySpinBoxes();
     updateToolBarButtons();
 
+    // Initialize ui for disassembly widget
     ui->disassemblyLayout->addWidget(disassemblyWidget);
 
-    // Initialize ui for GPIO widget
-    QVBoxLayout *gpioLayout = new QVBoxLayout(this);
-    gpioLayout->addWidget(gpioWidget);
-    ui->scrollAreaGPIOContents->setLayout(gpioLayout);
+    // Initialize ui for peripheral widgets
+    ui->peripheralWidget->layout()->addWidget(peripheralsTabWidget_);
 
-    // Initialize ui for UART widget
-    QVBoxLayout *uartLayout = new QVBoxLayout(this);
-    ui->tabUart->layout()->addWidget(uartWidget);
+    // Initialize splitter ratio
+    ui->splitterTop->setStretchFactor(0, 1);
+    ui->splitterTop->setStretchFactor(1, 0);
+
+    ui->splitterBottom->setStretchFactor(0, 1);
+    ui->splitterBottom->setStretchFactor(1, 1);
+
+    ui->splitterMain->setStretchFactor(0, 3);
+    ui->splitterMain->setStretchFactor(1, 2);
 
     // Following code is only for ui testing purposes and will eventually be removed
     for (int i = 0; i < 100; i++)
     {
         disassemblyWidget->addInstruction("00000", " ");
     }
+
+    GPIOWidget *gpioWidget = new GPIOWidget(this);
+    UARTWidget *uartWidget = new UARTWidget(this);
 
     gpioWidget->addPort(new GPIOPortWidget(gpioWidget, "PORT_A", {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15}));
     gpioWidget->addPort(new GPIOPortWidget(gpioWidget, "PORT_B", {0, 1,    3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15}));
@@ -99,9 +97,8 @@ MainWindow::MainWindow(QWidget *parent)
     gpioWidget->setPinMode("PORT_B", 0, GPIO_PinMode::kOutput);
     gpioWidget->setPinStatus("PORT_B", 0, true);
 
-    connect(ui->action_Serial_monitor, SIGNAL(toggled(bool)), this, SLOT(setUARTTabVisible()));
-    connect(ui->action_GPIO, SIGNAL(toggled(bool)), this, SLOT(setGPIOTabVisible()));
-    connect(ui->action_Output, SIGNAL(toggled(bool)), this, SLOT(setOutputTabVisible()));
+    peripheralsTabWidget_->addPeripheralWidget(gpioWidget, "GPIO", true);
+    peripheralsTabWidget_->addPeripheralWidget(uartWidget, "UART");
 }
 
 MainWindow::MainWindow(Controller *pController) : MainWindow(){
@@ -115,24 +112,6 @@ MainWindow::MainWindow(QWidget *parent, Controller *pController) : MainWindow(pa
 MainWindow::~MainWindow()
 {
     delete ui;
-}
-
-void MainWindow::setUARTTabVisible()
-{
-    ui->tabWidget->setTabVisible(0, ui->action_Serial_monitor->isChecked());
-    updatePeripheralTabWidgetVisible();
-}
-
-void MainWindow::setGPIOTabVisible()
-{
-    ui->tabWidget->setTabVisible(1, ui->action_GPIO->isChecked());
-    updatePeripheralTabWidgetVisible();
-}
-
-void MainWindow::setOutputTabVisible()
-{
-    ui->tabWidget->setTabVisible(2, ui->action_Output->isChecked());
-    updatePeripheralTabWidgetVisible();
 }
 
 void MainWindow::setRunning(bool running)
@@ -217,20 +196,6 @@ void MainWindow::updateRegistersWidgetEnabled()
     }
 
     ui->registersWidget->setEnabled(true);
-}
-
-void MainWindow::updatePeripheralTabWidgetVisible()
-{
-    for (int i = 0; i < ui->tabWidget->count(); ++i)
-    {
-        if (ui->tabWidget->isTabVisible(i))
-        {
-            ui->tabWidget->setVisible(true);
-            return;
-        }
-    }
-
-    ui->tabWidget->setVisible(false);
 }
 
 void MainWindow::updateMemoryButtons()

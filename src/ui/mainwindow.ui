@@ -594,8 +594,8 @@ QToolButton:hover {
                   <rect>
                    <x>0</x>
                    <y>0</y>
-                   <width>708</width>
-                   <height>279</height>
+                   <width>1028</width>
+                   <height>262</height>
                   </rect>
                  </property>
                  <layout class="QVBoxLayout" name="verticalLayout_7">
@@ -727,109 +727,6 @@ QToolButton:hover {
             <property name="bottomMargin">
              <number>0</number>
             </property>
-            <item>
-             <widget class="QTabWidget" name="tabWidget">
-              <property name="enabled">
-               <bool>true</bool>
-              </property>
-              <property name="currentIndex">
-               <number>0</number>
-              </property>
-              <property name="tabsClosable">
-               <bool>false</bool>
-              </property>
-              <property name="movable">
-               <bool>false</bool>
-              </property>
-              <widget class="QWidget" name="tabUart">
-               <attribute name="title">
-                <string>UART</string>
-               </attribute>
-               <layout class="QVBoxLayout" name="verticalLayout_3">
-                <property name="spacing">
-                 <number>3</number>
-                </property>
-                <property name="leftMargin">
-                 <number>0</number>
-                </property>
-                <property name="topMargin">
-                 <number>0</number>
-                </property>
-                <property name="rightMargin">
-                 <number>0</number>
-                </property>
-                <property name="bottomMargin">
-                 <number>0</number>
-                </property>
-               </layout>
-              </widget>
-              <widget class="QWidget" name="tabGPIO">
-               <attribute name="title">
-                <string>GPIO</string>
-               </attribute>
-               <layout class="QVBoxLayout" name="verticalLayout_15">
-                <property name="leftMargin">
-                 <number>0</number>
-                </property>
-                <property name="topMargin">
-                 <number>0</number>
-                </property>
-                <property name="rightMargin">
-                 <number>0</number>
-                </property>
-                <property name="bottomMargin">
-                 <number>0</number>
-                </property>
-                <item>
-                 <widget class="QScrollArea" name="scrollAreaGPIO">
-                  <property name="widgetResizable">
-                   <bool>true</bool>
-                  </property>
-                  <widget class="QWidget" name="scrollAreaGPIOContents">
-                   <property name="geometry">
-                    <rect>
-                     <x>0</x>
-                     <y>0</y>
-                     <width>314</width>
-                     <height>283</height>
-                    </rect>
-                   </property>
-                  </widget>
-                 </widget>
-                </item>
-               </layout>
-              </widget>
-              <widget class="QWidget" name="tabOutput">
-               <attribute name="title">
-                <string>Output</string>
-               </attribute>
-               <layout class="QVBoxLayout" name="verticalLayout_6">
-                <property name="leftMargin">
-                 <number>0</number>
-                </property>
-                <property name="topMargin">
-                 <number>0</number>
-                </property>
-                <property name="rightMargin">
-                 <number>0</number>
-                </property>
-                <property name="bottomMargin">
-                 <number>0</number>
-                </property>
-                <item>
-                 <widget class="QPlainTextEdit" name="plainTextEdit_4">
-                  <property name="frameShape">
-                   <enum>QFrame::NoFrame</enum>
-                  </property>
-                  <property name="frameShadow">
-                   <enum>QFrame::Plain</enum>
-                  </property>
-                 </widget>
-                </item>
-               </layout>
-              </widget>
-             </widget>
-            </item>
            </layout>
           </widget>
          </widget>
@@ -870,9 +767,6 @@ QToolButton:hover {
     <property name="title">
      <string>&amp;View</string>
     </property>
-    <addaction name="action_Serial_monitor"/>
-    <addaction name="action_GPIO"/>
-    <addaction name="action_Output"/>
    </widget>
    <widget class="QMenu" name="menu_Edit">
     <property name="title">
@@ -907,39 +801,6 @@ QToolButton:hover {
     <string>&amp;About RISC-V Emulator</string>
    </property>
   </action>
-  <action name="action_Serial_monitor">
-   <property name="checkable">
-    <bool>true</bool>
-   </property>
-   <property name="checked">
-    <bool>true</bool>
-   </property>
-   <property name="text">
-    <string>&amp;Serial monitor</string>
-   </property>
-  </action>
-  <action name="action_GPIO">
-   <property name="checkable">
-    <bool>true</bool>
-   </property>
-   <property name="checked">
-    <bool>true</bool>
-   </property>
-   <property name="text">
-    <string>&amp;GPIO</string>
-   </property>
-  </action>
-  <action name="action_Output">
-   <property name="checkable">
-    <bool>true</bool>
-   </property>
-   <property name="checked">
-    <bool>true</bool>
-   </property>
-   <property name="text">
-    <string>&amp;Output</string>
-   </property>
-  </action>
  </widget>
  <tabstops>
   <tabstop>listViewRegisters</tabstop>
@@ -949,8 +810,6 @@ QToolButton:hover {
   <tabstop>spinBoxMemoryTo</tabstop>
   <tabstop>btnSelectMemory</tabstop>
   <tabstop>btnRestoreMemory</tabstop>
-  <tabstop>tabWidget</tabstop>
-  <tabstop>plainTextEdit_4</tabstop>
  </tabstops>
  <resources/>
  <connections/>

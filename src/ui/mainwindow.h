@@ -7,6 +7,7 @@
 #include "Controller.h"
 #include "peripherals/gpio/GPIOWidget.h"
 #include "peripherals/uart/UARTWidget.h"
+#include "peripherals/PeripheralsTabWidget.h"
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class MainWindow; }
@@ -24,10 +25,6 @@ public:
     ~MainWindow();
 
 private slots:
-    void setUARTTabVisible();
-    void setGPIOTabVisible();
-    void setOutputTabVisible();
-
     void on_action_Open_triggered();
     void on_action_About_RISCVEmulator_triggered();
     void on_spinBoxMemoryFrom_valueChanged(int arg1);
@@ -48,8 +45,7 @@ private:
 
     Ui::MainWindow *ui;
     DisassemblyWidget *disassemblyWidget;
-    GPIOWidget *gpioWidget;
-    UARTWidget *uartWidget;
+    PeripheralsTabWidget *peripheralsTabWidget_;
 
     int memoryFrom = 0, memoryTo = 0xfff;
     bool running = false;

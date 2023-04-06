@@ -24,7 +24,8 @@ set(PROJECT_SOURCES
 		ui/peripherals/gpio/GPIOPortWidget.cpp ui/peripherals/gpio/GPIOPortWidget.h
 		ui/peripherals/gpio/GPIOPinButton.cpp ui/peripherals/gpio/GPIOPinButton.h
 		ui/peripherals/gpio/GPIOWidget.cpp ui/peripherals/gpio/GPIOWidget.h
-		ui/peripherals/uart/UARTWidget.cpp ui/peripherals/uart/UARTWidget.h)
+		ui/peripherals/uart/UARTWidget.cpp ui/peripherals/uart/UARTWidget.h
+		ui/peripherals/PeripheralsTabWidget.cpp ui/peripherals/PeripheralsTabWidget.h)
 
 #################################################################################
 #Download libraries from git repositories
