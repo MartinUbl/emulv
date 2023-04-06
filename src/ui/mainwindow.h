@@ -5,6 +5,7 @@
 #include <QFileDialog>
 #include "disassemblywidget.h"
 #include "Controller.h"
+#include "peripherals/gpio/GPIOWidget.h"
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class MainWindow; }
@@ -47,11 +48,11 @@ private:
 
     Ui::MainWindow *ui;
     DisassemblyWidget *disassemblyWidget;
+    GPIOWidget *gpioWidget;
+
     int memoryFrom = 0, memoryTo = 0xfff;
     bool running = false;
     bool debug = false;
-
-    void addGPIO(std::string label, std::vector<int> pin_ids);
 
     void setRunning(bool running);
     void setDebug(bool debug);

@@ -37,3 +37,7 @@ void GPIOPortWidget::setPinMode(int pin_id, GPIO_PinMode input) {
 void GPIOPortWidget::setPinStatus(int pin_id, bool status) {
     this->pins_[pin_id]->setStatus(status);
 }
+
+std::string GPIOPortWidget::label() {
+    return label_;
+}

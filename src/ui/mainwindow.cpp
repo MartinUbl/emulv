@@ -14,6 +14,7 @@ MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
     , ui(new Ui::MainWindow)
     , disassemblyWidget(new DisassemblyWidget(this))
+    , gpioWidget(new GPIOWidget(this))
 {
     ui->setupUi(this);
 
@@ -58,7 +59,7 @@ MainWindow::MainWindow(QWidget *parent)
     ui->splitterBottom->setStretchFactor(1, 5);
 
     ui->splitterMain->setStretchFactor(0, 3);
-    ui->splitterMain->setStretchFactor(1, 1);
+    ui->splitterMain->setStretchFactor(1, 2);
 
     ui->runningIndicator->setVisible(false);
     ui->debugIndicator->setVisible(false);
@@ -70,20 +71,25 @@ MainWindow::MainWindow(QWidget *parent)
     updateMemorySpinBoxes();
     updateToolBarButtons();
 
+    QVBoxLayout *gpioLayout = new QVBoxLayout(this);
+    gpioLayout->addWidget(gpioWidget);
+    ui->scrollAreaGPIOContents->setLayout(gpioLayout);
+
     ui->disassemblyLayout->addWidget(disassemblyWidget);
 
+    // Following code is only for ui testing purposes and will eventually be removed
     for (int i = 0; i < 100; i++)
     {
         disassemblyWidget->addInstruction("00000", " ");
     }
 
-    QVBoxLayout *gpioLayout = new QVBoxLayout(this);
-    gpioLayout->setAlignment(Qt::AlignTop);
-    ui->scrollAreaGPIOContents->setLayout(gpioLayout);
+    gpioWidget->addPort(new GPIOPortWidget(gpioWidget, "PORT_A", {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15}));
+    gpioWidget->addPort(new GPIOPortWidget(gpioWidget, "PORT_B", {0, 1,    3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15}));
+    gpioWidget->addPort(new GPIOPortWidget(gpioWidget, "PORT_C", {13, 14, 15}));
 
-    addGPIO("PA", {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15});
-    addGPIO("PB", {0, 1,    3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15});
-    addGPIO("PC", {13, 14, 15});
+    gpioWidget->setPinMode("PORT_A", 4, GPIO_PinMode::kOutput);
+    gpioWidget->setPinMode("PORT_B", 0, GPIO_PinMode::kOutput);
+    gpioWidget->setPinStatus("PORT_B", 0, true);
 }
 
 MainWindow::MainWindow(Controller *pController) : MainWindow(){
@@ -97,18 +103,6 @@ MainWindow::MainWindow(QWidget *parent, Controller *pController) : MainWindow(pa
 MainWindow::~MainWindow()
 {
     delete ui;
-}
-
-void MainWindow::addGPIO(std::string label, std::vector<int> pin_ids) {
-    QWidget *widget = new QWidget(this);
-    QHBoxLayout *layout = new QHBoxLayout(this);
-    GPIOPortWidget *port = new GPIOPortWidget(widget, label, pin_ids);
-
-    layout->setAlignment(Qt::AlignLeft);
-    widget->setLayout(layout);
-
-    layout->addWidget(port);
-    ui->scrollAreaGPIOContents->layout()->addWidget(widget);
 }
 
 void MainWindow::setUARTTabVisible()
@@ -434,4 +428,3 @@ void MainWindow::on_rbRegistersHex_clicked()
 {
     updateListViewRegisters();
 }
-

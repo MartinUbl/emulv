@@ -14,6 +14,7 @@ public:
     GPIOPortWidget(QWidget *parent = nullptr, std::string label = "", std::vector<int> pin_ids = {});
     void setPinMode(int pin_id, GPIO_PinMode input);
     void setPinStatus(int pin_id, bool status);
+    std::string label();
 
 private:
     std::string label_;
