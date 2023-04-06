@@ -626,17 +626,8 @@ QToolButton:hover {
                       </property>
                       <item>
                        <widget class="QLineEdit" name="lineEditMemoryHeader">
-                        <property name="sizePolicy">
-                         <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
-                          <horstretch>0</horstretch>
-                          <verstretch>0</verstretch>
-                         </sizepolicy>
-                        </property>
-                        <property name="sizeIncrement">
-                         <size>
-                          <width>0</width>
-                          <height>0</height>
-                         </size>
+                        <property name="enabled">
+                         <bool>true</bool>
                         </property>
                         <property name="font">
                          <font>
@@ -648,18 +639,13 @@ QToolButton:hover {
                          <cursorShape>ArrowCursor</cursorShape>
                         </property>
                         <property name="styleSheet">
-                         <string notr="true">padding-left: 2px;
-selection-background-color: rgba(255, 255, 255, 0);
-padding-bottom: -5px;</string>
+                         <string notr="true">padding-left: 2px;</string>
                         </property>
                         <property name="text">
                          <string>         00 01 02 03 04 05 06 07 08 09 0A 0B 0C 0D 0E 0F</string>
                         </property>
                         <property name="frame">
                          <bool>false</bool>
-                        </property>
-                        <property name="dragEnabled">
-                         <bool>true</bool>
                         </property>
                         <property name="readOnly">
                          <bool>true</bool>
@@ -685,6 +671,9 @@ padding-bottom: -5px;</string>
                         </property>
                         <property name="frameShape">
                          <enum>QFrame::NoFrame</enum>
+                        </property>
+                        <property name="frameShadow">
+                         <enum>QFrame::Plain</enum>
                         </property>
                         <property name="lineWidth">
                          <number>0</number>
@@ -744,7 +733,7 @@ padding-bottom: -5px;</string>
                <bool>true</bool>
               </property>
               <property name="currentIndex">
-               <number>1</number>
+               <number>0</number>
               </property>
               <property name="tabsClosable">
                <bool>false</bool>
@@ -772,53 +761,6 @@ padding-bottom: -5px;</string>
                 <property name="bottomMargin">
                  <number>0</number>
                 </property>
-                <item>
-                 <widget class="QPlainTextEdit" name="plainTextEdit_2">
-                  <property name="frameShape">
-                   <enum>QFrame::NoFrame</enum>
-                  </property>
-                  <property name="frameShadow">
-                   <enum>QFrame::Plain</enum>
-                  </property>
-                  <property name="lineWidth">
-                   <number>0</number>
-                  </property>
-                  <property name="lineWrapMode">
-                   <enum>QPlainTextEdit::NoWrap</enum>
-                  </property>
-                 </widget>
-                </item>
-                <item>
-                 <layout class="QHBoxLayout" name="horizontalLayout_4">
-                  <item>
-                   <widget class="QLineEdit" name="lineEditSendMessage">
-                    <property name="placeholderText">
-                     <string>Send message...</string>
-                    </property>
-                    <property name="clearButtonEnabled">
-                     <bool>true</bool>
-                    </property>
-                   </widget>
-                  </item>
-                  <item>
-                   <widget class="QPushButton" name="btnSendMessage">
-                    <property name="enabled">
-                     <bool>false</bool>
-                    </property>
-                    <property name="toolTip">
-                     <string>Send</string>
-                    </property>
-                    <property name="text">
-                     <string/>
-                    </property>
-                    <property name="icon">
-                     <iconset theme="go-next">
-                      <normaloff>.</normaloff>.</iconset>
-                    </property>
-                   </widget>
-                  </item>
-                 </layout>
-                </item>
                </layout>
               </widget>
               <widget class="QWidget" name="tabGPIO">
@@ -1008,9 +950,6 @@ padding-bottom: -5px;</string>
   <tabstop>btnSelectMemory</tabstop>
   <tabstop>btnRestoreMemory</tabstop>
   <tabstop>tabWidget</tabstop>
-  <tabstop>plainTextEdit_2</tabstop>
-  <tabstop>lineEditSendMessage</tabstop>
-  <tabstop>btnSendMessage</tabstop>
   <tabstop>plainTextEdit_4</tabstop>
  </tabstops>
  <resources/>

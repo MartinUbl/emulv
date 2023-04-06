@@ -15,9 +15,21 @@ MainWindow::MainWindow(QWidget *parent)
     , ui(new Ui::MainWindow)
     , disassemblyWidget(new DisassemblyWidget(this))
     , gpioWidget(new GPIOWidget(this))
+    , uartWidget(new UARTWidget(this))
 {
     ui->setupUi(this);
 
+    // Initialize splitter ratio
+    ui->splitterTop->setStretchFactor(0, 1);
+    ui->splitterTop->setStretchFactor(1, 0);
+
+    ui->splitterBottom->setStretchFactor(0, 2);
+    ui->splitterBottom->setStretchFactor(1, 5);
+
+    ui->splitterMain->setStretchFactor(0, 3);
+    ui->splitterMain->setStretchFactor(1, 2);
+
+    // Initialize monospace fonts
     QFont font("Monospace");
     font.setStyleHint(QFont::TypeWriter);
     ui->listViewRegisters->setFont(font);
@@ -27,14 +39,12 @@ MainWindow::MainWindow(QWidget *parent)
     ui->spinBoxMemoryTo->setFont(font);
     ui->textEditMemory->setFont(font);
 
+    // Initialize toolbar buttons
     ui->btnTerminate->setIcon(QIcon(":img/terminate.png"));
     ui->btnContinue->setIcon(QIcon(":img/continue.png"));
     ui->btnRun->setIcon(QIcon(":img/run.png"));
     ui->btnDebug->setIcon(QIcon(":img/debug.png"));
     ui->btnStep->setIcon(QIcon(":img/step.png"));
-
-    ui->btnSelectMemory->setIcon(QIcon(":img/search.png"));
-    ui->btnRestoreMemory->setIcon(QIcon(":img/restore.png"));
 
     QSize btnSize(25, 25);
     ui->btnTerminate->setFixedSize(btnSize);
@@ -49,33 +59,31 @@ MainWindow::MainWindow(QWidget *parent)
     ui->btnRun->setIconSize(iconSize);
     ui->btnDebug->setIconSize(QSize(16, 16));
     ui->btnStep->setIconSize(QSize(16, 16));
+
+    // Initialize memory button icons
     ui->btnSelectMemory->setIconSize(QSize(14, 14));
     ui->btnRestoreMemory->setIconSize(QSize(14, 14));
 
-    ui->splitterTop->setStretchFactor(0, 1);
-    ui->splitterTop->setStretchFactor(1, 0);
+    ui->btnSelectMemory->setIcon(QIcon(":img/search.png"));
+    ui->btnRestoreMemory->setIcon(QIcon(":img/restore.png"));
 
-    ui->splitterBottom->setStretchFactor(0, 2);
-    ui->splitterBottom->setStretchFactor(1, 5);
-
-    ui->splitterMain->setStretchFactor(0, 3);
-    ui->splitterMain->setStretchFactor(1, 2);
-
+    // Make running and debug indicator lines invisible
     ui->runningIndicator->setVisible(false);
     ui->debugIndicator->setVisible(false);
-
-    connect(ui->action_Serial_monitor, SIGNAL(toggled(bool)), this, SLOT(setUARTTabVisible()));
-    connect(ui->action_GPIO, SIGNAL(toggled(bool)), this, SLOT(setGPIOTabVisible()));
-    connect(ui->action_Output, SIGNAL(toggled(bool)), this, SLOT(setOutputTabVisible()));
 
     updateMemorySpinBoxes();
     updateToolBarButtons();
 
+    ui->disassemblyLayout->addWidget(disassemblyWidget);
+
+    // Initialize ui for GPIO widget
     QVBoxLayout *gpioLayout = new QVBoxLayout(this);
     gpioLayout->addWidget(gpioWidget);
     ui->scrollAreaGPIOContents->setLayout(gpioLayout);
 
-    ui->disassemblyLayout->addWidget(disassemblyWidget);
+    // Initialize ui for UART widget
+    QVBoxLayout *uartLayout = new QVBoxLayout(this);
+    ui->tabUart->layout()->addWidget(uartWidget);
 
     // Following code is only for ui testing purposes and will eventually be removed
     for (int i = 0; i < 100; i++)
@@ -90,6 +98,10 @@ MainWindow::MainWindow(QWidget *parent)
     gpioWidget->setPinMode("PORT_A", 4, GPIO_PinMode::kOutput);
     gpioWidget->setPinMode("PORT_B", 0, GPIO_PinMode::kOutput);
     gpioWidget->setPinStatus("PORT_B", 0, true);
+
+    connect(ui->action_Serial_monitor, SIGNAL(toggled(bool)), this, SLOT(setUARTTabVisible()));
+    connect(ui->action_GPIO, SIGNAL(toggled(bool)), this, SLOT(setGPIOTabVisible()));
+    connect(ui->action_Output, SIGNAL(toggled(bool)), this, SLOT(setOutputTabVisible()));
 }
 
 MainWindow::MainWindow(Controller *pController) : MainWindow(){
@@ -344,11 +356,6 @@ void MainWindow::on_btnSelectMemory_clicked()
     updateMemorySpinBoxes();
     updateMemoryButtons();
     updateTextEditMemory();
-}
-
-void MainWindow::on_lineEditSendMessage_textChanged(const QString &arg1)
-{
-    ui->btnSendMessage->setEnabled(!ui->lineEditSendMessage->text().isEmpty());
 }
 
 void MainWindow::on_btnRun_clicked()

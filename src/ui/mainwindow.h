@@ -6,6 +6,7 @@
 #include "disassemblywidget.h"
 #include "Controller.h"
 #include "peripherals/gpio/GPIOWidget.h"
+#include "peripherals/uart/UARTWidget.h"
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class MainWindow; }
@@ -33,7 +34,6 @@ private slots:
     void on_spinBoxMemoryTo_valueChanged(int arg1);
     void on_btnRestoreMemory_clicked();
     void on_btnSelectMemory_clicked();
-    void on_lineEditSendMessage_textChanged(const QString &arg1);
     void on_btnRun_clicked();
     void on_btnDebug_clicked();
     void on_btnStep_clicked();
@@ -49,6 +49,7 @@ private:
     Ui::MainWindow *ui;
     DisassemblyWidget *disassemblyWidget;
     GPIOWidget *gpioWidget;
+    UARTWidget *uartWidget;
 
     int memoryFrom = 0, memoryTo = 0xfff;
     bool running = false;

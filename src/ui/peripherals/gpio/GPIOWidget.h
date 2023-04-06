@@ -10,6 +10,7 @@
 #include "GPIOPinButton.h"
 
 class GPIOWidget : public QWidget {
+    Q_OBJECT
 public:
     GPIOWidget(QWidget *parent = nullptr);
     void addPort(GPIOPortWidget *port_widget);
