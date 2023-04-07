@@ -30,12 +30,10 @@ UARTWidget::UARTWidget(QWidget *parent)
     comboBoxLineSeparator_->addItem("CRLF");
 
     buttonSendMessage_->setEnabled(false);
-    buttonSendMessage_->setFixedSize(lineEditSendMessage_->height() - 6, lineEditSendMessage_->height() - 6);
     buttonSendMessage_->setIcon(QIcon(":img/send.svg"));
-    buttonSendMessage_->setIconSize(QSize(buttonSendMessage_->height() - 2, buttonSendMessage_->height() - 2));
+    buttonSendMessage_->setToolTip("Send");
 
     connect(lineEditSendMessage_, SIGNAL(textChanged(const QString &)), this, SLOT(on_lineEditSendMessage_textChanged()));
-    connect(comboBoxLineSeparator_, SIGNAL(currentIndexChanged(int)), this, SLOT(on_comboBoxLineSeparator_selected()));
     connect(buttonSendMessage_, SIGNAL(clicked(bool)), this, SLOT(on_buttonSendMessage_clicked()));
 
     this->setLayout(main_layout);
@@ -61,10 +59,14 @@ void UARTWidget::on_lineEditSendMessage_textChanged() {
 }
 
 void UARTWidget::on_buttonSendMessage_clicked() {
-    appendMessage(lineEditSendMessage_->text().toStdString()); // To be removed
+    // To be removed
+    textEditMessages_->moveCursor(QTextCursor::End);
+    textEditMessages_->insertPlainText(lineEditSendMessage_->text());
+    textEditMessages_->moveCursor(QTextCursor::End);
+
+    QString newLine = comboBoxLineSeparator_->currentText() == QString::fromStdString("LF") ? "\n" : "\r\n";
+    textEditMessages_->insertPlainText(newLine);
+    textEditMessages_->moveCursor(QTextCursor::End);
+
     lineEditSendMessage_->clear();
-}
-
-void UARTWidget::on_comboBoxLineSeparator_selected() {
-
 }

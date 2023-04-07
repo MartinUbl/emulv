@@ -7,7 +7,7 @@
 
 #include <QWidget>
 #include <QToolButton>
-#include <QTextEdit>
+#include <QPlainTextEdit>
 #include <QLineEdit>
 #include <QComboBox>
 
@@ -21,7 +21,6 @@ public:
 private slots:
     void on_lineEditSendMessage_textChanged();
     void on_buttonSendMessage_clicked();
-    void on_comboBoxLineSeparator_selected();
 
 private:
     QTextEdit *textEditMessages_;
