@@ -2,3 +2,5 @@
 /src/cmake-build-debug/
 /.vscode/
 /build/
+/build-src-Desktop-Debug/
+/src/CMakeLists.txt.user
