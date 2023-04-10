@@ -14,6 +14,7 @@ class DisassemblyWidget : public QGroupBox
 public:
     explicit DisassemblyWidget(QWidget *parent = nullptr);
     void addInstruction(QString address, QString instruction);
+    void addInstructionsList(const std::vector<std::string> &instructionsList);
     void highlightLine(int line);
     int getHighlightedLine();
     int getInstructionCount();
@@ -36,6 +37,8 @@ private:
     int instructionCount = 0;
 
     void updateScroll(int value);
+
+    static void ParseInstructionString(const std::string &instructionString, std::string &address, std::string &instruction);
 };
 
 #endif // DISASSEMBLYWIDGET_H

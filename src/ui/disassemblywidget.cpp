@@ -8,11 +8,10 @@
 #include "breakpointbutton.h"
 
 DisassemblyWidget::DisassemblyWidget(QWidget *parent)
-    : QGroupBox{parent},
-      addressArea(new QTextEdit(this)),
-      instructionArea(new QTextEdit(this)),
-      breakpointScrollArea(new QScrollArea(this))
-{
+        : QGroupBox{parent},
+          addressArea(new QTextEdit(this)),
+          instructionArea(new QTextEdit(this)),
+          breakpointScrollArea(new QScrollArea(this)) {
     QFont font("Monospace");
     font.setStyleHint(QFont::TypeWriter);
     addressArea->setFont(font);
@@ -61,13 +60,13 @@ DisassemblyWidget::DisassemblyWidget(QWidget *parent)
     layout->setContentsMargins(0, 0, 0, 0);
     this->setLayout(layout);
 
-    connect(breakpointScrollArea->verticalScrollBar(), SIGNAL(valueChanged(int)), this, SLOT(onBreakpointScrollAreaScroll()));
+    connect(breakpointScrollArea->verticalScrollBar(), SIGNAL(valueChanged(int)), this,
+            SLOT(onBreakpointScrollAreaScroll()));
     connect(addressArea->verticalScrollBar(), SIGNAL(valueChanged(int)), this, SLOT(onAddressAreaScroll()));
     connect(instructionArea->verticalScrollBar(), SIGNAL(valueChanged(int)), this, SLOT(onInstructionAreaScroll()));
 }
 
-void DisassemblyWidget::addInstruction(QString address, QString instruction)
-{
+void DisassemblyWidget::addInstruction(QString address, QString instruction) {
     BreakpointButton *breakpoint = new BreakpointButton(this, address);
     breakpoint->setFixedSize(addressArea->fontMetrics().height() - 4,
                              addressArea->fontMetrics().height() - 4);
@@ -80,14 +79,13 @@ void DisassemblyWidget::addInstruction(QString address, QString instruction)
     breakpointAreaWidget->setMinimumHeight(instructionCount * addressArea->fontMetrics().height() + 8);
 }
 
-void DisassemblyWidget::highlightLine(int line)
-{
+
+void DisassemblyWidget::highlightLine(int line) {
     QList<QTextEdit::ExtraSelection> extraSelections;
 
     highlightedLine = line;
 
-    if (line >= 0)
-    {
+    if (line >= 0) {
         QTextEdit::ExtraSelection selection;
         const QColor lineBgColor = QColor(160, 0, 0, 100);
         selection.format.setBackground(lineBgColor);
@@ -106,36 +104,30 @@ void DisassemblyWidget::highlightLine(int line)
     instructionArea->setExtraSelections(extraSelections);
 }
 
-int DisassemblyWidget::getHighlightedLine()
-{
+int DisassemblyWidget::getHighlightedLine() {
     return highlightedLine;
 }
 
-int DisassemblyWidget::getInstructionCount()
-{
+int DisassemblyWidget::getInstructionCount() {
     return instructionCount;
 }
 
-void DisassemblyWidget::onBreakpointScrollAreaScroll()
-{
+void DisassemblyWidget::onBreakpointScrollAreaScroll() {
     QScrollBar *sb = breakpointScrollArea->verticalScrollBar();
     updateScroll(sb->value());
 }
 
-void DisassemblyWidget::onAddressAreaScroll()
-{
+void DisassemblyWidget::onAddressAreaScroll() {
     QScrollBar *sb = addressArea->verticalScrollBar();
     updateScroll(sb->value());
 }
 
-void DisassemblyWidget::onInstructionAreaScroll()
-{
+void DisassemblyWidget::onInstructionAreaScroll() {
     QScrollBar *sb = instructionArea->verticalScrollBar();
     updateScroll(sb->value());
 }
 
-void DisassemblyWidget::updateScroll(int value)
-{
+void DisassemblyWidget::updateScroll(int value) {
     QScrollBar *sbBrk = breakpointScrollArea->verticalScrollBar();
     QScrollBar *sbAddr = addressArea->verticalScrollBar();
     QScrollBar *sbInstr = instructionArea->verticalScrollBar();
@@ -143,4 +135,63 @@ void DisassemblyWidget::updateScroll(int value)
     sbBrk->setValue(value);
     sbAddr->setValue(value);
     sbInstr->setValue(value);
+}
+
+void DisassemblyWidget::addInstructionsList(const std::vector<std::string> &instructionsList) {
+    addressArea->clear();
+    instructionArea->clear();
+
+    //Delete breakpoints
+    QLayoutItem *item;
+    while ((item = breakpointAreaLayout->takeAt(0)) != nullptr) {
+        // remove the widget from the layout
+        QWidget *widget = item->widget();
+        breakpointAreaLayout->removeWidget(widget);
+        // delete the widget
+        delete widget;
+        delete item;
+    }
+
+    //Block UI signals
+    QSignalBlocker blocker1(this);
+    QSignalBlocker blocker2(this->parent());
+
+    int i = 0;
+    for (const std::string &instructionString: instructionsList) {
+        //Parse the instruction string
+        std::string address;
+        std::string instruction;
+        ParseInstructionString(instructionString, address, instruction);
+
+        //TODO - Adding instructions is very slow
+        if (i++ == 300)
+            return;
+
+        addInstruction(QString::fromUtf8(address), QString::fromUtf8(instruction));
+    }
+}
+
+void DisassemblyWidget::ParseInstructionString(const std::string &instructionString, std::string &address,
+                                               std::string &instruction) {
+    int mode = 0;
+    for (std::string::size_type i = 0; i < instructionString.size(); ++i) {
+        if (instructionString[i] == ' ' && mode == 0) {
+            address = instructionString.substr(0, i);
+            mode++;
+        }
+
+        if (instructionString[i] != ' ' && mode == 1) {
+            mode++;
+        }
+
+        if (instructionString[i] == ' ' && mode == 2) {
+            //Binary representation of instruction
+            mode++;
+        }
+
+        if (instructionString[i] != ' ' && mode == 3) {
+            instruction = instructionString.substr(i, instructionString.size());
+            break;
+        }
+    }
 }

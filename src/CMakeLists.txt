@@ -23,9 +23,10 @@ set(PROJECT_SOURCES
 		ui/Controller.cpp ui/Controller.h)
 
 #################################################################################
-#Download libriscv from github (version v0.20 is selected by GIT_TAG)
+#Download libraries from git repositories
 #################################################################################
 
+#Download libriscv from github (version v0.20 is selected by GIT_TAG)
 include(FetchContent)
 FetchContent_Declare(
         libriscv
@@ -34,6 +35,7 @@ FetchContent_Declare(
 )
 FetchContent_MakeAvailable(libriscv)
 
+#Download riscv-disassembler library
 FetchContent_Declare(
 		riscv-disassembler
 		GIT_REPOSITORY https://github.com/michaeljclark/riscv-disassembler.git
@@ -41,12 +43,20 @@ FetchContent_Declare(
 FetchContent_MakeAvailable(riscv-disassembler)
 include_directories(${riscv-disassembler_SOURCE_DIR}/src)
 
+#Download the json parser library
+FetchContent_Declare(
+		json-lib
+		GIT_REPOSITORY https://github.com/nlohmann/json.git
+)
+FetchContent_MakeAvailable(json-lib)
+
 #################################################################################
 #Define libraries (define all libraries used by the project here)
 #################################################################################
 
 add_library(emulator ./emulator/EmulatorUnit.cpp)
 add_library(modules ./modules/PeripheralDevice.h)
+add_library(events utils/events/EventEmitter.cpp utils/events/EventEmitter.h)
 
 #################################################################################
 #Set up project target executable file
@@ -73,16 +83,17 @@ endif ()
 #Add library dependencies
 #################################################################################
 
-#Project target depends on riscv
-target_link_libraries(${PROJECT_NAME} PRIVATE riscv)
-#Emulator target depends on riscv
+#Emulator target depends on riscv, riscv-disassembler, events
 target_link_libraries(emulator riscv)
-#Emulator target depends on riscv-disassembler
 target_link_libraries(emulator ${riscv-disassembler_SOURCE_DIR}/src/riscv-disas.c)
-#Project target depends on emulator
+target_link_libraries(emulator events)
+
+#Project target depends on riscv, emulator, modules, events, json-lib
+target_link_libraries(${PROJECT_NAME} PRIVATE riscv)
 target_link_libraries(${PROJECT_NAME} PRIVATE emulator)
-#Project target depends on modules
 target_link_libraries(${PROJECT_NAME} PRIVATE modules)
+target_link_libraries(${PROJECT_NAME} PRIVATE nlohmann_json)
+target_link_libraries(${PROJECT_NAME} PRIVATE events)
 
 #################################################################################
 #Setup QT GUI #2

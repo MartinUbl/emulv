@@ -2,13 +2,16 @@
 #include <iostream>
 
 #include <libriscv/machine.hpp>
-
 #include "EmulatorUnit.h"
 #include "libriscv/rv32i_instr.hpp"
 #include "riscv-disas.h"
-
 namespace emulator {
 
+
+    /**
+     * Loads an executable risc-v ELF file into this emulator instance.
+     * @param file_path Path of the file
+     */
     void EmulatorUnit::LoadElfFile(const std::string &file_path) {
         // Read the RISC-V program into a std::vector:
         std::ifstream stream(file_path, std::ios::in | std::ios::binary);
@@ -23,6 +26,11 @@ namespace emulator {
 
     }
 
+    /**
+     * Execute the loaded ELF file.
+     * @param machine_arguments Arguments of the program
+     * @return Exit code of the program
+     */
     int EmulatorUnit::Execute(const std::vector<std::string> &machine_arguments) {
         // Create a new 64-bit RISC-V machine
         riscv::Machine<riscv::RISCV64> machine{binary_};
@@ -41,10 +49,13 @@ namespace emulator {
             return EXIT_FAILURE;
         }
 
-        std::cout << "Program exited with status: " << machine.return_value<long>() << std::endl;
-        return 0;
+        return machine.return_value<long>();
     }
 
+    /**
+     * Disassembles the loaded ELF file.
+     * @return A string vector containing lines of the disassembled program
+     */
     std::vector<std::string> EmulatorUnit::Disassemble() {
         riscv::Machine<riscv::RISCV64> machine{binary_};
         machine.setup_linux(
@@ -64,11 +75,12 @@ namespace emulator {
             if (cpu.pc() == cpu.current_execute_segment()->exec_end()) {
                 break;
             }
+
             // Read next instruction
             const auto instruction = cpu.read_next_instruction();
 
             // Store the disassembled instruction
-            output.push_back(InstructonToString_(cpu, instruction));
+            output.push_back(std::to_string(cpu.pc()) + " " + InstructonToString_(cpu, instruction));
 
             // Increment PC to next instruction, and increment instruction counter
             cpu.increment_pc(instruction.length());
@@ -78,12 +90,19 @@ namespace emulator {
         return output;
     }
 
+    /**
+     * Disassembles instructions via the disassembler library
+     * @param cpu riscv CPU object
+     * @param format Instruction format
+     * @return Disassembled instruction
+     */
     std::string EmulatorUnit::InstructonToString_(riscv::CPU<8> const &cpu, riscv::instruction_format format) {
-        char buf[256] = { 0 };
+        char buf[256] = {0};
         disasm_inst(buf, sizeof(buf), rv32, cpu.pc(), (uint16_t) format.whole);
 
         auto result = std::string(buf);
         return result;
     }
+
 
 }
