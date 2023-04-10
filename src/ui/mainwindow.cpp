@@ -71,13 +71,18 @@ MainWindow::MainWindow(QWidget *parent)
 
     ui->disassemblyLayout->addWidget(disassemblyWidget);
 
-    for (int i = 0; i < 25; i++)
+    for (int i = 0; i < 100; i++)
     {
-        disassemblyWidget->addInstruction("401FABC0", "addi t0, zero, 0");
-        disassemblyWidget->addInstruction("401FABC4", "addi t1, zero, 1");
-        disassemblyWidget->addInstruction("401FABC8", "bge  t1, a1, 2f");
-        disassemblyWidget->addInstruction("401FABCC", "slli t3, t1, 3");
+        disassemblyWidget->addInstruction("00000", " ");
     }
+}
+
+MainWindow::MainWindow(Controller *pController) : MainWindow(){
+    this->controller = pController;
+}
+
+MainWindow::MainWindow(QWidget *parent, Controller *pController) : MainWindow(parent) {
+    this->controller = pController;
 }
 
 MainWindow::~MainWindow()
@@ -289,6 +294,8 @@ void MainWindow::on_action_Open_triggered()
 {
     QString fileName = QFileDialog::getOpenFileName(this, "Select binary file", ".");
     ui->statusbar->showMessage(fileName);
+    controller->LoadFile(fileName.toStdString());
+    disassemblyWidget->addInstructionsList(controller->GetDisassembly());
 }
 
 void MainWindow::on_action_About_RISCVEmulator_triggered()
@@ -332,11 +339,39 @@ void MainWindow::on_lineEditSendMessage_textChanged(const QString &arg1)
 
 void MainWindow::on_btnRun_clicked()
 {
+    if(!controller->IsFileLoaded()) {
+        QMessageBox msgBox;
+        msgBox.setIcon(QMessageBox::Warning);
+        msgBox.setWindowTitle("Error");
+        QString msg = QString::fromStdString("Cannot run program because no file has been loaded. Please use the \"File -> Open\" button in order to proceed.");
+        msgBox.setText(msg);
+        msgBox.exec();
+        return;
+    }
+
     setRunning(true);
+    int exitCode = controller->RunProgram();
+    QMessageBox msgBox;
+    msgBox.setIcon(QMessageBox::Information);
+    msgBox.setWindowTitle("Program Exit Status");
+    QString msg = QString::fromStdString("Program has exited with code: " + std::to_string(exitCode));
+    msgBox.setText(msg);
+    msgBox.exec();
+    on_btnTerminate_clicked();
 }
 
 void MainWindow::on_btnDebug_clicked()
 {
+    if(!controller->IsFileLoaded()) {
+        QMessageBox msgBox;
+        msgBox.setIcon(QMessageBox::Warning);
+        msgBox.setWindowTitle("Error");
+        QString msg = QString::fromStdString("Cannot debug program because no file has been loaded. Please use the \"File -> Open\" button in order to proceed.");
+        msgBox.setText(msg);
+        msgBox.exec();
+        return;
+    }
+
     setDebug(true);
 }
 
@@ -379,3 +414,4 @@ void MainWindow::on_rbRegistersHex_clicked()
 {
     updateListViewRegisters();
 }
+

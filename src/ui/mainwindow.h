@@ -4,6 +4,7 @@
 #include <QMainWindow>
 #include <QFileDialog>
 #include "disassemblywidget.h"
+#include "Controller.h"
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class MainWindow; }
@@ -15,6 +16,9 @@ class MainWindow : public QMainWindow
 
 public:
     MainWindow(QWidget *parent = nullptr);
+    MainWindow(Controller *pController);
+    MainWindow(QWidget *parent, Controller *pController);
+
     ~MainWindow();
 
 private slots:
@@ -39,6 +43,8 @@ private slots:
     void on_rbRegistersHex_clicked();
 
 private:
+    Controller *controller;
+
     Ui::MainWindow *ui;
     DisassemblyWidget *disassemblyWidget;
     int memoryFrom = 0, memoryTo = 0xfff;
