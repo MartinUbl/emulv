@@ -167,7 +167,7 @@ void DisassemblyWidget::addInstructionsList(const std::vector<std::string> &inst
         if (i++ == 300)
             return;
 
-        addInstruction(QString::fromUtf8(address), QString::fromUtf8(instruction));
+        addInstruction(QString::fromStdString(address), QString::fromStdString(instruction));
     }
 }
 
