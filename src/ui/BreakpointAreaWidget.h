@@ -7,7 +7,6 @@
 
 #include <QFrame>
 #include <QMouseEvent>
-#include "breakpointbutton.h"
 
 class BreakpointAreaWidget : public QFrame {
     Q_OBJECT
@@ -19,7 +18,7 @@ public:
 
 private:
     int max_breakpoints_ = 1;
-    std::unordered_map<int, BreakpointButton *> breakpoints_;
+    std::unordered_map<int, QWidget *> breakpoints_;
 
     void mousePressEvent(QMouseEvent *event) override;
 };

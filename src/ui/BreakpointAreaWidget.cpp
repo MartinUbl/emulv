@@ -2,8 +2,8 @@
 // Created by Hynek on 11.04.2023.
 //
 
+#include <QLabel>
 #include "BreakpointAreaWidget.h"
-#include "breakpointbutton.h"
 
 BreakpointAreaWidget::BreakpointAreaWidget(QWidget *parent)
     : QFrame(parent)
@@ -42,16 +42,20 @@ void BreakpointAreaWidget::mousePressEvent(QMouseEvent *event) {
     }
 
     // Add a new breakpoint
-    BreakpointButton *breakpoint = new BreakpointButton(this, line);
+    QLabel *breakpoint = new QLabel(this);
+
     breakpoint->setFixedSize(breakpoint_height, breakpoint_height);
     breakpoint->move(0, y - 3);
+    breakpoint->setStyleSheet("padding: 2px;");
+    breakpoint->setPixmap(QPixmap(":img/breakpoint.png"));
+    breakpoint->setScaledContents(true);
     breakpoint->show();
 
     breakpoints_[line] = breakpoint;
 }
 
 void BreakpointAreaWidget::removeBreakpoint(int line) {
-    BreakpointButton *breakpoint = breakpoints_[line];
+    QWidget *breakpoint = breakpoints_[line];
     breakpoints_.erase(line);
     delete breakpoint;
 }

@@ -19,8 +19,7 @@ set(PROJECT_SOURCES
         ui/mainwindow.cpp ui/mainwindow.ui
         ui/aboutwindow.h ui/aboutwindow.cpp ui/aboutwindow.ui
         ui/disassemblywidget.h ui/disassemblywidget.cpp
-        ui/breakpointbutton.h ui/breakpointbutton.cpp
-		ui/Controller.cpp ui/Controller.h
+        ui/Controller.cpp ui/Controller.h
 		ui/peripherals/gpio/GPIOPortWidget.cpp ui/peripherals/gpio/GPIOPortWidget.h
 		ui/peripherals/gpio/GPIOPinButton.cpp ui/peripherals/gpio/GPIOPinButton.h
 		ui/peripherals/gpio/GPIOWidget.cpp ui/peripherals/gpio/GPIOWidget.h
