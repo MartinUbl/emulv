@@ -7,16 +7,14 @@ class BreakpointButton : public QToolButton
 {
     Q_OBJECT
 public:
-    BreakpointButton(QWidget *parent = nullptr, QString address = "");
+    BreakpointButton(QWidget *parent = nullptr, int line = -1);
+    void setFixedSize(int w, int h);
 
 private slots:
     void onClicked();
 
 private:
-    bool active = false;
-    QString address;
-
-    void updateVisibility();
+    int line_;
 };
 
 #endif // BREAKPOINTBUTTON_H

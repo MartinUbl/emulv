@@ -1,11 +1,9 @@
 #include "disassemblywidget.h"
 
 #include <QLayout>
-#include <QHBoxLayout>
 #include <QTextBlock>
 #include <QScrollBar>
 #include <QAbstractItemModel>
-#include "breakpointbutton.h"
 
 DisassemblyWidget::DisassemblyWidget(QWidget *parent)
         : QGroupBox{parent},
@@ -17,23 +15,17 @@ DisassemblyWidget::DisassemblyWidget(QWidget *parent)
     addressArea->setFont(font);
     instructionArea->setFont(font);
 
-    breakpointAreaWidget = new QWidget(breakpointScrollArea);
-    breakpointAreaLayout = new QVBoxLayout(breakpointAreaWidget);
+    breakpointAreaWidget = new BreakpointAreaWidget(breakpointScrollArea);
 
     breakpointAreaWidget->setFixedWidth(addressArea->fontMetrics().height());
     breakpointAreaWidget->setObjectName("breakpointAreaWidget");
     breakpointAreaWidget->setStyleSheet("#breakpointAreaWidget { background-color: rgba(100, 100, 100, 100); }");
-
-    breakpointAreaLayout->setSpacing(4);
-    breakpointAreaLayout->setAlignment(Qt::AlignTop);
-    breakpointAreaLayout->setContentsMargins(2, 6, 2, 0);
 
     breakpointScrollArea->setFixedWidth(addressArea->fontMetrics().height());
     breakpointScrollArea->setFrameShape(QFrame::Box);
     breakpointScrollArea->setLineWidth(0);
     breakpointScrollArea->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
 
-    breakpointAreaWidget->setLayout(breakpointAreaLayout);
     breakpointScrollArea->setWidget(breakpointAreaWidget);
 
     addressArea->setObjectName("addressArea");
@@ -67,16 +59,14 @@ DisassemblyWidget::DisassemblyWidget(QWidget *parent)
 }
 
 void DisassemblyWidget::addInstruction(QString address, QString instruction) {
-    BreakpointButton *breakpoint = new BreakpointButton(this, address);
-    breakpoint->setFixedSize(addressArea->fontMetrics().height() - 4,
-                             addressArea->fontMetrics().height() - 4);
-
-    breakpointAreaLayout->addWidget(breakpoint);
     addressArea->append(address);
     instructionArea->append(instruction);
-    instructionCount++;
 
-    breakpointAreaWidget->setMinimumHeight(instructionCount * addressArea->fontMetrics().height() + 8);
+    int lineHeight = addressArea->fontMetrics().height();
+    int lines = addressArea->document()->blockCount();
+
+    breakpointAreaWidget->setMaximumBreakpoints(lines);
+    breakpointAreaWidget->setFixedHeight(lines * lineHeight + 8);
 }
 
 
@@ -109,7 +99,7 @@ int DisassemblyWidget::getHighlightedLine() {
 }
 
 int DisassemblyWidget::getInstructionCount() {
-    return instructionCount;
+    return addressArea->document()->blockCount();
 }
 
 void DisassemblyWidget::onBreakpointScrollAreaScroll() {
@@ -140,17 +130,7 @@ void DisassemblyWidget::updateScroll(int value) {
 void DisassemblyWidget::addInstructionsList(const std::vector<std::string> &instructionsList) {
     addressArea->clear();
     instructionArea->clear();
-
-    //Delete breakpoints
-    QLayoutItem *item;
-    while ((item = breakpointAreaLayout->takeAt(0)) != nullptr) {
-        // remove the widget from the layout
-        QWidget *widget = item->widget();
-        breakpointAreaLayout->removeWidget(widget);
-        // delete the widget
-        delete widget;
-        delete item;
-    }
+    breakpointAreaWidget->clear();
 
     //Block UI signals
     QSignalBlocker blocker1(this);
@@ -162,10 +142,6 @@ void DisassemblyWidget::addInstructionsList(const std::vector<std::string> &inst
         std::string address;
         std::string instruction;
         ParseInstructionString(instructionString, address, instruction);
-
-        //TODO - Adding instructions is very slow
-        if (i++ == 300)
-            return;
 
         addInstruction(QString::fromStdString(address), QString::fromStdString(instruction));
     }
