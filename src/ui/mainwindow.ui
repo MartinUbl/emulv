@@ -594,8 +594,8 @@ QToolButton:hover {
                   <rect>
                    <x>0</x>
                    <y>0</y>
-                   <width>708</width>
-                   <height>279</height>
+                   <width>1028</width>
+                   <height>262</height>
                   </rect>
                  </property>
                  <layout class="QVBoxLayout" name="verticalLayout_7">
@@ -626,17 +626,8 @@ QToolButton:hover {
                       </property>
                       <item>
                        <widget class="QLineEdit" name="lineEditMemoryHeader">
-                        <property name="sizePolicy">
-                         <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
-                          <horstretch>0</horstretch>
-                          <verstretch>0</verstretch>
-                         </sizepolicy>
-                        </property>
-                        <property name="sizeIncrement">
-                         <size>
-                          <width>0</width>
-                          <height>0</height>
-                         </size>
+                        <property name="enabled">
+                         <bool>true</bool>
                         </property>
                         <property name="font">
                          <font>
@@ -648,18 +639,13 @@ QToolButton:hover {
                          <cursorShape>ArrowCursor</cursorShape>
                         </property>
                         <property name="styleSheet">
-                         <string notr="true">padding-left: 2px;
-selection-background-color: rgba(255, 255, 255, 0);
-padding-bottom: -5px;</string>
+                         <string notr="true">padding-left: 2px;</string>
                         </property>
                         <property name="text">
                          <string>         00 01 02 03 04 05 06 07 08 09 0A 0B 0C 0D 0E 0F</string>
                         </property>
                         <property name="frame">
                          <bool>false</bool>
-                        </property>
-                        <property name="dragEnabled">
-                         <bool>true</bool>
                         </property>
                         <property name="readOnly">
                          <bool>true</bool>
@@ -685,6 +671,9 @@ padding-bottom: -5px;</string>
                         </property>
                         <property name="frameShape">
                          <enum>QFrame::NoFrame</enum>
+                        </property>
+                        <property name="frameShadow">
+                         <enum>QFrame::Plain</enum>
                         </property>
                         <property name="lineWidth">
                          <number>0</number>
@@ -738,125 +727,6 @@ padding-bottom: -5px;</string>
             <property name="bottomMargin">
              <number>0</number>
             </property>
-            <item>
-             <widget class="QTabWidget" name="tabWidget">
-              <property name="enabled">
-               <bool>true</bool>
-              </property>
-              <property name="currentIndex">
-               <number>0</number>
-              </property>
-              <property name="tabsClosable">
-               <bool>false</bool>
-              </property>
-              <property name="movable">
-               <bool>false</bool>
-              </property>
-              <widget class="QWidget" name="tabUart">
-               <attribute name="title">
-                <string>UART</string>
-               </attribute>
-               <layout class="QVBoxLayout" name="verticalLayout_3">
-                <property name="spacing">
-                 <number>3</number>
-                </property>
-                <property name="leftMargin">
-                 <number>0</number>
-                </property>
-                <property name="topMargin">
-                 <number>0</number>
-                </property>
-                <property name="rightMargin">
-                 <number>0</number>
-                </property>
-                <property name="bottomMargin">
-                 <number>0</number>
-                </property>
-                <item>
-                 <widget class="QPlainTextEdit" name="plainTextEdit_2">
-                  <property name="frameShape">
-                   <enum>QFrame::NoFrame</enum>
-                  </property>
-                  <property name="frameShadow">
-                   <enum>QFrame::Plain</enum>
-                  </property>
-                  <property name="lineWidth">
-                   <number>0</number>
-                  </property>
-                  <property name="lineWrapMode">
-                   <enum>QPlainTextEdit::NoWrap</enum>
-                  </property>
-                 </widget>
-                </item>
-                <item>
-                 <layout class="QHBoxLayout" name="horizontalLayout_4">
-                  <item>
-                   <widget class="QLineEdit" name="lineEditSendMessage">
-                    <property name="placeholderText">
-                     <string>Send message...</string>
-                    </property>
-                    <property name="clearButtonEnabled">
-                     <bool>true</bool>
-                    </property>
-                   </widget>
-                  </item>
-                  <item>
-                   <widget class="QPushButton" name="btnSendMessage">
-                    <property name="enabled">
-                     <bool>false</bool>
-                    </property>
-                    <property name="toolTip">
-                     <string>Send</string>
-                    </property>
-                    <property name="text">
-                     <string/>
-                    </property>
-                    <property name="icon">
-                     <iconset theme="go-next">
-                      <normaloff>.</normaloff>.</iconset>
-                    </property>
-                   </widget>
-                  </item>
-                 </layout>
-                </item>
-               </layout>
-              </widget>
-              <widget class="QWidget" name="tabGPIO">
-               <attribute name="title">
-                <string>GPIO</string>
-               </attribute>
-              </widget>
-              <widget class="QWidget" name="tabOutput">
-               <attribute name="title">
-                <string>Output</string>
-               </attribute>
-               <layout class="QVBoxLayout" name="verticalLayout_6">
-                <property name="leftMargin">
-                 <number>0</number>
-                </property>
-                <property name="topMargin">
-                 <number>0</number>
-                </property>
-                <property name="rightMargin">
-                 <number>0</number>
-                </property>
-                <property name="bottomMargin">
-                 <number>0</number>
-                </property>
-                <item>
-                 <widget class="QPlainTextEdit" name="plainTextEdit_4">
-                  <property name="frameShape">
-                   <enum>QFrame::NoFrame</enum>
-                  </property>
-                  <property name="frameShadow">
-                   <enum>QFrame::Plain</enum>
-                  </property>
-                 </widget>
-                </item>
-               </layout>
-              </widget>
-             </widget>
-            </item>
            </layout>
           </widget>
          </widget>
@@ -897,9 +767,6 @@ padding-bottom: -5px;</string>
     <property name="title">
      <string>&amp;View</string>
     </property>
-    <addaction name="action_Serial_monitor"/>
-    <addaction name="action_GPIO"/>
-    <addaction name="action_Output"/>
    </widget>
    <widget class="QMenu" name="menu_Edit">
     <property name="title">
@@ -934,39 +801,6 @@ padding-bottom: -5px;</string>
     <string>&amp;About RISC-V Emulator</string>
    </property>
   </action>
-  <action name="action_Serial_monitor">
-   <property name="checkable">
-    <bool>true</bool>
-   </property>
-   <property name="checked">
-    <bool>true</bool>
-   </property>
-   <property name="text">
-    <string>&amp;Serial monitor</string>
-   </property>
-  </action>
-  <action name="action_GPIO">
-   <property name="checkable">
-    <bool>true</bool>
-   </property>
-   <property name="checked">
-    <bool>true</bool>
-   </property>
-   <property name="text">
-    <string>&amp;GPIO</string>
-   </property>
-  </action>
-  <action name="action_Output">
-   <property name="checkable">
-    <bool>true</bool>
-   </property>
-   <property name="checked">
-    <bool>true</bool>
-   </property>
-   <property name="text">
-    <string>&amp;Output</string>
-   </property>
-  </action>
  </widget>
  <tabstops>
   <tabstop>listViewRegisters</tabstop>
@@ -976,11 +810,6 @@ padding-bottom: -5px;</string>
   <tabstop>spinBoxMemoryTo</tabstop>
   <tabstop>btnSelectMemory</tabstop>
   <tabstop>btnRestoreMemory</tabstop>
-  <tabstop>tabWidget</tabstop>
-  <tabstop>plainTextEdit_2</tabstop>
-  <tabstop>lineEditSendMessage</tabstop>
-  <tabstop>btnSendMessage</tabstop>
-  <tabstop>plainTextEdit_4</tabstop>
  </tabstops>
  <resources/>
  <connections/>

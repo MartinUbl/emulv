@@ -1,6 +1,7 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
 #include "aboutwindow.h"
+#include "peripherals/gpio/GPIOPortWidget.h"
 
 #include <QAction>
 #include <QMessageBox>
@@ -12,10 +13,12 @@
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
     , ui(new Ui::MainWindow)
-    , disassemblyWidget(new DisassemblyWidget)
+    , disassemblyWidget(new DisassemblyWidget(this))
+    , peripheralsTabWidget_(new PeripheralsTabWidget(this))
 {
     ui->setupUi(this);
 
+    // Initialize monospace fonts
     QFont font("Monospace");
     font.setStyleHint(QFont::TypeWriter);
     ui->listViewRegisters->setFont(font);
@@ -25,14 +28,12 @@ MainWindow::MainWindow(QWidget *parent)
     ui->spinBoxMemoryTo->setFont(font);
     ui->textEditMemory->setFont(font);
 
+    // Initialize toolbar buttons
     ui->btnTerminate->setIcon(QIcon(":img/terminate.png"));
     ui->btnContinue->setIcon(QIcon(":img/continue.png"));
     ui->btnRun->setIcon(QIcon(":img/run.png"));
     ui->btnDebug->setIcon(QIcon(":img/debug.png"));
     ui->btnStep->setIcon(QIcon(":img/step.png"));
-
-    ui->btnSelectMemory->setIcon(QIcon(":img/search.png"));
-    ui->btnRestoreMemory->setIcon(QIcon(":img/restore.png"));
 
     QSize btnSize(25, 25);
     ui->btnTerminate->setFixedSize(btnSize);
@@ -47,34 +48,57 @@ MainWindow::MainWindow(QWidget *parent)
     ui->btnRun->setIconSize(iconSize);
     ui->btnDebug->setIconSize(QSize(16, 16));
     ui->btnStep->setIconSize(QSize(16, 16));
+
+    // Initialize memory button icons
     ui->btnSelectMemory->setIconSize(QSize(14, 14));
     ui->btnRestoreMemory->setIconSize(QSize(14, 14));
 
-    ui->splitterTop->setStretchFactor(0, 1);
-    ui->splitterTop->setStretchFactor(1, 0);
+    ui->btnSelectMemory->setIcon(QIcon(":img/search.png"));
+    ui->btnRestoreMemory->setIcon(QIcon(":img/restore.png"));
 
-    ui->splitterBottom->setStretchFactor(0, 2);
-    ui->splitterBottom->setStretchFactor(1, 5);
-
-    ui->splitterMain->setStretchFactor(0, 3);
-    ui->splitterMain->setStretchFactor(1, 1);
-
+    // Make running and debug indicator lines invisible
     ui->runningIndicator->setVisible(false);
     ui->debugIndicator->setVisible(false);
 
-    connect(ui->action_Serial_monitor, SIGNAL(toggled(bool)), this, SLOT(setUARTTabVisible()));
-    connect(ui->action_GPIO, SIGNAL(toggled(bool)), this, SLOT(setGPIOTabVisible()));
-    connect(ui->action_Output, SIGNAL(toggled(bool)), this, SLOT(setOutputTabVisible()));
-
+    // Initialize spin boxes and toolbar button states
     updateMemorySpinBoxes();
     updateToolBarButtons();
 
+    // Initialize ui for disassembly widget
     ui->disassemblyLayout->addWidget(disassemblyWidget);
 
+    // Initialize ui for peripheral widgets
+    ui->peripheralWidget->layout()->addWidget(peripheralsTabWidget_);
+
+    // Initialize splitter ratio
+    ui->splitterTop->setStretchFactor(0, 1);
+    ui->splitterTop->setStretchFactor(1, 0);
+
+    ui->splitterBottom->setStretchFactor(0, 1);
+    ui->splitterBottom->setStretchFactor(1, 1);
+
+    ui->splitterMain->setStretchFactor(0, 3);
+    ui->splitterMain->setStretchFactor(1, 2);
+
+    // Following code is only for ui testing purposes and will eventually be removed
     for (int i = 0; i < 100; i++)
     {
         disassemblyWidget->addInstruction("00000", " ");
     }
+
+    GPIOWidget *gpioWidget = new GPIOWidget(this);
+    UARTWidget *uartWidget = new UARTWidget(this);
+
+    gpioWidget->addPort(new GPIOPortWidget(gpioWidget, "PORT_A", {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15}));
+    gpioWidget->addPort(new GPIOPortWidget(gpioWidget, "PORT_B", {0, 1,    3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15}));
+    gpioWidget->addPort(new GPIOPortWidget(gpioWidget, "PORT_C", {13, 14, 15}));
+
+    gpioWidget->setPinMode("PORT_A", 4, GPIO_PinMode::kOutput);
+    gpioWidget->setPinMode("PORT_B", 0, GPIO_PinMode::kOutput);
+    gpioWidget->setPinStatus("PORT_B", 0, true);
+
+    peripheralsTabWidget_->addPeripheralWidget(gpioWidget, "GPIO", true);
+    peripheralsTabWidget_->addPeripheralWidget(uartWidget, "UART");
 }
 
 MainWindow::MainWindow(Controller *pController) : MainWindow(){
@@ -88,25 +112,6 @@ MainWindow::MainWindow(QWidget *parent, Controller *pController) : MainWindow(pa
 MainWindow::~MainWindow()
 {
     delete ui;
-    delete disassemblyWidget;
-}
-
-void MainWindow::setUARTTabVisible()
-{
-    ui->tabWidget->setTabVisible(0, ui->action_Serial_monitor->isChecked());
-    updatePeripheralTabWidgetVisible();
-}
-
-void MainWindow::setGPIOTabVisible()
-{
-    ui->tabWidget->setTabVisible(1, ui->action_GPIO->isChecked());
-    updatePeripheralTabWidgetVisible();
-}
-
-void MainWindow::setOutputTabVisible()
-{
-    ui->tabWidget->setTabVisible(2, ui->action_Output->isChecked());
-    updatePeripheralTabWidgetVisible();
 }
 
 void MainWindow::setRunning(bool running)
@@ -191,20 +196,6 @@ void MainWindow::updateRegistersWidgetEnabled()
     }
 
     ui->registersWidget->setEnabled(true);
-}
-
-void MainWindow::updatePeripheralTabWidgetVisible()
-{
-    for (int i = 0; i < ui->tabWidget->count(); ++i)
-    {
-        if (ui->tabWidget->isTabVisible(i))
-        {
-            ui->tabWidget->setVisible(true);
-            return;
-        }
-    }
-
-    ui->tabWidget->setVisible(false);
 }
 
 void MainWindow::updateMemoryButtons()
@@ -332,11 +323,6 @@ void MainWindow::on_btnSelectMemory_clicked()
     updateTextEditMemory();
 }
 
-void MainWindow::on_lineEditSendMessage_textChanged(const QString &arg1)
-{
-    ui->btnSendMessage->setEnabled(!ui->lineEditSendMessage->text().isEmpty());
-}
-
 void MainWindow::on_btnRun_clicked()
 {
     if(!controller->IsFileLoaded()) {
@@ -414,4 +400,3 @@ void MainWindow::on_rbRegistersHex_clicked()
 {
     updateListViewRegisters();
 }
-
