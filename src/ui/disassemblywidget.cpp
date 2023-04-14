@@ -1,5 +1,6 @@
 #include "disassemblywidget.h"
 
+#include <sstream>
 #include <QLayout>
 #include <QTextBlock>
 #include <QScrollBar>
@@ -136,15 +137,28 @@ void DisassemblyWidget::addInstructionsList(const std::vector<std::string> &inst
     QSignalBlocker blocker1(this);
     QSignalBlocker blocker2(this->parent());
 
-    int i = 0;
-    for (const std::string &instructionString: instructionsList) {
+    std::stringstream ssAddresses;
+    std::stringstream ssInstructions;
+
+    for (const std::string &instructionString : instructionsList) {
         //Parse the instruction string
         std::string address;
         std::string instruction;
         ParseInstructionString(instructionString, address, instruction);
 
-        addInstruction(QString::fromStdString(address), QString::fromStdString(instruction));
+        ssAddresses << address << "\n";
+        ssInstructions << instruction << "\n";
     }
+
+    std::string addressAreaText = ssAddresses.str();
+    std::string instructionAreaText = ssInstructions.str();
+
+    //Remove last line separator
+    addressAreaText = addressAreaText.erase(addressAreaText.length() - 1);
+    instructionAreaText = instructionAreaText.erase(instructionAreaText.length() - 1);
+
+    addressArea->setText(QString::fromStdString(addressAreaText));
+    instructionArea->setText(QString::fromStdString(instructionAreaText));
 }
 
 void DisassemblyWidget::ParseInstructionString(const std::string &instructionString, std::string &address,
