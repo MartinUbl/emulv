@@ -7,6 +7,7 @@
 #include <QObject>
 #include <QFrame>
 #include <QScrollArea>
+#include "BreakpointAreaWidget.h"
 
 class DisassemblyWidget : public QGroupBox
 {
@@ -29,12 +30,10 @@ private slots:
 private:
     QTextEdit *addressArea;
     QTextEdit *instructionArea;
-    QVBoxLayout *breakpointAreaLayout;
     QScrollArea *breakpointScrollArea;
-    QWidget *breakpointAreaWidget;
+    BreakpointAreaWidget *breakpointAreaWidget;
 
     int highlightedLine = -1;
-    int instructionCount = 0;
 
     void updateScroll(int value);
 
