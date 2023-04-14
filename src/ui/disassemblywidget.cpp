@@ -62,12 +62,7 @@ DisassemblyWidget::DisassemblyWidget(QWidget *parent)
 void DisassemblyWidget::addInstruction(QString address, QString instruction) {
     addressArea->append(address);
     instructionArea->append(instruction);
-
-    int lineHeight = addressArea->fontMetrics().height();
-    int lines = addressArea->document()->blockCount();
-
-    breakpointAreaWidget->setMaximumBreakpoints(lines);
-    breakpointAreaWidget->setFixedHeight(lines * lineHeight + 8);
+    updateBreakpointWidget();
 }
 
 
@@ -159,6 +154,15 @@ void DisassemblyWidget::addInstructionsList(const std::vector<std::string> &inst
 
     addressArea->setText(QString::fromStdString(addressAreaText));
     instructionArea->setText(QString::fromStdString(instructionAreaText));
+    updateBreakpointWidget();
+}
+
+void DisassemblyWidget::updateBreakpointWidget() {
+    int lineHeight = addressArea->fontMetrics().height();
+    int lines = addressArea->document()->blockCount();
+
+    breakpointAreaWidget->setMaximumBreakpoints(lines);
+    breakpointAreaWidget->setFixedHeight(lines * lineHeight + 8);
 }
 
 void DisassemblyWidget::ParseInstructionString(const std::string &instructionString, std::string &address,

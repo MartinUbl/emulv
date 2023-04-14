@@ -19,6 +19,7 @@ public:
     void highlightLine(int line);
     int getHighlightedLine();
     int getInstructionCount();
+    void updateBreakpointWidget();
 
 signals:
 
