@@ -285,6 +285,10 @@ void MainWindow::on_action_Open_triggered()
 {
     QString fileName = QFileDialog::getOpenFileName(this, "Select binary file", ".");
     ui->statusbar->showMessage(fileName);
+    //If no file was selected
+    if (fileName.isEmpty()) {
+        return;
+    }
     controller->LoadFile(fileName.toStdString());
     disassemblyWidget->addInstructionsList(controller->GetDisassembly());
 }
