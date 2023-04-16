@@ -5,9 +5,6 @@
 
 #include "emulator/EmulatorUnit.h"
 #include "ui/Controller.h"
-#include "ui/mainwindow.h"
-#include <QApplication>
-
 
 int main(int argc, char **argv) {
     Controller c(argc,argv);

@@ -60,7 +60,7 @@ FetchContent_MakeAvailable(json-lib)
 #################################################################################
 
 add_library(emulator ./emulator/EmulatorUnit.cpp)
-add_library(modules ./modules/PeripheralDevice.h)
+add_library(modules ./modules/PeripheralDevice.h modules/ExampleDevice.cpp modules/ExampleDevice.h)
 add_library(events utils/events/EventEmitter.cpp utils/events/EventEmitter.h)
 
 #################################################################################
@@ -88,10 +88,11 @@ endif ()
 #Add library dependencies
 #################################################################################
 
-#Emulator target depends on riscv, riscv-disassembler, events
+#Emulator target depends on riscv, riscv-disassembler, events, modules
 target_link_libraries(emulator riscv)
 target_link_libraries(emulator ${riscv-disassembler_SOURCE_DIR}/src/riscv-disas.c)
 target_link_libraries(emulator events)
+target_link_libraries(emulator modules)
 
 #Project target depends on riscv, emulator, modules, events, json-lib
 target_link_libraries(${PROJECT_NAME} PRIVATE riscv)

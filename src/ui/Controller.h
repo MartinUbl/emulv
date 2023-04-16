@@ -7,6 +7,8 @@
 
 #include "../utils/events/EventEmitter.h"
 #include "../emulator/EmulatorUnit.h"
+#include "../modules/PeripheralDevice.h"
+#include "../modules/ExampleDevice.h"
 
 class Controller {
 private:
@@ -15,6 +17,9 @@ private:
     EventEmitter emitter_;
     emulator::EmulatorUnit *emulatorUnit_;
     std::string openedFile_;
+    void CreatePeripherals_();
+    void RegisterPeripherals_();
+    std::map<std::string, PeripheralDevice*> ActivePeripherals_;
 public:
     Controller(int argc, char **argv);
     int ShowWindow();
