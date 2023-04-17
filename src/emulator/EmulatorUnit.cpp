@@ -5,6 +5,7 @@
 #include "EmulatorUnit.h"
 #include "libriscv/rv32i_instr.hpp"
 #include "riscv-disas.h"
+
 namespace emulator {
 
 
@@ -16,7 +17,7 @@ namespace emulator {
         // Read the RISC-V program into a std::vector:
         std::ifstream stream(file_path, std::ios::in | std::ios::binary);
         if (!stream) {
-            throw std::runtime_error("LoadElfFle: File not found or is inaccessible!");
+            throw std::runtime_error("EmulatorUnit::LoadElfFle: File not found or is inaccessible!");
         }
 
         binary_ = std::vector<uint8_t>(
@@ -40,6 +41,10 @@ namespace emulator {
                 machine_arguments,
                 {"LC_TYPE=C", "LC_ALL=C", "USER=root"});
         machine.setup_linux_syscalls();
+
+        // Setup memory traps for peripherals
+        if (peripheral_devices_ != nullptr)
+            SetupMemoryTraps_(machine);
 
         try {
             // Run the program, but timeout after 128bn instructions
@@ -91,6 +96,15 @@ namespace emulator {
     }
 
     /**
+     * Loads a map of peripheral devices into the peripheral_devices_ class attribute,
+     * key of the map is a name of the peripheral, value is the instance of the PeripheralDevice class
+     * @param devices A map of peripheral devices
+     */
+    void EmulatorUnit::RegisterPeripherals(std::map<std::string, PeripheralDevice *> &devices) {
+        peripheral_devices_ = &devices;
+    }
+
+    /**
      * Disassembles instructions via the disassembler library
      * @param cpu riscv CPU object
      * @param format Instruction format
@@ -104,5 +118,60 @@ namespace emulator {
         return result;
     }
 
+    /**
+     * Setups the required memory traps of peripheral devices on this machine instance.
+     * PeripheralDevices must first be registered using the RegisterPeripherals() method.
+     * @param machine The current emulated machine instance
+     */
+    void EmulatorUnit::SetupMemoryTraps_(riscv::Machine<riscv::RISCV64> &machine) const {
+        for (const auto &p: *peripheral_devices_) {
+            //TODO: Remove print
+            std::cout << "Setting up memory trap for device with name: " << p.first << std::endl;
+            PeripheralDevice *pDevice = p.second;
+
+            //Check if the address range isn't too big
+            if ((pDevice->GetStartAddress() + RISCV_PAGE_SIZE) < pDevice->GetEndAddress()) {
+                throw std::runtime_error(
+                        "EmulatorUnit::RegisterPeripheral: The address range of this peripheral device is greater than the maximal supported page size of 4096 bytes.");
+            }
+
+            uint64_t TRAP_PAGE = pDevice->GetStartAddress();
+            //Create a trap page - the default size is 4096 bytes
+            auto const &trap_page = machine.memory.create_writable_pageno(
+                    riscv::Memory<riscv::RISCV64>::page_number(TRAP_PAGE));
+
+            //Sets a callback on this trap page
+            trap_page.set_trap([pDevice](auto &page, uint32_t offset, int mode, int64_t value) {
+                //int mode --> a bitfield containing MODE and SIZE
+                //Page::trap_mode(mode) --> Extracts the MODE (read / write) from the mode bitfield's upper 4 bits
+                //Page::trap_size(mode) --> Extracts the SIZE from the mode bitfield's lower 12 bits
+                //SIZE --> in this context means the size of the read / write operation in bytes (4 bytes = 32bit processor / 8 bytes = 64bit processor)
+                //int64_t value --> is in case of write the value which is to be written to memory
+                //auto &page --> is the page object, on which this trap occurred
+
+                const size_t size = riscv::Page::trap_size(mode);
+
+                switch (riscv::Page::trap_mode(mode)) {
+                    case riscv::TRAP_WRITE:
+//                        std::cout << "TRAPPED WRITE" << std::endl << "Page size: " << size << std::endl
+//                                  << "Offset: " << offset << std::endl << "Mode: " << mode << std::endl
+//                                  << "Value: " << value << std::endl << std::endl;
+                        //TODO: Passing only offset, is this good enough?
+                        pDevice->WriteDoubleword(offset,value);
+                        break;
+                    case riscv::TRAP_READ:
+//                        std::cout << "TRAPPED READ" << std::endl << "Page size: " << size << std::endl
+//                                  << "Offset: " << offset << std::endl << "Mode: " << mode << std::endl
+//                                  << "Value: " << value << std::endl << std::endl;
+
+                        //TODO: Passing only offset, is this good enough?
+                        uint64_t mmio_value = pDevice->ReadDoubleword(offset);
+
+                        page.page().template aligned_write<uint64_t>(offset, mmio_value);
+                        break;
+                }
+            });
+        }
+    }
 
 }

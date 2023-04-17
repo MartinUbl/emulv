@@ -18,5 +18,8 @@ public:
     virtual uint16_t ReadHalfword(uint64_t address) = 0;
     virtual uint32_t ReadWord(uint64_t address) = 0;
     virtual uint64_t ReadDoubleword(uint64_t address) = 0;
+
+    virtual uint64_t GetStartAddress() = 0;
+    virtual uint64_t GetEndAddress() = 0;
 };
 #endif //EMULV_PERIPHERALDEVICE_H

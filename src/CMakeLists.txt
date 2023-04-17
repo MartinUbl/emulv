@@ -19,13 +19,13 @@ set(PROJECT_SOURCES
         ui/mainwindow.cpp ui/mainwindow.ui
         ui/aboutwindow.h ui/aboutwindow.cpp ui/aboutwindow.ui
         ui/disassemblywidget.h ui/disassemblywidget.cpp
-        ui/breakpointbutton.h ui/breakpointbutton.cpp
-		ui/Controller.cpp ui/Controller.h
+        ui/Controller.cpp ui/Controller.h
 		ui/peripherals/gpio/GPIOPortWidget.cpp ui/peripherals/gpio/GPIOPortWidget.h
 		ui/peripherals/gpio/GPIOPinButton.cpp ui/peripherals/gpio/GPIOPinButton.h
 		ui/peripherals/gpio/GPIOWidget.cpp ui/peripherals/gpio/GPIOWidget.h
 		ui/peripherals/uart/UARTWidget.cpp ui/peripherals/uart/UARTWidget.h
-		ui/peripherals/PeripheralsTabWidget.cpp ui/peripherals/PeripheralsTabWidget.h)
+		ui/peripherals/PeripheralsTabWidget.cpp ui/peripherals/PeripheralsTabWidget.h
+		ui/BreakpointAreaWidget.cpp ui/BreakpointAreaWidget.h)
 
 #################################################################################
 #Download libraries from git repositories
@@ -60,7 +60,7 @@ FetchContent_MakeAvailable(json-lib)
 #################################################################################
 
 add_library(emulator ./emulator/EmulatorUnit.cpp)
-add_library(modules ./modules/PeripheralDevice.h)
+add_library(modules ./modules/PeripheralDevice.h modules/ExampleDevice.cpp modules/ExampleDevice.h)
 add_library(events utils/events/EventEmitter.cpp utils/events/EventEmitter.h)
 
 #################################################################################
@@ -88,10 +88,11 @@ endif ()
 #Add library dependencies
 #################################################################################
 
-#Emulator target depends on riscv, riscv-disassembler, events
+#Emulator target depends on riscv, riscv-disassembler, events, modules
 target_link_libraries(emulator riscv)
 target_link_libraries(emulator ${riscv-disassembler_SOURCE_DIR}/src/riscv-disas.c)
 target_link_libraries(emulator events)
+target_link_libraries(emulator modules)
 
 #Project target depends on riscv, emulator, modules, events, json-lib
 target_link_libraries(${PROJECT_NAME} PRIVATE riscv)

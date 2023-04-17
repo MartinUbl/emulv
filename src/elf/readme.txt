@@ -1,0 +1,1 @@
+riscv64-linux-gnu-gcc-11 memory_experiment.c -std=c11 -x c -O0 -static -W
