@@ -8,8 +8,8 @@
 
 DisassemblyWidget::DisassemblyWidget(QWidget *parent)
         : QGroupBox{parent},
-          addressArea(new QPlainTextEdit(this)),
-          instructionArea(new QPlainTextEdit(this)),
+          addressArea(new QTextEdit(this)),
+          instructionArea(new QTextEdit(this)),
           breakpointScrollArea(new QScrollArea(this)) {
     QFont font("Monospace");
     font.setStyleHint(QFont::TypeWriter);
@@ -59,8 +59,8 @@ DisassemblyWidget::DisassemblyWidget(QWidget *parent)
 }
 
 void DisassemblyWidget::addInstruction(QString address, QString instruction) {
-    addressArea->appendPlainText(address);
-    instructionArea->appendPlainText(instruction);
+    addressArea->append(address);
+    instructionArea->append(instruction);
     updateBreakpointWidget();
 }
 
