@@ -27,7 +27,7 @@ namespace emulator {
     private:
         EventEmitter &emitter_;
         std::vector<uint8_t> binary_;
-        std::map<std::string, PeripheralDevice *> *peripheral_devices_ = nullptr;
+        std::map<std::string, modules::PeripheralDevice *> *peripheral_devices_ = nullptr;
 
         static std::string InstructonToString_(riscv::CPU<8> const &cpu, riscv::instruction_format format);
 
@@ -42,7 +42,7 @@ namespace emulator {
 
         std::vector<std::string> Disassemble();
 
-        void RegisterPeripherals(std::map<std::string, PeripheralDevice *> &devices);
+        void RegisterPeripherals(std::map<std::string, modules::PeripheralDevice *> &devices);
     };
 
 }
