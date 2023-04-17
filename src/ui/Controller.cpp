@@ -34,7 +34,7 @@ Controller::Controller(int argc, char **argv) {
 }
 
 void Controller::CreatePeripherals_() {
-    ActivePeripherals_["EXAMPLE"] = new ExampleDevice(emitter_, 0xF0000000, 0xF0000FFF);
+    ActivePeripherals_["EXAMPLE"] = new modules::ExampleDevice(emitter_, 0xF0000000, 0xF0000FFF);
 }
 
 void Controller::RegisterPeripherals_() {

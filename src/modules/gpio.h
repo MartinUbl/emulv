@@ -71,7 +71,7 @@ namespace modules {
             std::bitset<kReg_Size> Reg_OCTL;
 
         public:
-            GPIO_Port();
+            GPIO_Port(EventEmitter &emitter, uint64_t start_address, uint64_t end_address);
 
             // Interface - PeripheralDevice
             virtual void WriteByte(uint64_t address, uint8_t value) override;
@@ -84,6 +84,9 @@ namespace modules {
             /** Handles reading from GPIO port registers. */
             virtual uint32_t ReadWord(uint64_t address) override;
             virtual uint64_t ReadDoubleword(uint64_t address) override;
+
+            uint64_t GetStartAddress();
+            uint64_t GetEndAddress();
 
             // Interface - IGPIO_Port_Controller
             virtual GPIO_Pin_Mode Get_Pin_Mode(const size_t pinNo) const override;

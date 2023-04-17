@@ -100,7 +100,7 @@ namespace emulator {
      * key of the map is a name of the peripheral, value is the instance of the PeripheralDevice class
      * @param devices A map of peripheral devices
      */
-    void EmulatorUnit::RegisterPeripherals(std::map<std::string, PeripheralDevice *> &devices) {
+    void EmulatorUnit::RegisterPeripherals(std::map<std::string, modules::PeripheralDevice *> &devices) {
         peripheral_devices_ = &devices;
     }
 
@@ -127,7 +127,7 @@ namespace emulator {
         for (const auto &p: *peripheral_devices_) {
             //TODO: Remove print
             std::cout << "Setting up memory trap for device with name: " << p.first << std::endl;
-            PeripheralDevice *pDevice = p.second;
+            modules::PeripheralDevice *pDevice = p.second;
 
             //Check if the address range isn't too big
             if ((pDevice->GetStartAddress() + RISCV_PAGE_SIZE) < pDevice->GetEndAddress()) {

@@ -11,7 +11,9 @@
 
 namespace modules {
 
-    GPIO_Port::GPIO_Port() {
+    GPIO_Port::GPIO_Port(EventEmitter &emitter, uint64_t start_address, uint64_t end_address) :
+        PeripheralDevice(emitter, start_address, end_address)
+    {
         Reg_CTL0 = std::bitset<kReg_Size> {kReg_CTL_RESET_VALUE};
         Reg_CTL1 = std::bitset<kReg_Size> {kReg_CTL_RESET_VALUE};
     }

@@ -19,7 +19,7 @@ private:
     std::string openedFile_;
     void CreatePeripherals_();
     void RegisterPeripherals_();
-    std::map<std::string, PeripheralDevice*> ActivePeripherals_;
+    std::map<std::string, modules::PeripheralDevice*> ActivePeripherals_;
 public:
     Controller(int argc, char **argv);
     int ShowWindow();
