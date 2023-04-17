@@ -2,7 +2,7 @@
 #define DISASSEMBLYWIDGET_H
 
 #include <QGroupBox>
-#include <QTextEdit>
+#include <QPlainTextEdit>
 #include <QGridLayout>
 #include <QObject>
 #include <QFrame>
@@ -29,8 +29,8 @@ private slots:
     void onInstructionAreaScroll();
 
 private:
-    QTextEdit *addressArea;
-    QTextEdit *instructionArea;
+    QPlainTextEdit *addressArea;
+    QPlainTextEdit *instructionArea;
     QScrollArea *breakpointScrollArea;
     BreakpointAreaWidget *breakpointAreaWidget;
 

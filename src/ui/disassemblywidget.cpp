@@ -8,8 +8,8 @@
 
 DisassemblyWidget::DisassemblyWidget(QWidget *parent)
         : QGroupBox{parent},
-          addressArea(new QTextEdit(this)),
-          instructionArea(new QTextEdit(this)),
+          addressArea(new QPlainTextEdit(this)),
+          instructionArea(new QPlainTextEdit(this)),
           breakpointScrollArea(new QScrollArea(this)) {
     QFont font("Monospace");
     font.setStyleHint(QFont::TypeWriter);
@@ -33,7 +33,6 @@ DisassemblyWidget::DisassemblyWidget(QWidget *parent)
     addressArea->setStyleSheet("#addressArea { background-color: rgba(100, 100, 100, 100); }");
     addressArea->setMaximumWidth(addressArea->fontMetrics().horizontalAdvance("00000000 "));
     addressArea->setReadOnly(true);
-    addressArea->setAlignment(Qt::AlignRight);
     addressArea->setFrameShape(QFrame::Box);
     addressArea->setLineWidth(0);
     addressArea->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
@@ -60,8 +59,8 @@ DisassemblyWidget::DisassemblyWidget(QWidget *parent)
 }
 
 void DisassemblyWidget::addInstruction(QString address, QString instruction) {
-    addressArea->append(address);
-    instructionArea->append(instruction);
+    addressArea->appendPlainText(address);
+    instructionArea->appendPlainText(instruction);
     updateBreakpointWidget();
 }
 
@@ -152,8 +151,8 @@ void DisassemblyWidget::addInstructionsList(const std::vector<std::string> &inst
     addressAreaText = addressAreaText.erase(addressAreaText.length() - 1);
     instructionAreaText = instructionAreaText.erase(instructionAreaText.length() - 1);
 
-    addressArea->setText(QString::fromStdString(addressAreaText));
-    instructionArea->setText(QString::fromStdString(instructionAreaText));
+    addressArea->setPlainText(QString::fromStdString(addressAreaText));
+    instructionArea->setPlainText(QString::fromStdString(instructionAreaText));
     updateBreakpointWidget();
 }
 
