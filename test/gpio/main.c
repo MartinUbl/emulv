@@ -1,7 +1,7 @@
 /**
- * @file main.c GPIO peripherial test
+ * @file main.c GPIO peripheral device test
  * @author Stanislav Kafara
- * @version 1
+ * @version 2023-04-17
  */
 
 
@@ -39,8 +39,8 @@ int main() {
 
     // (PA0) Initialize PA0 as INPUT.
     address = (uint32_t *) GPIOA_CTL0;
-    // (PA0) Set CTL0 in CTLO to INPUT (10). (default 01, bit 2,3)
-    // (PA1) Set MD0 in CTL0 to INPUT (00). (default 00, bit 0,1)
+    // (PA0) Set CTL0 in CTLO to INPUT(PUSH-PULL) (10). (default 01, bits [3:2])
+    // (PA0) Set MD0 in CTL0 to INPUT (00). (default 00, bits [1:0])
     value = 0b11111111111111111111111111110000;
     *address = *address & value;
     value = 0b00000000000000000000000000001000;
@@ -48,8 +48,8 @@ int main() {
 
     // (PA1) Initialize PA1 as OUTPUT.
     address = (uint32_t *) GPIOA_CTL0;
-    // (PA1) Set CTL1 in CTLO to OUTPUT (00). (default 01, bit 6,7)
-    // (PA1) Set MD1 in CTL0 to OUTPUT (01). (default 00, bit 4,5)
+    // (PA1) Set CTL1 in CTLO to OUTPUT(PUSH-PULL) (00). (default 01, bit [7:6])
+    // (PA1) Set MD1 in CTL0 to OUTPUT (01). (default 00, bit [5:4])
     value = 0b11111111111111111111111100001111;
     *address = *address & value;
     value = 0b00000000000000000000000000010000;
@@ -57,17 +57,17 @@ int main() {
 
     // (PA2) Initialize PA2 as OUTPUT.
     address = (uint32_t *) GPIOA_CTL0;
-    // (PA2) Set CTL2 in CTLO to OUTPUT (00). (default 01, bit 10,11)
-    // (PA2) Set MD2 in CTL0 to OUTPUT (01). (default 00, bit 8,9)
+    // (PA2) Set CTL2 in CTLO to OUTPUT(PUSH-PULL) (00). (default 01, bit [11:10])
+    // (PA2) Set MD2 in CTL0 to OUTPUT (01). (default 00, bit [9:8])
     value = 0b11111111111111111111000011111111;
     *address = *address & value;
     value = 0b00000000000000000000000100000000;
     *address = *address | value;
 
     // (PC13) Initialize PC13 as OUTPUT.
-    address = (uint32_t *) GPIOA_CTL0;
-    // (PC13) Set CTL13 in CTL1 to OUTPUT (00). (default 01, bit 22,23)
-    // (PC13) Set MD13 in CTL1 to OUTPUT (01). (default 00, bit 20,21)
+    address = (uint32_t *) GPIOC_CTL1;
+    // (PC13) Set CTL13 in CTL1 to OUTPUT(PUSH-PULL) (00). (default 01, bit [23:22])
+    // (PC13) Set MD13 in CTL1 to OUTPUT (01). (default 00, bit [21:20])
     value = 0b11111111000011111111111111111111;
     *address = *address & value;
     value = 0b00000000000100000000000000000000;
@@ -85,7 +85,7 @@ int main() {
     // (PC13) Set OCTL13 to HIGH using BOP.
     address = (uint32_t *) GPIOC_BOP;
     value = 0b00000000000000000000000000000010;
-    *address = *address | value;
+    *address = value;
 
     // END MANUAL SWITCH OUTPUT HIGH
 
@@ -100,7 +100,7 @@ int main() {
         address = (uint32_t *) GPIOA_OCTL;
         // (PA0) INPUT LEVEL HIGH
         if (value > 0) {
-            // (PA2) OUPTUT LEVEL HIGH
+            // (PA2) OUTPUT LEVEL HIGH
             value = 0b00000000000000000000000000000100;
             *address = *address | value;
         }
