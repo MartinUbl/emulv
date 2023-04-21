@@ -61,16 +61,14 @@ namespace modules {
 
             case GPIO_Port_Reg_Offset::BOP: {
                 uint32_t bits = value;
-                size_t i = 0;
-                for (; i < kReg_Size / 2; i++) {
+                for (size_t i = 0; i < kReg_Size; i++) {
                     if (bits & 0b1) {
-                        Reg_OCTL.set(i);
-                    }
-                    bits >>= 1;
-                }
-                for (; i < kReg_Size; i++) {
-                    if (bits & 0b1) {
-                        Reg_OCTL.reset(i);
+                        if (i < kReg_Size / 2) {
+                            Reg_OCTL.set(i);
+                        }
+                        else {
+                            Reg_OCTL.reset(i - kReg_Size / 2);
+                        }
                     }
                     bits >>= 1;
                 }
