@@ -80,3 +80,23 @@ void Controller::LoadFile(std::string file_path) {
 bool Controller::IsFileLoaded() {
     return !this->openedFile_.empty();
 }
+
+std::unordered_map<std::string, uint32_t> Controller::GetRegisters() {
+    // TODO: get registers from EmulatorUnit
+    std::unordered_map<std::string, uint32_t> registers;
+
+    // TODO: remove
+    registers["x0"] = 0;
+    registers["x1"] = 0x5f880900;
+    registers["x2"] = 0x5f880900;
+    registers["x3"] = 0x5f880900;
+    registers["x4"] = 0x5f880900;
+    registers["x5"] = 0x5f880900;
+    registers["x6"] = 0x5f880900;
+    registers["x20"] = 0x5f880900;
+    registers["x31"] = 0x5f880900;
+    registers["pc"] = 0x00037a40;
+
+    return registers;
+}
+

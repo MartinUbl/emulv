@@ -23,12 +23,14 @@ private:
     std::map<std::string, modules::PeripheralDevice*> ActivePeripherals_;
 public:
     Controller(int argc, char **argv);
+    ~Controller();
+
     int ShowWindow();
     int RunProgram();
-    std::vector<std::string> GetDisassembly();
     void LoadFile(std::string file_path);
     bool IsFileLoaded();
-    ~Controller();
+    std::vector<std::string> GetDisassembly();
+    std::unordered_map<std::string, uint32_t> GetRegisters();
 };
 
 

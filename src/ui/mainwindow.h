@@ -8,6 +8,7 @@
 #include "peripherals/gpio/GPIOWidget.h"
 #include "peripherals/uart/UARTWidget.h"
 #include "peripherals/PeripheralsTabWidget.h"
+#include "RegistersWidget.h"
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class MainWindow; }
@@ -18,10 +19,7 @@ class MainWindow : public QMainWindow
     Q_OBJECT
 
 public:
-    MainWindow(QWidget *parent = nullptr);
-    MainWindow(Controller *pController);
-    MainWindow(QWidget *parent, Controller *pController);
-
+    MainWindow(QWidget *parent = nullptr, Controller *controller = nullptr);
     ~MainWindow();
 
 private slots:
@@ -37,14 +35,13 @@ private slots:
     void on_btnTerminate_clicked();
     void on_rbMemoryDec_clicked();
     void on_rbMemoryHex_clicked();
-    void on_rbRegistersDec_clicked();
-    void on_rbRegistersHex_clicked();
 
 private:
     Controller *controller;
 
     Ui::MainWindow *ui;
     DisassemblyWidget *disassemblyWidget;
+    RegistersWidget *registersWidget_;
     PeripheralsTabWidget *peripheralsTabWidget_;
 
     int memoryFrom = 0, memoryTo = 0xfff;
@@ -59,12 +56,11 @@ private:
 
     void updateMemoryWidgetEnabled();
     void updateRegistersWidgetEnabled();
-    void updatePeripheralTabWidgetVisible();
     void updateMemorySpinBoxes();
     void updateMemoryButtons();
     void updateMemoryHeader();
     void updateTextEditMemory();
-    void updateListViewRegisters();
+    void updateRegisters();
     void updateToolBarButtons();
 };
 #endif // MAINWINDOW_H

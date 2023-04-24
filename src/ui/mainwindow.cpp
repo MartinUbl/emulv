@@ -10,18 +10,18 @@
 #include <sstream>
 #include <iomanip>
 
-MainWindow::MainWindow(QWidget *parent)
-    : QMainWindow(parent)
-    , ui(new Ui::MainWindow)
-    , disassemblyWidget(new DisassemblyWidget(this))
-    , peripheralsTabWidget_(new PeripheralsTabWidget(this))
-{
+MainWindow::MainWindow(QWidget *parent, Controller *controller)
+: QMainWindow(parent)
+, ui(new Ui::MainWindow)
+, controller(controller)
+, disassemblyWidget(new DisassemblyWidget(this))
+, registersWidget_(new RegistersWidget(this))
+, peripheralsTabWidget_(new PeripheralsTabWidget(this)) {
     ui->setupUi(this);
 
     // Initialize monospace fonts
     QFont font("Monospace");
     font.setStyleHint(QFont::TypeWriter);
-    ui->listViewRegisters->setFont(font);
     ui->lineEditMemoryHeader->setFont(font);
     ui->textEditMemory->setFont(font);
     ui->spinBoxMemoryFrom->setFont(font);
@@ -67,6 +67,10 @@ MainWindow::MainWindow(QWidget *parent)
     // Initialize ui for disassembly widget
     ui->disassemblyLayout->addWidget(disassemblyWidget);
 
+    // Initialize ui for registers widget
+    ui->registersWidget->setLayout(new QVBoxLayout(ui->registersWidget));
+    ui->registersWidget->layout()->addWidget(registersWidget_);
+
     // Initialize ui for peripheral widgets
     ui->peripheralWidget->layout()->addWidget(peripheralsTabWidget_);
 
@@ -101,14 +105,6 @@ MainWindow::MainWindow(QWidget *parent)
     peripheralsTabWidget_->addPeripheralWidget(uartWidget, "UART");
 }
 
-MainWindow::MainWindow(Controller *pController) : MainWindow(){
-    this->controller = pController;
-}
-
-MainWindow::MainWindow(QWidget *parent, Controller *pController) : MainWindow(parent) {
-    this->controller = pController;
-}
-
 MainWindow::~MainWindow()
 {
     delete ui;
@@ -133,7 +129,7 @@ void MainWindow::setDebug(bool debug)
     setRunning(debug);
 
     updateTextEditMemory();
-    updateListViewRegisters();
+    updateRegisters();
 
     disassemblyWidget->highlightLine(debug ? 0 : -1);
 
@@ -239,22 +235,9 @@ void MainWindow::updateTextEditMemory()
     ui->textEditMemory->setPlainText(str);
 }
 
-void MainWindow::updateListViewRegisters()
+void MainWindow::updateRegisters()
 {
-    auto model = new QStringListModel(this);
-
-    QStringList list;
-
-    for (int i = 0; i < 32; ++i) {
-        std::string s = "R" + std::to_string(i) + ":  ";
-        s += generateBytes(4, ui->rbRegistersHex->isChecked());
-        QString str = QString::fromStdString(s);
-        list << str;
-    }
-
-    model->setStringList(list);
-    ui->listViewRegisters->setModel(model);
-    ui->listViewRegisters->setEditTriggers(QAbstractItemView::NoEditTriggers);
+    registersWidget_->setRegisters(controller->GetRegisters());
 }
 
 void MainWindow::updateMemorySpinBoxes()
@@ -341,6 +324,7 @@ void MainWindow::on_btnRun_clicked()
 
     setRunning(true);
     int exitCode = controller->RunProgram();
+    updateRegisters();
     QMessageBox msgBox;
     msgBox.setIcon(QMessageBox::Information);
     msgBox.setWindowTitle("Program Exit Status");
@@ -363,12 +347,13 @@ void MainWindow::on_btnDebug_clicked()
     }
 
     setDebug(true);
+    updateRegisters();
 }
 
 void MainWindow::on_btnStep_clicked()
 {
     updateTextEditMemory();
-    updateListViewRegisters();
+    updateRegisters();
 
     disassemblyWidget->highlightLine(disassemblyWidget->getHighlightedLine() + 1);
 
@@ -381,6 +366,7 @@ void MainWindow::on_btnStep_clicked()
 void MainWindow::on_btnTerminate_clicked()
 {
     setDebug(false);
+    updateRegisters();
 }
 
 void MainWindow::on_rbMemoryDec_clicked()
@@ -393,14 +379,4 @@ void MainWindow::on_rbMemoryHex_clicked()
 {
     updateMemoryHeader();
     updateTextEditMemory();
-}
-
-void MainWindow::on_rbRegistersDec_clicked()
-{
-    updateListViewRegisters();
-}
-
-void MainWindow::on_rbRegistersHex_clicked()
-{
-    updateListViewRegisters();
 }
