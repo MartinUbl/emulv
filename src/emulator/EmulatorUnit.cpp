@@ -118,16 +118,48 @@ namespace emulator {
         return result;
     }
 
+    uint64_t EmulatorUnit::GetPageStart_(uint64_t address) {
+        return address & 0xFFFFFFFFFFFFF000;
+    }
+
+    void EmulatorUnit::MapDeviceToPage_(modules::PeripheralDevice *device) {
+        uint64_t page_start = GetPageStart_(device->GetStartAddress());
+
+        auto entry = page_peripherals_.find(page_start);
+        if (entry != page_peripherals_.end()) {
+            entry->second.push_back(device);
+        }
+        else {
+            auto peripherals = std::vector<modules::PeripheralDevice*>();
+            peripherals.push_back(device);
+            page_peripherals_[page_start] = peripherals;
+        }
+    }
+
+    modules::PeripheralDevice *EmulatorUnit::GetRealDevice_(uint64_t address) {
+        uint64_t page_start = GetPageStart_(address);
+        auto page_peripherals = this->page_peripherals_[page_start];
+
+        for (auto p : page_peripherals) {
+            if (p->GetStartAddress() <= address && address <= p->GetEndAddress()) {
+                return p;
+            }
+        }
+        return nullptr;
+    }
+
     /**
      * Setups the required memory traps of peripheral devices on this machine instance.
      * PeripheralDevices must first be registered using the RegisterPeripherals() method.
      * @param machine The current emulated machine instance
      */
-    void EmulatorUnit::SetupMemoryTraps_(riscv::Machine<riscv::RISCV64> &machine) const {
+    void EmulatorUnit::SetupMemoryTraps_(riscv::Machine<riscv::RISCV64> &machine) {
         for (const auto &p: *peripheral_devices_) {
             //TODO: Remove print
             std::cout << "Setting up memory trap for device with name: " << p.first << std::endl;
+
             modules::PeripheralDevice *pDevice = p.second;
+            MapDeviceToPage_(pDevice);
 
             //Check if the address range isn't too big
             if ((pDevice->GetStartAddress() + RISCV_PAGE_SIZE) < pDevice->GetEndAddress()) {
@@ -141,13 +173,25 @@ namespace emulator {
                     riscv::Memory<riscv::RISCV64>::page_number(TRAP_PAGE));
 
             //Sets a callback on this trap page
-            trap_page.set_trap([pDevice](auto &page, uint32_t offset, int mode, int64_t value) {
+            trap_page.set_trap([pDevice, this](auto &page, uint32_t offset, int mode, int64_t value) {
                 //int mode --> a bitfield containing MODE and SIZE
                 //Page::trap_mode(mode) --> Extracts the MODE (read / write) from the mode bitfield's upper 4 bits
                 //Page::trap_size(mode) --> Extracts the SIZE from the mode bitfield's lower 12 bits
                 //SIZE --> in this context means the size of the read / write operation in bytes (4 bytes = 32bit processor / 8 bytes = 64bit processor)
                 //int64_t value --> is in case of write the value which is to be written to memory
                 //auto &page --> is the page object, on which this trap occurred
+
+                // Find the real device for which this callback was called for
+                uint64_t page_start = GetPageStart_(pDevice->GetStartAddress());
+                uint64_t real_address = page_start + offset;
+                modules::PeripheralDevice *real_device = GetRealDevice_(real_address);
+
+                if (!real_device) {
+                    return;
+                }
+
+                // Real offset relative to the devices start address
+                uint64_t real_offset = real_address - real_device->GetStartAddress();
 
                 const size_t size = riscv::Page::trap_size(mode);
 
@@ -157,7 +201,7 @@ namespace emulator {
 //                                  << "Offset: " << offset << std::endl << "Mode: " << mode << std::endl
 //                                  << "Value: " << value << std::endl << std::endl;
                         //TODO: Passing only offset, is this good enough?
-                        pDevice->WriteDoubleword(offset,value);
+                        real_device->WriteDoubleword(real_offset, value);
                         break;
                     case riscv::TRAP_READ:
 //                        std::cout << "TRAPPED READ" << std::endl << "Page size: " << size << std::endl
@@ -165,7 +209,7 @@ namespace emulator {
 //                                  << "Value: " << value << std::endl << std::endl;
 
                         //TODO: Passing only offset, is this good enough?
-                        uint64_t mmio_value = pDevice->ReadDoubleword(offset);
+                        uint64_t mmio_value = real_device->ReadDoubleword(real_offset);
 
                         page.page().template aligned_write<uint64_t>(offset, mmio_value);
                         break;

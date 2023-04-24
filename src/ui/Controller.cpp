@@ -10,7 +10,7 @@
 
 int Controller::ShowWindow() {
     QApplication a(argc_, argv_);
-    MainWindow w(this);
+    MainWindow w(nullptr, this);
 
     //TODO: Remove
     emitter_.On("data", [&](auto res) {
@@ -34,7 +34,8 @@ Controller::Controller(int argc, char **argv) {
 }
 
 void Controller::CreatePeripherals_() {
-    ActivePeripherals_["EXAMPLE"] = new modules::ExampleDevice(emitter_, 0xF0000000, 0xF0000FFF);
+    ActivePeripherals_["PORT_A"] = new modules::GPIO_Port(emitter_, 0x40010800, 0x40010BFF);
+    ActivePeripherals_["PORT_B"] = new modules::GPIO_Port(emitter_, 0x40010C00, 0x40010FFF);
 }
 
 void Controller::RegisterPeripherals_() {
@@ -72,4 +73,3 @@ void Controller::LoadFile(std::string file_path) {
 bool Controller::IsFileLoaded() {
     return !this->openedFile_.empty();
 }
-
