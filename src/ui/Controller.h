@@ -28,9 +28,11 @@ public:
 
     int ShowWindow();
     int RunProgram();
+    std::vector<std::string> GetDisassembly();
+    modules::PeripheralDevice* GetPeripheral(std::string name);
+    void SetPinStatus(std::string module, int pin, bool status);
     void LoadFile(std::string file_path);
     bool IsFileLoaded();
-    std::vector<std::string> GetDisassembly();
     std::vector<std::vector<uint8_t>> GetMemory(uint64_t from, uint64_t to);
     std::vector<std::tuple<std::string, uint32_t>> GetRegisters();
 

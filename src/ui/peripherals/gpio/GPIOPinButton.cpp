@@ -4,7 +4,9 @@
 
 #include "GPIOPinButton.h"
 
-GPIOPinButton::GPIOPinButton(QWidget *parent) : QToolButton(parent) {
+GPIOPinButton::GPIOPinButton(QWidget *parent, int id)
+    : QToolButton(parent)
+    , id_(id) {
     this->setFixedSize(25, 25);
     this->update_button();
     this->setIconSize(QSize(height() - 2, height() - 2));
@@ -28,12 +30,6 @@ GPIO_PinMode GPIOPinButton::mode() {
 
 bool GPIOPinButton::status() {
     return status_;
-}
-
-void GPIOPinButton::on_clicked() {
-    if (mode_ == GPIO_PinMode::kInput) {
-        setStatus(!status_);
-    }
 }
 
 void GPIOPinButton::update_button() {

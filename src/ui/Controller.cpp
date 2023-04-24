@@ -49,6 +49,14 @@ void Controller::RegisterPeripherals_() {
     emulatorUnit_->RegisterPeripherals(activePeripherals_);
 }
 
+modules::PeripheralDevice* Controller::GetPeripheral(std::string name) {
+    auto entry = ActivePeripherals_.find(name);
+    if (entry != ActivePeripherals_.end()) {
+        return entry->second;
+    }
+    return nullptr;
+}
+
 Controller::~Controller() {
     delete emulatorUnit_;
     //Delete peripheral objects
@@ -115,3 +123,12 @@ uint64_t Controller::GetMemoryEndAddress() {
 bool Controller::DebugContinue(const std::unordered_set<int64_t>& breakpointAddresses) {
     return emulatorUnit_->DebugContinue(breakpointAddresses);
 }
+void Controller::SetPinStatus(std::string module, int pin, bool status) {
+    auto port = dynamic_cast<modules::GPIO_Port*>(GetPeripheral(module));
+    if (port == nullptr) {
+        return;
+    }
+
+    port->Set_Pin_Level(pin, status ? modules::GPIO_Pin_Level::HIGH : modules::GPIO_Pin_Level::LOW);
+}
+

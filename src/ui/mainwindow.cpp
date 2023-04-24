@@ -79,13 +79,9 @@ MainWindow::MainWindow(QWidget *parent, Controller *controller)
     auto *gpioWidget = new GPIOWidget(this);
     auto *uartWidget = new UARTWidget(this);
 
-    gpioWidget->addPort(new GPIOPortWidget(gpioWidget, "PORT_A", {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15}));
-    gpioWidget->addPort(new GPIOPortWidget(gpioWidget, "PORT_B", {0, 1,    3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15}));
-    gpioWidget->addPort(new GPIOPortWidget(gpioWidget, "PORT_C", {13, 14, 15}));
-
-    gpioWidget->setPinMode("PORT_A", 4, GPIO_PinMode::kOutput);
-    gpioWidget->setPinMode("PORT_B", 0, GPIO_PinMode::kOutput);
-    gpioWidget->setPinStatus("PORT_B", 0, true);
+    gpioWidget->addPort(new GPIOPortWidget(gpioWidget, controller, "PORT_A", {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15}));
+    gpioWidget->addPort(new GPIOPortWidget(gpioWidget, controller, "PORT_B", {0, 1,    3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15}));
+    gpioWidget->addPort(new GPIOPortWidget(gpioWidget, controller, "PORT_C", {13, 14, 15}));
 
     peripheralsTabWidget_->addPeripheralWidget(gpioWidget, "GPIO", true);
     peripheralsTabWidget_->addPeripheralWidget(uartWidget, "UART");
