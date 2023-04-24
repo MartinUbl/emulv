@@ -248,10 +248,10 @@ void MainWindow::updateMemorySpinBoxes()
 
 void MainWindow::updateToolBarButtons()
 {
-    ui->btnRun->setEnabled(!running);
+    ui->btnRun->setEnabled(!running && controller->IsFileLoaded());
     ui->btnRun->setVisible(!running);
 
-    ui->btnDebug->setEnabled(!running);
+    ui->btnDebug->setEnabled(!running && controller->IsFileLoaded());
     ui->btnDebug->setVisible(!running);
 
     ui->btnStep->setEnabled(debug);
@@ -274,6 +274,7 @@ void MainWindow::on_action_Open_triggered()
     }
     controller->LoadFile(fileName.toStdString());
     disassemblyWidget->addInstructionsList(controller->GetDisassembly());
+    updateToolBarButtons();
 }
 
 void MainWindow::on_action_About_RISCVEmulator_triggered()
@@ -312,40 +313,15 @@ void MainWindow::on_btnSelectMemory_clicked()
 
 void MainWindow::on_btnRun_clicked()
 {
-    if(!controller->IsFileLoaded()) {
-        QMessageBox msgBox;
-        msgBox.setIcon(QMessageBox::Warning);
-        msgBox.setWindowTitle("Error");
-        QString msg = QString::fromStdString("Cannot run program because no file has been loaded. Please use the \"File -> Open\" button in order to proceed.");
-        msgBox.setText(msg);
-        msgBox.exec();
-        return;
-    }
-
     setRunning(true);
     int exitCode = controller->RunProgram();
     updateRegisters();
-    QMessageBox msgBox;
-    msgBox.setIcon(QMessageBox::Information);
-    msgBox.setWindowTitle("Program Exit Status");
-    QString msg = QString::fromStdString("Program has exited with code: " + std::to_string(exitCode));
-    msgBox.setText(msg);
-    msgBox.exec();
     on_btnTerminate_clicked();
+    ui->statusbar->showMessage(QString::fromStdString("Program has exited with code: " + std::to_string(exitCode)));
 }
 
 void MainWindow::on_btnDebug_clicked()
 {
-    if(!controller->IsFileLoaded()) {
-        QMessageBox msgBox;
-        msgBox.setIcon(QMessageBox::Warning);
-        msgBox.setWindowTitle("Error");
-        QString msg = QString::fromStdString("Cannot debug program because no file has been loaded. Please use the \"File -> Open\" button in order to proceed.");
-        msgBox.setText(msg);
-        msgBox.exec();
-        return;
-    }
-
     setDebug(true);
     updateRegisters();
 }
