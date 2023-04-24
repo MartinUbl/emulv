@@ -9,6 +9,7 @@
 #include "../emulator/EmulatorUnit.h"
 #include "../modules/PeripheralDevice.h"
 #include "../modules/ExampleDevice.h"
+#include "../modules/gpio.h"
 
 class Controller {
 private:
