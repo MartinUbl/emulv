@@ -216,6 +216,10 @@ void MemoryWidget::updateMemoryButtons_() {
     btn_restore_->setEnabled(enabled);
 }
 
+char MemoryWidget::formatChar_(uint8_t byte) {
+    return byte >= 32 && byte < 128 ? (char)byte : '.';
+}
+
 std::string MemoryWidget::formatByte_(int byte) {
     std::stringstream ssByte;
 
@@ -239,21 +243,33 @@ std::string MemoryWidget::formatHeader_() {
     ss << std::setw(kAddressWidth) << std::setfill(' ') << "";
 
     if (rb_dec_->isChecked()) {
-        return ss.str() + "  00  01  02  03  04  05  06  07  08  09  0A  0B  0C  0D  0E  0F    ";
+        ss << "  00  01  02  03  04  05  06  07  08  09  0A  0B  0C  0D  0E  0F    ";
     }
-    return ss.str() + " 00 01 02 03 04 05 06 07 08 09 0A 0B 0C 0D 0E 0F    ";
+    else {
+        ss << " 00 01 02 03 04 05 06 07 08 09 0A 0B 0C 0D 0E 0F    ";
+    }
+
+    // Right padding for ascii column
+    ss << "0123456789ABCDEF  ";
+
+    return ss.str();
 }
 
 std::string MemoryWidget::formatLine_(int address, const std::vector<uint8_t>& bytes) {
-    std::stringstream ss_address;
-    std::stringstream ss_bytes;
+    std::stringstream ss;
 
-    ss_address << std::uppercase << std::hex << std::setw(kAddressWidth - 1) << std::setfill('0') << address << '0';
-    ss_bytes << " ";
+    ss << std::uppercase << std::hex << std::setw(kAddressWidth - 1) << std::setfill('0') << address << "0 ";
 
     for (auto byte : bytes) {
-        ss_bytes << formatByte_(byte) << " ";
+        ss << formatByte_(byte) << " ";
     }
 
-    return ss_address.str() + ss_bytes.str();
+    ss << "   ";
+
+    for (auto byte : bytes) {
+        ss << formatChar_(byte);
+    }
+
+
+    return ss.str();
 }

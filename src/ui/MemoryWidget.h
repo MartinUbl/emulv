@@ -48,6 +48,7 @@ private:
     void updateMemorySpinBoxes_();
     void updateMemoryButtons_();
     void updateScroll_(int value);
+    static char formatChar_(uint8_t byte);
     std::string formatByte_(int byte);
     std::string formatHeader_();
     std::string formatLine_(int address, const std::vector<uint8_t>& bytes);

@@ -87,7 +87,11 @@ std::vector<std::vector<uint8_t>> Controller::GetMemory(const uint64_t from, con
 
     // TODO: remove
     for (uint64_t i = from; i <= to; ++i) {
-        memory.push_back({0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0});
+        std::vector<uint8_t> v;
+        for (int j = 0; j < 16; ++j) {
+            v.push_back(rand() % 255);
+        }
+        memory.push_back(v);
     }
     return memory;
 }
