@@ -69,6 +69,8 @@ MainWindow::MainWindow(QWidget *parent, Controller *controller)
 
     // Initialize ui for registers widget
     ui->registersWidget->setLayout(new QVBoxLayout(ui->registersWidget));
+    ui->registersWidget->layout()->setSpacing(0);
+    ui->registersWidget->layout()->setContentsMargins(0, 0, 6, 0);
     ui->registersWidget->layout()->addWidget(registersWidget_);
 
     // Initialize ui for peripheral widgets
