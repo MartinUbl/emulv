@@ -239,9 +239,9 @@ std::string MemoryWidget::formatHeader_() {
     ss << std::setw(kAddressWidth) << std::setfill(' ') << "";
 
     if (rb_dec_->isChecked()) {
-        return ss.str() + "  00  01  02  03  04  05  06  07  08  09  0A  0B  0C  0D  0E  0F ";
+        return ss.str() + "  00  01  02  03  04  05  06  07  08  09  0A  0B  0C  0D  0E  0F    ";
     }
-    return ss.str() + " 00 01 02 03 04 05 06 07 08 09 0A 0B 0C 0D 0E 0F ";
+    return ss.str() + " 00 01 02 03 04 05 06 07 08 09 0A 0B 0C 0D 0E 0F    ";
 }
 
 std::string MemoryWidget::formatLine_(int address, const std::vector<uint8_t>& bytes) {
