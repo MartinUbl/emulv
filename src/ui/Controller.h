@@ -31,7 +31,7 @@ public:
     bool IsFileLoaded();
     std::vector<std::string> GetDisassembly();
     std::vector<std::vector<uint8_t>> GetMemory(uint64_t from, uint64_t to);
-    std::unordered_map<std::string, uint32_t> GetRegisters();
+    std::vector<std::tuple<std::string, uint32_t>> GetRegisters();
 };
 
 

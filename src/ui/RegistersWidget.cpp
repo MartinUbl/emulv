@@ -44,11 +44,11 @@ RegistersWidget::RegistersWidget(QWidget *parent)
     connect(rb_dec_, SIGNAL(clicked(bool)), this, SLOT(rb_dec_clicked_()));
 }
 
-void RegistersWidget::setRegisters(const std::unordered_map<std::string, uint32_t> &registers) {
+void RegistersWidget::setRegisters(const std::vector<std::tuple<std::string, uint32_t>> &registers) {
     registers_.clear();
 
     for (const auto &reg: registers) {
-        registers_[reg.first] = reg.second;
+        registers_.push_back(reg);
     }
 
     updateRegisters_();
@@ -64,13 +64,14 @@ void RegistersWidget::rb_dec_clicked_() {
 
 void RegistersWidget::updateRegisters_() {
     std::stringstream ss;
+
     for (const auto &reg : registers_) {
         std::stringstream ssLabel;
-        ssLabel << std::setw(4) << std::setfill(' ') << reg.first;
-        ss << ssLabel.str() << "   " << formatValueBytes_(reg.second);
+        ssLabel << std::setw(4) << std::setfill(' ') << std::get<0>(reg);
+        ss << ssLabel.str() << "   " << formatValueBytes_(std::get<1>(reg));
 
         if (rb_dec_->isChecked()) {
-            ss << "(" << reg.second << ')';
+            ss << "(" << std::get<1>(reg) << ')';
         }
         ss << '\n';
     }

@@ -13,14 +13,14 @@ class RegistersWidget : public QFrame {
     Q_OBJECT
 public:
     explicit RegistersWidget(QWidget *parent = nullptr);
-    void setRegisters(const std::unordered_map<std::string, uint32_t> &registers);
+    void setRegisters(const std::vector<std::tuple<std::string, uint32_t>> &registers);
 
 private slots:
     void rb_hex_clicked_();
     void rb_dec_clicked_();
 
 private:
-    std::unordered_map<std::string, uint32_t> registers_;
+    std::vector<std::tuple<std::string, uint32_t>> registers_;
     QRadioButton *rb_hex_, *rb_dec_;
     QTextEdit *main_text_edit_;
 

@@ -92,21 +92,21 @@ std::vector<std::vector<uint8_t>> Controller::GetMemory(const uint64_t from, con
     return memory;
 }
 
-std::unordered_map<std::string, uint32_t> Controller::GetRegisters() {
+std::vector<std::tuple<std::string, uint32_t>> Controller::GetRegisters() {
     // TODO: get registers from EmulatorUnit
-    std::unordered_map<std::string, uint32_t> registers;
+    std::vector<std::tuple<std::string, uint32_t>> registers;
 
     // TODO: remove
-    registers["x0"] = 0;
-    registers["x1"] = 0x5f880900;
-    registers["x2"] = 0x5f880900;
-    registers["x3"] = 0x5f880900;
-    registers["x4"] = 0x5f880900;
-    registers["x5"] = 0x5f880900;
-    registers["x6"] = 0x5f880900;
-    registers["x20"] = 0x5f880900;
-    registers["x31"] = 0x5f880900;
-    registers["pc"] = 0x00037a40;
+    registers.emplace_back("x0", 0);
+    registers.emplace_back("x1", 0x5f880900);
+    registers.emplace_back("x2", 0x5f880900);
+    registers.emplace_back("x3", 0x5f880900);
+    registers.emplace_back("x4", 0x5f880900);
+    registers.emplace_back("x5", 0x5f880900);
+    registers.emplace_back("x6", 0x5f880900);
+    registers.emplace_back("x20", 0x5f880900);
+    registers.emplace_back("x31", 0x5f880900);
+    registers.emplace_back("pc", 0x00037a40);
 
     return registers;
 }

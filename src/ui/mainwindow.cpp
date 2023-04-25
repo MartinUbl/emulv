@@ -4,11 +4,9 @@
 #include "peripherals/gpio/GPIOPortWidget.h"
 
 #include <QAction>
-#include <QMessageBox>
 #include <QStringListModel>
 
 #include <sstream>
-#include <iomanip>
 
 MainWindow::MainWindow(QWidget *parent, Controller *controller)
 : QMainWindow(parent)
@@ -57,6 +55,7 @@ MainWindow::MainWindow(QWidget *parent, Controller *controller)
     ui->registersWidget->layout()->setContentsMargins(0, 0, 6, 0);
     ui->registersWidget->layout()->addWidget(registersWidget_);
 
+    // Initialize ui for memory widget
     ui->memoryWidget->setLayout(new QVBoxLayout(ui->memoryWidget));
     ui->memoryWidget->layout()->setSpacing(0);
     ui->memoryWidget->layout()->setContentsMargins(0, 0, 0, 0);
@@ -76,8 +75,8 @@ MainWindow::MainWindow(QWidget *parent, Controller *controller)
     ui->splitterMain->setStretchFactor(1, 2);
 
     // Following code is only for ui testing purposes and will eventually be removed
-    GPIOWidget *gpioWidget = new GPIOWidget(this);
-    UARTWidget *uartWidget = new UARTWidget(this);
+    auto *gpioWidget = new GPIOWidget(this);
+    auto *uartWidget = new UARTWidget(this);
 
     gpioWidget->addPort(new GPIOPortWidget(gpioWidget, "PORT_A", {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15}));
     gpioWidget->addPort(new GPIOPortWidget(gpioWidget, "PORT_B", {0, 1,    3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15}));
