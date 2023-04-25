@@ -221,7 +221,7 @@ void MemoryWidget::updateMemoryButtons_() {
 }
 
 char MemoryWidget::formatChar_(uint8_t byte) {
-    return byte >= 32 && byte < 128 ? (char)byte : '.';
+    return byte >= 32 && byte < 127 ? (char)byte : '.';
 }
 
 std::string MemoryWidget::formatByte_(int byte) {
