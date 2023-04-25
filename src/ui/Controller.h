@@ -30,6 +30,7 @@ public:
     void LoadFile(std::string file_path);
     bool IsFileLoaded();
     std::vector<std::string> GetDisassembly();
+    std::vector<std::vector<uint8_t>> GetMemory(uint64_t from, uint64_t to);
     std::unordered_map<std::string, uint32_t> GetRegisters();
 };
 

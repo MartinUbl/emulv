@@ -81,6 +81,17 @@ bool Controller::IsFileLoaded() {
     return !this->openedFile_.empty();
 }
 
+std::vector<std::vector<uint8_t>> Controller::GetMemory(const uint64_t from, const uint64_t to) {
+    // TODO: get memory from EmulatorUnit
+    std::vector<std::vector<uint8_t>> memory;
+
+    // TODO: remove
+    for (uint64_t i = from; i <= to; ++i) {
+        memory.push_back({0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0});
+    }
+    return memory;
+}
+
 std::unordered_map<std::string, uint32_t> Controller::GetRegisters() {
     // TODO: get registers from EmulatorUnit
     std::unordered_map<std::string, uint32_t> registers;
@@ -99,4 +110,3 @@ std::unordered_map<std::string, uint32_t> Controller::GetRegisters() {
 
     return registers;
 }
-
