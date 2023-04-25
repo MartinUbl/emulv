@@ -44,6 +44,7 @@ private:
     int memory_from_, memory_to_;
     std::vector<std::vector<uint8_t>> memory_;
 
+    void updateMemory_();
     void updateMemorySpinBoxes_();
     void updateMemoryButtons_();
     void updateScroll_(int value);

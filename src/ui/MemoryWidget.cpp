@@ -136,33 +136,22 @@ void MemoryWidget::setAddressRangeLimit(const int min, const int max) {
     updateMemoryButtons_();
 }
 
+void MemoryWidget::updateMemory() {
+    memory_ = controller_->GetMemory(memory_from_, memory_to_);
+    updateMemory_();
+}
+
 void MemoryWidget::clear() {
     memory_.clear();
     te_memory_->clear();
 }
 
-void MemoryWidget::updateMemory() {
-    memory_ = controller_->GetMemory(memory_from_, memory_to_);
-
-    std::stringstream ss;
-
-    int address = memory_from_;
-
-    for (const auto& bytes : memory_) {
-        ss << formatLine_(address, bytes) << '\n';
-        ++address;
-    }
-
-    te_header_->setText(QString::fromStdString(formatHeader_()));
-    te_memory_->setText(QString::fromStdString(ss.str()));
-}
-
 void MemoryWidget::rb_hex_clicked_() {
-    updateMemory();
+    updateMemory_();
 }
 
 void MemoryWidget::rb_dec_clicked_() {
-    updateMemory();
+    updateMemory_();
 }
 
 void MemoryWidget::sp_memory_from_changed_() {
@@ -201,6 +190,20 @@ void MemoryWidget::updateScroll_(int value) {
     te_memory_->horizontalScrollBar()->setValue(value);
 }
 
+void MemoryWidget::updateMemory_() {
+    std::stringstream ss;
+
+    int address = memory_from_;
+
+    for (const auto& bytes : memory_) {
+        ss << formatLine_(address, bytes) << '\n';
+        ++address;
+    }
+
+    te_header_->setText(QString::fromStdString(formatHeader_()));
+    te_memory_->setText(QString::fromStdString(ss.str()));
+}
+
 void MemoryWidget::updateMemorySpinBoxes_() {
     sp_memory_from_->setValue(memory_from_);
     sp_memory_to_->setValue(memory_to_);
@@ -228,6 +231,10 @@ std::string MemoryWidget::formatByte_(int byte) {
 }
 
 std::string MemoryWidget::formatHeader_() {
+    if (memory_.empty()) {
+        return "";
+    }
+
     std::stringstream ss;
     ss << std::setw(kAddressWidth) << std::setfill(' ') << "";
 
