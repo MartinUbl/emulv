@@ -7,6 +7,7 @@
 #include <QScrollBar>
 #include <QLabel>
 #include <iomanip>
+#include <QGroupBox>
 #include "MemoryWidget.h"
 
 MemoryWidget::MemoryWidget(QWidget *parent, Controller *controller)
@@ -59,12 +60,10 @@ MemoryWidget::MemoryWidget(QWidget *parent, Controller *controller)
     top_layout->addWidget(btn_restore_);
 
     // Initialize bottom widget (Memory header, memory contents)
-    auto *bot_widget = new QFrame(this);
+    auto *bot_widget = new QGroupBox(this);
     auto *bot_layout = new QVBoxLayout(bot_widget);
     bot_layout->setSpacing(0);
     bot_layout->setContentsMargins(0, 0, 0, 0);
-
-    bot_widget->setFrameShape(Box);
 
     te_header_ = new QTextEdit(bot_widget);
     te_memory_ = new QTextEdit(bot_widget);
@@ -74,6 +73,7 @@ MemoryWidget::MemoryWidget(QWidget *parent, Controller *controller)
     te_header_->setFont(font);
     te_memory_->setFont(font);
 
+    te_header_->setStyleSheet("background-color: rgba(100, 100, 100, 100);");
     te_header_->setFrameShape(NoFrame);
     te_header_->setReadOnly(true);
     te_header_->document()->setMaximumBlockCount(1);
@@ -92,7 +92,7 @@ MemoryWidget::MemoryWidget(QWidget *parent, Controller *controller)
 
     // Add top and bottom widgets to main layout
     setLayout(new QVBoxLayout(this));
-    layout()->setSpacing(0);
+    layout()->setSpacing(3);
     layout()->setContentsMargins(0, 0, 0, 0);
     layout()->addWidget(top_widget);
     layout()->addWidget(bot_widget);
@@ -200,8 +200,12 @@ void MemoryWidget::updateMemory_() {
         ++address;
     }
 
+    int scroll = te_memory_->verticalScrollBar()->value();
+
     te_header_->setText(QString::fromStdString(formatHeader_()));
     te_memory_->setText(QString::fromStdString(ss.str()));
+
+    te_memory_->verticalScrollBar()->setValue(scroll);
 }
 
 void MemoryWidget::updateMemorySpinBoxes_() {
@@ -243,14 +247,14 @@ std::string MemoryWidget::formatHeader_() {
     ss << std::setw(kAddressWidth) << std::setfill(' ') << "";
 
     if (rb_dec_->isChecked()) {
-        ss << "  00  01  02  03  04  05  06  07  08  09  0A  0B  0C  0D  0E  0F    ";
+        ss << "  00  01  02  03  04  05  06  07  08  09  0A  0B  0C  0D  0E  0F";
     }
     else {
-        ss << " 00 01 02 03 04 05 06 07 08 09 0A 0B 0C 0D 0E 0F    ";
+        ss << " 00 01 02 03 04 05 06 07 08 09 0A 0B 0C 0D 0E 0F";
     }
 
-    // Right padding for ascii column
-    ss << "0123456789ABCDEF  ";
+    // ASCII column header
+    ss << "    0123456789ABCDEF  ";
 
     return ss.str();
 }
