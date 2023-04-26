@@ -6,6 +6,7 @@
 #include "Controller.h"
 #include "mainwindow.h"
 #include "../utils/events/EventEmitter.h"
+#include "../utils/events/SimpleEvent.h"
 #include <QApplication>
 
 int Controller::ShowWindow() {
@@ -13,10 +14,16 @@ int Controller::ShowWindow() {
     MainWindow w(nullptr, this);
 
     //TODO: Remove
-    emitter_.On("data", [&](auto res) {
-        std::cout << res << std::endl;
+    emitter_.On("SimpleEventHello1", [](AbstractEvent *res) {
+        SimpleEvent *simpleEvent = dynamic_cast< SimpleEvent *>(res);
+
+        std::cout << "An event has been captured: " << std::endl << "Event Name: SimpleEventHello1" << std::endl
+                  << "The data of this object is: " << simpleEvent->getData() << std::endl;
+
+        //Don't forget to free the event object after using it
+        delete res;
     });
-    emitter_.Emit("data", "Hello world");
+    emitter_.Emit("SimpleEventHello1",new SimpleEvent("Hello world. SIMPLE EVENT DATA."));
 
     w.show();
     return a.exec();

@@ -62,7 +62,7 @@ FetchContent_MakeAvailable(json-lib)
 
 add_library(emulator ./emulator/EmulatorUnit.cpp)
 add_library(modules ./modules/PeripheralDevice.h modules/ExampleDevice.cpp modules/ExampleDevice.h)
-add_library(events utils/events/EventEmitter.cpp utils/events/EventEmitter.h)
+add_library(events utils/events/EventEmitter.cpp utils/events/EventEmitter.h utils/events/AbstractEvent.h utils/events/SimpleEvent.cpp utils/events/SimpleEvent.h)
 
 #################################################################################
 #Set up project target executable file
