@@ -5,6 +5,7 @@
 #include <sstream>
 #include <iomanip>
 #include <QHBoxLayout>
+#include <QScrollBar>
 #include <QLabel>
 
 #include "RegistersWidget.h"
@@ -17,6 +18,7 @@ RegistersWidget::RegistersWidget(QWidget *parent)
     font.setStyleHint(QFont::TypeWriter);
     main_text_edit_->setFont(font);
 
+    main_text_edit_->setReadOnly(true);
     main_text_edit_->setWordWrapMode(QTextOption::NoWrap);
 
     auto top_widget = new QWidget(this);
@@ -66,17 +68,23 @@ void RegistersWidget::updateRegisters_() {
     std::stringstream ss;
 
     for (const auto &reg : registers_) {
-        std::stringstream ssLabel;
-        ssLabel << std::setw(4) << std::setfill(' ') << std::get<0>(reg);
-        ss << ssLabel.str() << "   " << formatValueBytes_(std::get<1>(reg));
+        std::string label = std::get<0>(reg);
+        uint32_t value = std::get<1>(reg);
+
+        ss << std::setw(kRegisterLabelWidth) << std::setfill(' ') << label;
+        ss << "   " << formatValueBytes_(value);
 
         if (rb_dec_->isChecked()) {
-            ss << "(" << std::get<1>(reg) << ')';
+            ss << "(" << value << ')';
         }
         ss << '\n';
     }
 
+    int scroll = main_text_edit_->verticalScrollBar()->value();
+
     main_text_edit_->setText(QString::fromStdString(ss.str()));
+
+    main_text_edit_->verticalScrollBar()->setValue(scroll);
 }
 
 std::string RegistersWidget::formatByte_(int byte) {
