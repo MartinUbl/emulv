@@ -7,6 +7,7 @@
 
 
 #include <stdexcept>
+#include <limits>
 #include "gpio.h"
 
 

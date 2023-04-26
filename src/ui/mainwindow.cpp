@@ -4,29 +4,19 @@
 #include "peripherals/gpio/GPIOPortWidget.h"
 
 #include <QAction>
-#include <QMessageBox>
 #include <QStringListModel>
 
 #include <sstream>
-#include <iomanip>
 
-MainWindow::MainWindow(QWidget *parent)
-    : QMainWindow(parent)
-    , ui(new Ui::MainWindow)
-    , disassemblyWidget(new DisassemblyWidget(this))
-    , peripheralsTabWidget_(new PeripheralsTabWidget(this))
-{
+MainWindow::MainWindow(QWidget *parent, Controller *controller)
+: QMainWindow(parent)
+, ui(new Ui::MainWindow)
+, controller(controller)
+, disassemblyWidget(new DisassemblyWidget(this))
+, registersWidget_(new RegistersWidget(this))
+, memoryWidget_(new MemoryWidget(this, controller))
+, peripheralsTabWidget_(new PeripheralsTabWidget(this)) {
     ui->setupUi(this);
-
-    // Initialize monospace fonts
-    QFont font("Monospace");
-    font.setStyleHint(QFont::TypeWriter);
-    ui->listViewRegisters->setFont(font);
-    ui->lineEditMemoryHeader->setFont(font);
-    ui->textEditMemory->setFont(font);
-    ui->spinBoxMemoryFrom->setFont(font);
-    ui->spinBoxMemoryTo->setFont(font);
-    ui->textEditMemory->setFont(font);
 
     // Initialize toolbar buttons
     ui->btnTerminate->setIcon(QIcon(":img/terminate.png"));
@@ -49,23 +39,27 @@ MainWindow::MainWindow(QWidget *parent)
     ui->btnDebug->setIconSize(QSize(16, 16));
     ui->btnStep->setIconSize(QSize(16, 16));
 
-    // Initialize memory button icons
-    ui->btnSelectMemory->setIconSize(QSize(14, 14));
-    ui->btnRestoreMemory->setIconSize(QSize(14, 14));
-
-    ui->btnSelectMemory->setIcon(QIcon(":img/search.png"));
-    ui->btnRestoreMemory->setIcon(QIcon(":img/restore.png"));
-
     // Make running and debug indicator lines invisible
     ui->runningIndicator->setVisible(false);
     ui->debugIndicator->setVisible(false);
 
-    // Initialize spin boxes and toolbar button states
-    updateMemorySpinBoxes();
+    // Initialize toolbar button states
     updateToolBarButtons();
 
     // Initialize ui for disassembly widget
     ui->disassemblyLayout->addWidget(disassemblyWidget);
+
+    // Initialize ui for registers widget
+    ui->registersWidget->setLayout(new QVBoxLayout(ui->registersWidget));
+    ui->registersWidget->layout()->setSpacing(0);
+    ui->registersWidget->layout()->setContentsMargins(0, 0, 6, 0);
+    ui->registersWidget->layout()->addWidget(registersWidget_);
+
+    // Initialize ui for memory widget
+    ui->memoryWidget->setLayout(new QVBoxLayout(ui->memoryWidget));
+    ui->memoryWidget->layout()->setSpacing(0);
+    ui->memoryWidget->layout()->setContentsMargins(0, 0, 0, 0);
+    ui->memoryWidget->layout()->addWidget(memoryWidget_);
 
     // Initialize ui for peripheral widgets
     ui->peripheralWidget->layout()->addWidget(peripheralsTabWidget_);
@@ -81,13 +75,8 @@ MainWindow::MainWindow(QWidget *parent)
     ui->splitterMain->setStretchFactor(1, 2);
 
     // Following code is only for ui testing purposes and will eventually be removed
-    for (int i = 0; i < 100; i++)
-    {
-        disassemblyWidget->addInstruction("00000", " ");
-    }
-
-    GPIOWidget *gpioWidget = new GPIOWidget(this);
-    UARTWidget *uartWidget = new UARTWidget(this);
+    auto *gpioWidget = new GPIOWidget(this);
+    auto *uartWidget = new UARTWidget(this);
 
     gpioWidget->addPort(new GPIOPortWidget(gpioWidget, "PORT_A", {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15}));
     gpioWidget->addPort(new GPIOPortWidget(gpioWidget, "PORT_B", {0, 1,    3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15}));
@@ -99,14 +88,8 @@ MainWindow::MainWindow(QWidget *parent)
 
     peripheralsTabWidget_->addPeripheralWidget(gpioWidget, "GPIO", true);
     peripheralsTabWidget_->addPeripheralWidget(uartWidget, "UART");
-}
 
-MainWindow::MainWindow(Controller *pController) : MainWindow(){
-    this->controller = pController;
-}
-
-MainWindow::MainWindow(QWidget *parent, Controller *pController) : MainWindow(parent) {
-    this->controller = pController;
+    memoryWidget_->setAddressRangeLimit(0, 0xfff);
 }
 
 MainWindow::~MainWindow()
@@ -132,8 +115,8 @@ void MainWindow::setDebug(bool debug)
     this->debug = debug;
     setRunning(debug);
 
-    updateTextEditMemory();
-    updateListViewRegisters();
+    updateMemory();
+    updateRegisters();
 
     disassemblyWidget->highlightLine(debug ? 0 : -1);
 
@@ -144,36 +127,6 @@ void MainWindow::setDebug(bool debug)
 
     ui->debugIndicator->setVisible(debug);
     ui->statusbar->showMessage(debug ? "Running in debug mode ..." : "");
-}
-
-std::string MainWindow::generateByte(bool hex)
-{
-    std::stringstream ssByte;
-
-    if (hex)
-    {
-        ssByte << std::uppercase << std::hex << std::setw(2);
-    }
-    else
-    {
-        ssByte << std::setw(3);
-    }
-
-    ssByte << std::setfill('0') << (rand() % 256);
-
-    return ssByte.str();
-}
-
-std::string MainWindow::generateBytes(int count, bool hex)
-{
-    std::string s = "";
-
-    for (int i = 0; i < count; ++i)
-    {
-        s += " " + generateByte(hex);
-    }
-
-    return s;
 }
 
 void MainWindow::updateMemoryWidgetEnabled()
@@ -198,77 +151,20 @@ void MainWindow::updateRegistersWidgetEnabled()
     ui->registersWidget->setEnabled(true);
 }
 
-void MainWindow::updateMemoryButtons()
-{
-    bool enabled = ui->spinBoxMemoryFrom->value() != this->memoryFrom ||
-                   ui->spinBoxMemoryTo->value() != this->memoryTo;
-
-    ui->btnSelectMemory->setEnabled(enabled);
-    ui->btnRestoreMemory->setEnabled(enabled);
+void MainWindow::updateRegisters() {
+    registersWidget_->setRegisters(controller->GetRegisters());
 }
 
-void MainWindow::updateMemoryHeader()
-{
-    if (ui->rbMemoryDec->isChecked())
-    {
-        ui->lineEditMemoryHeader->setText("          00  01  02  03  04  05  06  07  08  09  0A  0B  0C  0D  0E  0F");
-        ui->textEditMemory->setMinimumWidth(600);
-    }
-    else
-    {
-        ui->lineEditMemoryHeader->setText("         00 01 02 03 04 05 06 07 08 09 0A 0B 0C 0D 0E 0F");
-        ui->textEditMemory->setMinimumWidth(480);
-    }
-}
-
-void MainWindow::updateTextEditMemory()
-{
-    std::string s = "";
-
-    for (int i = this->memoryFrom; i <= this->memoryTo; ++i)
-    {
-        std::stringstream ss;
-        ss << std::uppercase << std::hex << std::setw(7) << std::setfill('0') << i;
-
-        s += ss.str() + "0";
-        s += generateBytes(16, ui->rbMemoryHex->isChecked());
-        s += "\n";
-    }
-
-    QString str = QString::fromStdString(s);
-    ui->textEditMemory->setPlainText(str);
-}
-
-void MainWindow::updateListViewRegisters()
-{
-    auto model = new QStringListModel(this);
-
-    QStringList list;
-
-    for (int i = 0; i < 32; ++i) {
-        std::string s = "R" + std::to_string(i) + ":  ";
-        s += generateBytes(4, ui->rbRegistersHex->isChecked());
-        QString str = QString::fromStdString(s);
-        list << str;
-    }
-
-    model->setStringList(list);
-    ui->listViewRegisters->setModel(model);
-    ui->listViewRegisters->setEditTriggers(QAbstractItemView::NoEditTriggers);
-}
-
-void MainWindow::updateMemorySpinBoxes()
-{
-    ui->spinBoxMemoryFrom->setValue(this->memoryFrom);
-    ui->spinBoxMemoryTo->setValue(this->memoryTo);
+void MainWindow::updateMemory() {
+    memoryWidget_->updateMemory();
 }
 
 void MainWindow::updateToolBarButtons()
 {
-    ui->btnRun->setEnabled(!running);
+    ui->btnRun->setEnabled(!running && controller->IsFileLoaded());
     ui->btnRun->setVisible(!running);
 
-    ui->btnDebug->setEnabled(!running);
+    ui->btnDebug->setEnabled(!running && controller->IsFileLoaded());
     ui->btnDebug->setVisible(!running);
 
     ui->btnStep->setEnabled(debug);
@@ -291,6 +187,7 @@ void MainWindow::on_action_Open_triggered()
     }
     controller->LoadFile(fileName.toStdString());
     disassemblyWidget->addInstructionsList(controller->GetDisassembly());
+    updateToolBarButtons();
 }
 
 void MainWindow::on_action_About_RISCVEmulator_triggered()
@@ -300,75 +197,25 @@ void MainWindow::on_action_About_RISCVEmulator_triggered()
     aboutWindow.exec();
 }
 
-void MainWindow::on_spinBoxMemoryFrom_valueChanged(int arg1)
-{
-    ui->spinBoxMemoryTo->setMinimum(ui->spinBoxMemoryFrom->value());
-    updateMemoryButtons();
-}
-
-void MainWindow::on_spinBoxMemoryTo_valueChanged(int arg1)
-{
-    ui->spinBoxMemoryFrom->setMaximum(ui->spinBoxMemoryTo->value());
-    updateMemoryButtons();
-}
-
-void MainWindow::on_btnRestoreMemory_clicked()
-{
-    updateMemorySpinBoxes();
-}
-
-void MainWindow::on_btnSelectMemory_clicked()
-{
-    this->memoryFrom = ui->spinBoxMemoryFrom->value();
-    this->memoryTo = ui->spinBoxMemoryTo->value();
-
-    updateMemorySpinBoxes();
-    updateMemoryButtons();
-    updateTextEditMemory();
-}
-
 void MainWindow::on_btnRun_clicked()
 {
-    if(!controller->IsFileLoaded()) {
-        QMessageBox msgBox;
-        msgBox.setIcon(QMessageBox::Warning);
-        msgBox.setWindowTitle("Error");
-        QString msg = QString::fromStdString("Cannot run program because no file has been loaded. Please use the \"File -> Open\" button in order to proceed.");
-        msgBox.setText(msg);
-        msgBox.exec();
-        return;
-    }
-
     setRunning(true);
     int exitCode = controller->RunProgram();
-    QMessageBox msgBox;
-    msgBox.setIcon(QMessageBox::Information);
-    msgBox.setWindowTitle("Program Exit Status");
-    QString msg = QString::fromStdString("Program has exited with code: " + std::to_string(exitCode));
-    msgBox.setText(msg);
-    msgBox.exec();
+    updateRegisters();
     on_btnTerminate_clicked();
+    ui->statusbar->showMessage(QString::fromStdString("Program has exited with code: " + std::to_string(exitCode)));
 }
 
 void MainWindow::on_btnDebug_clicked()
 {
-    if(!controller->IsFileLoaded()) {
-        QMessageBox msgBox;
-        msgBox.setIcon(QMessageBox::Warning);
-        msgBox.setWindowTitle("Error");
-        QString msg = QString::fromStdString("Cannot debug program because no file has been loaded. Please use the \"File -> Open\" button in order to proceed.");
-        msgBox.setText(msg);
-        msgBox.exec();
-        return;
-    }
-
     setDebug(true);
+    updateRegisters();
 }
 
 void MainWindow::on_btnStep_clicked()
 {
-    updateTextEditMemory();
-    updateListViewRegisters();
+    updateMemory();
+    updateRegisters();
 
     disassemblyWidget->highlightLine(disassemblyWidget->getHighlightedLine() + 1);
 
@@ -381,26 +228,5 @@ void MainWindow::on_btnStep_clicked()
 void MainWindow::on_btnTerminate_clicked()
 {
     setDebug(false);
-}
-
-void MainWindow::on_rbMemoryDec_clicked()
-{
-    updateMemoryHeader();
-    updateTextEditMemory();
-}
-
-void MainWindow::on_rbMemoryHex_clicked()
-{
-    updateMemoryHeader();
-    updateTextEditMemory();
-}
-
-void MainWindow::on_rbRegistersDec_clicked()
-{
-    updateListViewRegisters();
-}
-
-void MainWindow::on_rbRegistersHex_clicked()
-{
-    updateListViewRegisters();
+    updateRegisters();
 }

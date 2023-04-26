@@ -21,8 +21,6 @@ public:
     int getInstructionCount();
     void updateBreakpointWidget();
 
-signals:
-
 private slots:
     void onBreakpointScrollAreaScroll();
     void onAddressAreaScroll();
