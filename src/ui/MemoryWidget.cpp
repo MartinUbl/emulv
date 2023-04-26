@@ -254,7 +254,7 @@ std::string MemoryWidget::formatHeader_() {
     }
 
     // ASCII column header
-    ss << "    0123456789ABCDEF  ";
+    ss << "    0123456789ABCDEF   ";
 
     return ss.str();
 }

@@ -88,6 +88,8 @@ MainWindow::MainWindow(QWidget *parent, Controller *controller)
 
     peripheralsTabWidget_->addPeripheralWidget(gpioWidget, "GPIO", true);
     peripheralsTabWidget_->addPeripheralWidget(uartWidget, "UART");
+
+    memoryWidget_->setAddressRangeLimit(0, 0xfff);
 }
 
 MainWindow::~MainWindow()
