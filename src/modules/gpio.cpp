@@ -6,57 +6,60 @@
  */
 
 
+#include <stdexcept>
 #include "gpio.h"
 
 
 namespace modules {
 
     GPIO_Port::GPIO_Port(EventEmitter &emitter, uint64_t start_address, uint64_t end_address) :
-        PeripheralDevice(emitter, start_address, end_address)
-    {
-        Reg_CTL0 = std::bitset<kReg_Size> {kReg_CTL_RESET_VALUE};
-        Reg_CTL1 = std::bitset<kReg_Size> {kReg_CTL_RESET_VALUE};
+            PeripheralDevice(emitter, start_address, end_address) {
+        Reg_CTL0 = std::bitset<kReg_Size>{kReg_CTL_RESET_VALUE};
+        Reg_CTL1 = std::bitset<kReg_Size>{kReg_CTL_RESET_VALUE};
     }
 
     void GPIO_Port::WriteByte(uint64_t address, uint8_t value) {
-        // Not Implemented
+        WriteWord(address, value);
     }
 
     void GPIO_Port::WriteHalfword(uint64_t address, uint16_t value) {
-        // Not Implemented
+        WriteWord(address, value);
     }
 
     void GPIO_Port::WriteDoubleword(uint64_t address, uint64_t value) {
-        // Not Implemented
+        if (value > std::numeric_limits<uint32_t>::max())
+            throw std::runtime_error("GPIO: Cannot write 64 bit value! Only writes up to 32 bits are supported.");
+
+        WriteWord(address, value);
     }
 
     uint8_t GPIO_Port::ReadByte(uint64_t address) {
-        // Not Implemented
-        return 0;
+        //GPIO doesn't support reading 8 bits at a time
+        throw std::runtime_error("GPIO: Reading a byte is not supported. Only >32 bit read is supported.");
     }
 
     uint16_t GPIO_Port::ReadHalfword(uint64_t address) {
-        // Not Implemented
-        return 0;
+        //GPIO doesn't support reading 16 bits at a time
+        throw std::runtime_error("GPIO: Reading a halfword is not supported. Only >32 bit read is supported.");
     }
 
     uint64_t GPIO_Port::ReadDoubleword(uint64_t address) {
-        // Not Implemented
-        return 0;
+        //Will read 32 bit value and return it as a 64 bit value.
+        return ReadWord(address);
     }
 
     void GPIO_Port::WriteWord(uint64_t address, uint32_t value) {
         switch (address) {
             case GPIO_Port_Reg_Offset::CTL0:
-                Reg_CTL0 = std::bitset<kReg_Size> {value};
+                Reg_CTL0 = std::bitset<kReg_Size>{value};
                 break;
-            
+
             case GPIO_Port_Reg_Offset::CTL1:
-                Reg_CTL1 = std::bitset<kReg_Size> {value};
+                Reg_CTL1 = std::bitset<kReg_Size>{value};
                 break;
 
             case GPIO_Port_Reg_Offset::OCTL:
-                Reg_OCTL = std::bitset<kReg_Size> {value};
+                Reg_OCTL = std::bitset<kReg_Size>{value};
                 break;
 
             case GPIO_Port_Reg_Offset::BOP: {
@@ -65,8 +68,7 @@ namespace modules {
                     if (bits & 0b1) {
                         if (i < kReg_Size / 2) {
                             Reg_OCTL.set(i);
-                        }
-                        else {
+                        } else {
                             Reg_OCTL.reset(i - kReg_Size / 2);
                         }
                     }
@@ -85,7 +87,7 @@ namespace modules {
                 }
             }
                 break;
-            
+
             default: // write to LOCK register or outside GPIO registers memory area
                 return;
         }
@@ -97,7 +99,7 @@ namespace modules {
             case GPIO_Port_Reg_Offset::CTL0:
                 reg = Reg_CTL0;
                 break;
-            
+
             case GPIO_Port_Reg_Offset::CTL1:
                 reg = Reg_CTL1;
                 break;
@@ -109,7 +111,7 @@ namespace modules {
             case GPIO_Port_Reg_Offset::OCTL:
                 reg = Reg_OCTL;
                 break;
-            
+
             default:
                 return 0;
         }
@@ -129,7 +131,7 @@ namespace modules {
         if (!regCtl[bitOff] && !regCtl[bitOff + 1]) {
             return GPIO_Pin_Mode::INPUT;
         }
-        // MDi[1:0] == 01|10|11 => OUTPUT
+            // MDi[1:0] == 01|10|11 => OUTPUT
         else {
             return GPIO_Pin_Mode::OUTPUT;
         }
@@ -139,16 +141,13 @@ namespace modules {
         if (Get_Pin_Mode(pinNo) == GPIO_Pin_Mode::INPUT) {
             if (Reg_ISTAT[pinNo]) {
                 return GPIO_Pin_Level::HIGH;
-            }
-            else {
+            } else {
                 return GPIO_Pin_Level::LOW;
             }
-        }
-        else {
+        } else {
             if (Reg_OCTL[pinNo]) {
                 return GPIO_Pin_Level::HIGH;
-            }
-            else {
+            } else {
                 return GPIO_Pin_Level::LOW;
             }
         }
@@ -161,5 +160,5 @@ namespace modules {
 
         Reg_ISTAT.set(pinNo, level);
     }
-    
+
 }
