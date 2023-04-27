@@ -10,7 +10,8 @@
  */
 enum class eventType {
     SimpleEvent,
-    GPIOevent
+    GPIO_Pin_Mode_Changed_Event,
+    GPIO_Pin_Level_Changed_Event
 };
 
 class AbstractEvent {
