@@ -2,11 +2,12 @@
  * Represents implementation of declarations in gpio.h header file related to GPIO peripheral device.
  * 
  * @author Stanislav Kafara
- * @version 2023-04-18
+ * @version 2023-04-27
  */
 
 
 #include "gpio.h"
+#include "../utils/events/gpio_events.h"
 
 
 namespace modules {
@@ -48,27 +49,41 @@ namespace modules {
     void GPIO_Port::WriteWord(uint64_t address, uint32_t value) {
         switch (address) {
             case GPIO_Port_Reg_Offset::CTL0:
-                Reg_CTL0 = std::bitset<kReg_Size> {value};
+                Handle_Reg_CTL_Write(Reg_CTL0, 0, value);
                 break;
             
             case GPIO_Port_Reg_Offset::CTL1:
-                Reg_CTL1 = std::bitset<kReg_Size> {value};
+                Handle_Reg_CTL_Write(Reg_CTL1, 1, value);
                 break;
 
-            case GPIO_Port_Reg_Offset::OCTL:
-                Reg_OCTL = std::bitset<kReg_Size> {value};
+            case GPIO_Port_Reg_Offset::OCTL: {
+                uint32_t bits = value;
+                for (size_t i = 0; i < kReg_Size / 2; i++) {
+                    bool isToSet = bits & 0b1;
+                    GPIO_Pin_Level previousLevel = Get_Pin_Level(i);
+                    Reg_OCTL.set(i, isToSet);
+                    GPIO_Pin_Level currentLevel = Get_Pin_Level(i);
+                    Announce_Pin_Level_Change(i, previousLevel, currentLevel);
+                    bits >>= 1;
+                }
+            }
                 break;
 
             case GPIO_Port_Reg_Offset::BOP: {
                 uint32_t bits = value;
                 for (size_t i = 0; i < kReg_Size; i++) {
                     if (bits & 0b1) {
-                        if (i < kReg_Size / 2) {
-                            Reg_OCTL.set(i);
+                        bool isToSet = i < kReg_Size / 2;
+                        size_t pinNo = (isToSet) ? i : i - kReg_Size / 2;
+                        GPIO_Pin_Level previousLevel = Get_Pin_Level(i);
+                        if (isToSet) {
+                            Reg_OCTL.set(pinNo);
                         }
                         else {
-                            Reg_OCTL.reset(i - kReg_Size / 2);
+                            Reg_OCTL.reset(pinNo);
                         }
+                        GPIO_Pin_Level currentLevel = Get_Pin_Level(pinNo);
+                        Announce_Pin_Level_Change(i, previousLevel, currentLevel);
                     }
                     bits >>= 1;
                 }
@@ -79,7 +94,10 @@ namespace modules {
                 uint32_t bits = value;
                 for (size_t i = 0; i < kReg_Size / 2; i++) {
                     if (bits & 0b1) {
+                        GPIO_Pin_Level previousLevel = Get_Pin_Level(i);
                         Reg_OCTL.reset(i);
+                        GPIO_Pin_Level currentLevel = Get_Pin_Level(i);
+                        Announce_Pin_Level_Change(i, previousLevel, currentLevel);
                     }
                     bits >>= 1;
                 }
@@ -120,10 +138,10 @@ namespace modules {
     GPIO_Pin_Mode GPIO_Port::Get_Pin_Mode(const size_t pinNo) const {
         // pin control reg CTL0 or CTL1
         // first half of the pins controlled by CTL0, second by CTL1
-        const auto regCtl = (pinNo < (kPin_Count / 2)) ? Reg_CTL0 : Reg_CTL1;
+        const auto regCtl = (pinNo < kReg_CTL_Pin_Count) ? Reg_CTL0 : Reg_CTL1;
         // bit offset to MDi
         // CTL(0,1) - CTLz[1:0] MDz[1:0] CTLy[1:0] MDy[1:0] ... CTLx[1:0] MDx[1:0]
-        const size_t bitOff = (pinNo % (kPin_Count / 2)) * 4;
+        const size_t bitOff = (pinNo % kReg_CTL_Pin_Count) * 4;
 
         // MDi[1:0] == 00 => INPUT
         if (!regCtl[bitOff] && !regCtl[bitOff + 1]) {
@@ -160,6 +178,36 @@ namespace modules {
         }
 
         Reg_ISTAT.set(pinNo, level);
+    }
+
+    void GPIO_Port::Handle_Reg_CTL_Write(std::bitset<kReg_Size> &reg, const size_t regIndex, const uint32_t value) {
+        const size_t pinNoOffset = regIndex * kReg_CTL_Pin_Count;
+        for (size_t i = 0; i < kReg_CTL_Pin_Count; i++) {
+            size_t offset = kPin_Mode_Bits_Count * i;
+            GPIO_Pin_Mode previousMode = Get_Pin_Mode(pinNoOffset + i);
+            for (size_t j = 0; j < kPin_Mode_Bits_Count; j++) {
+                std::cout << ((value >> (offset + j)) & 0b1);
+                reg.set(offset + j, (value >> (offset + j)) & 0b1);
+            }
+            GPIO_Pin_Mode currentMode = Get_Pin_Mode(pinNoOffset + i);
+            Announce_Pin_Mode_Change(pinNoOffset + i, previousMode, currentMode);
+        }
+    }
+
+    void GPIO_Port::Announce_Pin_Level_Change(const size_t pinNo, const GPIO_Pin_Level previousLevel, const GPIO_Pin_Level currentLevel) const {
+        if (currentLevel == previousLevel) {
+            return;
+        }
+
+        Emitter.Emit(GPIO_Pin_Level_Changed_Event_Description, new GPIO_Pin_Level_Changed_Event(*this, pinNo, previousLevel, currentLevel));
+    }
+
+    void GPIO_Port::Announce_Pin_Mode_Change(const size_t pinNo, const GPIO_Pin_Mode previousMode, const GPIO_Pin_Mode currentMode) const {
+        if (currentMode == previousMode) {
+            return;
+        }
+
+        Emitter.Emit(GPIO_Pin_Mode_Changed_Event_Description, new GPIO_Pin_Mode_Changed_Event(*this, pinNo, previousMode, currentMode));
     }
     
 }

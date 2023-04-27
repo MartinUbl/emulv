@@ -26,7 +26,8 @@ set(PROJECT_SOURCES
 		ui/peripherals/uart/UARTWidget.cpp ui/peripherals/uart/UARTWidget.h
 		ui/peripherals/PeripheralsTabWidget.cpp ui/peripherals/PeripheralsTabWidget.h
 		ui/BreakpointAreaWidget.cpp ui/BreakpointAreaWidget.h
-		modules/gpio.cpp modules/gpio.h)
+		modules/gpio.cpp modules/gpio.h
+		utils/events/gpio_events.cpp utils/events/gpio_events.h)
 
 #################################################################################
 #Download libraries from git repositories
