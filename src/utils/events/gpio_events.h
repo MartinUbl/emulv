@@ -10,7 +10,7 @@
 #include <stddef.h>
 #include <string>
 
-#include "AbstractEvent.h"
+#include "PeripheralDeviceEvent.h"
 #include "../../modules/gpio.h"
 
 
@@ -18,24 +18,18 @@ const std::string GPIO_Pin_Mode_Changed_Event_Description {"gpio-pin-mode-change
 const std::string GPIO_Pin_Level_Changed_Event_Description {"gpio-pin-level-changed"};
 
 
-class AGPIO_Event : public AbstractEvent {
-
-    protected:
-
-        const modules::GPIO_Port &GPIO_Port;
-        const size_t Pin_No;
-
+class AGPIO_Event : public PeripheralDeviceEvent {
 
     public:
+        const size_t Pin_No;
 
         AGPIO_Event(const modules::GPIO_Port &gpioPort, const size_t pinNo) :
-            GPIO_Port(gpioPort),
+            PeripheralDeviceEvent(gpioPort),
             Pin_No(pinNo)
         {}
 
         // interface AbstractEvent
         virtual eventType getType() = 0;
-
 };
 
 class GPIO_Pin_Mode_Changed_Event : public AGPIO_Event {
