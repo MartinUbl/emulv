@@ -47,8 +47,8 @@ namespace modules {
         return 123;
     }
 
-    ExampleDevice::ExampleDevice(EventEmitter &emitter, uint64_t start_address, uint64_t end_address) :
-        PeripheralDevice(emitter, start_address, end_address)
+    ExampleDevice::ExampleDevice(const std::string &name, EventEmitter &emitter, uint64_t start_address, uint64_t end_address) :
+        PeripheralDevice(name, emitter, start_address, end_address)
     {}
 
 }

@@ -14,12 +14,14 @@ namespace modules {
     class PeripheralDevice {
        
         protected:
+            std::string Name;
             EventEmitter &Emitter;
             uint64_t Start_Address;
             uint64_t End_Address;
         
         public:
-            PeripheralDevice(EventEmitter &emitter, uint64_t start_address, uint64_t end_address) :
+            PeripheralDevice(const std::string &name, EventEmitter &emitter, uint64_t start_address, uint64_t end_address) :
+                Name(name),
                 Emitter(emitter),
                 Start_Address(start_address),
                 End_Address(end_address)
@@ -35,6 +37,9 @@ namespace modules {
             virtual uint32_t ReadWord(uint64_t address) = 0;
             virtual uint64_t ReadDoubleword(uint64_t address) = 0;
 
+            std::string GetName() {
+                return Name;
+            }
             uint64_t GetStartAddress() {
                 return Start_Address;
             };
