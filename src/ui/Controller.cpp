@@ -43,6 +43,7 @@ Controller::Controller(int argc, char **argv) {
 void Controller::CreatePeripherals_() {
     activePeripherals_["PORT_A"] = new modules::GPIO_Port("PORT_A", emitter_, 0x40010800, 0x40010BFF);
     activePeripherals_["PORT_B"] = new modules::GPIO_Port("PORT_B", emitter_, 0x40010C00, 0x40010FFF);
+    activePeripherals_["PORT_C"] = new modules::GPIO_Port("PORT_C", emitter_, 0x40011000, 0x40011BFF);
 }
 
 void Controller::RegisterPeripherals_() {
