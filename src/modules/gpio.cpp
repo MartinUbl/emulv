@@ -187,7 +187,6 @@ namespace modules {
             size_t offset = kPin_Mode_Bits_Count * i;
             GPIO_Pin_Mode previousMode = Get_Pin_Mode(pinNoOffset + i);
             for (size_t j = 0; j < kPin_Mode_Bits_Count; j++) {
-                std::cout << ((value >> (offset + j)) & 0b1);
                 reg.set(offset + j, (value >> (offset + j)) & 0b1);
             }
             GPIO_Pin_Mode currentMode = Get_Pin_Mode(pinNoOffset + i);
