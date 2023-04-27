@@ -128,9 +128,8 @@ namespace emulator {
         auto entry = page_peripherals_.find(page_start);
         if (entry != page_peripherals_.end()) {
             entry->second.push_back(device);
-        }
-        else {
-            auto peripherals = std::vector<modules::PeripheralDevice*>();
+        } else {
+            auto peripherals = std::vector<modules::PeripheralDevice *>();
             peripherals.push_back(device);
             page_peripherals_[page_start] = peripherals;
         }
@@ -140,7 +139,7 @@ namespace emulator {
         uint64_t page_start = GetPageStart_(address);
         auto page_peripherals = this->page_peripherals_[page_start];
 
-        for (auto p : page_peripherals) {
+        for (auto p: page_peripherals) {
             if (p->GetStartAddress() <= address && address <= p->GetEndAddress()) {
                 return p;
             }
@@ -200,15 +199,18 @@ namespace emulator {
 //                        std::cout << "TRAPPED WRITE" << std::endl << "Page size: " << size << std::endl
 //                                  << "Offset: " << offset << std::endl << "Mode: " << mode << std::endl
 //                                  << "Value: " << value << std::endl << std::endl;
-                        //TODO: Passing only offset, is this good enough?
-                        real_device->WriteDoubleword(real_offset, value);
+
+                        if (size == 8)
+                            real_device->WriteDoubleword(real_offset, value);
+                        else if (size == 4)
+                            real_device->WriteWord(real_offset, value);
                         break;
                     case riscv::TRAP_READ:
 //                        std::cout << "TRAPPED READ" << std::endl << "Page size: " << size << std::endl
 //                                  << "Offset: " << offset << std::endl << "Mode: " << mode << std::endl
 //                                  << "Value: " << value << std::endl << std::endl;
 
-                        //TODO: Passing only offset, is this good enough?
+                        //Will always read DoubleWord
                         uint64_t mmio_value = real_device->ReadDoubleword(real_offset);
 
                         page.page().template aligned_write<uint64_t>(offset, mmio_value);
