@@ -28,8 +28,9 @@ public:
 
     int ShowWindow();
     int RunProgram();
+    EventEmitter &GetEventEmitter();
     std::vector<std::string> GetDisassembly();
-    modules::PeripheralDevice* GetPeripheral(std::string name);
+    std::map<std::string, modules::PeripheralDevice*> GetPeripherals();
     void SetPinStatus(std::string module, int pin, bool status);
     void LoadFile(std::string file_path);
     bool IsFileLoaded();

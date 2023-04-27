@@ -3,6 +3,7 @@
 
 #include <QMainWindow>
 #include <QFileDialog>
+#include <thread>
 #include "disassemblywidget.h"
 #include "Controller.h"
 #include "peripherals/gpio/GPIOWidget.h"
@@ -39,6 +40,8 @@ private:
     RegistersWidget *registersWidget_;
     MemoryWidget *memoryWidget_;
     PeripheralsTabWidget *peripheralsTabWidget_;
+
+    std::unique_ptr<std::thread> mRun_Thread;
 
     bool running = false;
     bool debug = false;

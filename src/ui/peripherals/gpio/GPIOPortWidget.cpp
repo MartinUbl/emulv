@@ -32,8 +32,8 @@ GPIOPortWidget::GPIOPortWidget(QWidget *parent, Controller *controller, std::str
     this->setLayout(layout);
 }
 
-void GPIOPortWidget::setPinMode(int pin_id, GPIO_PinMode input) {
-    this->pins_[pin_id]->setMode(input);
+void GPIOPortWidget::setPinMode(int pin_id, modules::GPIO_Pin_Mode mode) {
+    this->pins_[pin_id]->setMode(mode);
 }
 
 void GPIOPortWidget::setPinStatus(int pin_id, bool status) {
@@ -47,7 +47,7 @@ std::string GPIOPortWidget::label() {
 void GPIOPortWidget::onPinButtonClicked()
 {
     auto pin = dynamic_cast<GPIOPinButton*>(QObject::sender());
-    if (pin->mode() == GPIO_PinMode::kInput) {
+    if (pin->mode() == modules::GPIO_Pin_Mode::INPUT) {
         pin->setStatus(!pin->status());
         controller_->SetPinStatus(label_, pin->id(), pin->status());
     }

@@ -4,33 +4,65 @@
 
 #include <QScrollArea>
 #include <QVBoxLayout>
+
 #include "PeripheralsTabWidget.h"
 
-PeripheralsTabWidget::PeripheralsTabWidget(QWidget *parent)
-    : QWidget(parent)
-    , tabWidget_(new QTabWidget(this)) {
-    QVBoxLayout *layout = new QVBoxLayout(this);
-    layout->setSpacing(0);
-    layout->setContentsMargins(0, 0, 0, 0);
+PeripheralsTabWidget::PeripheralsTabWidget(QWidget *parent, Controller *controller)
+: QWidget(parent)
+, controller_(controller)
+, tabWidget_(new QTabWidget(this)) {
+    setLayout(new QVBoxLayout(this));
+    layout()->setSpacing(0);
+    layout()->setContentsMargins(0, 0, 0, 0);
+    layout()->addWidget(tabWidget_);
 
-    this->setLayout(layout);
-    layout->addWidget(tabWidget_);
+    controller_->GetEventEmitter().On(GPIO_Pin_Mode_Changed_Event_Description, [this](AbstractEvent *res) {
+        auto event = dynamic_cast<GPIO_Pin_Mode_Changed_Event *>(res);
+        auto widget = widgets_[event->getPeripheralDevice().GetName()];
+        auto gpioPortWidget = dynamic_cast<GPIOPortWidget *>(widget);
+
+        gpioPortWidget->setPinMode(event->Pin_No, event->Current_Mode);
+
+        delete event;
+    });
+
+    controller_->GetEventEmitter().On(GPIO_Pin_Level_Changed_Event_Description, [this](AbstractEvent *res) {
+        auto event = dynamic_cast<GPIO_Pin_Level_Changed_Event *>(res);
+        auto widget = widgets_[event->getPeripheralDevice().GetName()];
+        auto gpioPortWidget = dynamic_cast<GPIOPortWidget *>(widget);
+
+        gpioPortWidget->setPinStatus(event->Pin_No, event->Current_Level);
+
+        delete event;
+    });
 }
 
-void PeripheralsTabWidget::addPeripheralWidget(QWidget *peripheral_widget, std::string header, bool scrollable) {
-    peripheral_widget->setParent(tabWidget_);
+void PeripheralsTabWidget::updateWidgets() {
+    auto peripherals = controller_->GetPeripherals();
 
-    if (scrollable) {
-        QScrollArea *scroll_area = new QScrollArea(tabWidget_);
-        scroll_area->setWidget(peripheral_widget);
-
-        tabWidget_->addTab(scroll_area, QString::fromStdString(header));
-    }
-    else {
-        tabWidget_->addTab(peripheral_widget, QString::fromStdString(header));
+    for (const auto& peripheral : peripherals) {
+        addWidget_(peripheral.second, peripheral.first);
     }
 }
 
 void PeripheralsTabWidget::clear() {
     tabWidget_->clear();
+}
+
+void PeripheralsTabWidget::addWidget_(modules::PeripheralDevice *peripheralDevice, const std::string &label) {
+    auto gpioPort = dynamic_cast<modules::GPIO_Port *>(peripheralDevice);
+    if (gpioPort != nullptr) {
+        addGPIOPortWidget_(label);
+    }
+}
+
+void PeripheralsTabWidget::addGPIOPortWidget_(const std::string &label) {
+    if (gpioWidget_ == nullptr) {
+        gpioWidget_ = new GPIOWidget(tabWidget_);
+        tabWidget_->addTab(gpioWidget_, "GPIO");
+    }
+
+    auto portWidget = new GPIOPortWidget(gpioWidget_, controller_, label, {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15});
+    widgets_[label] = portWidget;
+    gpioWidget_->addPort(portWidget);
 }

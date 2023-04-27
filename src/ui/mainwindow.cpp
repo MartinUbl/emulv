@@ -16,7 +16,7 @@ MainWindow::MainWindow(QWidget *parent, Controller *controller)
 , disassemblyWidget(new DisassemblyWidget(this))
 , registersWidget_(new RegistersWidget(this))
 , memoryWidget_(new MemoryWidget(this, controller))
-, peripheralsTabWidget_(new PeripheralsTabWidget(this)) {
+, peripheralsTabWidget_(new PeripheralsTabWidget(this, controller)) {
     ui->setupUi(this);
 
     // Initialize toolbar buttons
@@ -75,17 +75,9 @@ MainWindow::MainWindow(QWidget *parent, Controller *controller)
     ui->splitterMain->setStretchFactor(0, 3);
     ui->splitterMain->setStretchFactor(1, 2);
 
+    peripheralsTabWidget_->updateWidgets();
+
     // Following code is only for ui testing purposes and will eventually be removed
-    auto *gpioWidget = new GPIOWidget(this);
-    auto *uartWidget = new UARTWidget(this);
-
-    gpioWidget->addPort(new GPIOPortWidget(gpioWidget, controller, "PORT_A", {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15}));
-    gpioWidget->addPort(new GPIOPortWidget(gpioWidget, controller, "PORT_B", {0, 1,    3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15}));
-    gpioWidget->addPort(new GPIOPortWidget(gpioWidget, controller, "PORT_C", {13, 14, 15}));
-
-    peripheralsTabWidget_->addPeripheralWidget(gpioWidget, "GPIO", true);
-    peripheralsTabWidget_->addPeripheralWidget(uartWidget, "UART");
-
     memoryWidget_->setAddressRangeLimit(0, 0xfff);
 }
 
@@ -197,10 +189,11 @@ void MainWindow::on_action_About_RISCVEmulator_triggered()
 void MainWindow::on_btnRun_clicked()
 {
     setRunning(true);
-    int exitCode = controller->RunProgram();
-    updateRegisters();
-    on_btnTerminate_clicked();
-    ui->statusbar->showMessage(QString::fromStdString("Program has exited with code: " + std::to_string(exitCode)));
+    if (mRun_Thread && mRun_Thread->joinable()) {
+        mRun_Thread->join();
+    }
+
+    mRun_Thread = std::make_unique<std::thread>(&Controller::RunProgram, controller);
 }
 
 void MainWindow::on_btnDebug_clicked()
