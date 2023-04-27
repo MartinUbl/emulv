@@ -63,6 +63,8 @@ namespace emulator {
      */
     std::vector<std::string> EmulatorUnit::Disassemble() {
         riscv::Machine<riscv::RISCV64> machine{binary_};
+        activeMachine_ = &machine;
+        //TODO
         machine.setup_linux(
                 {"myprogram"},
                 {"LC_TYPE=C", "LC_ALL=C", "USER=root"});
@@ -218,6 +220,40 @@ namespace emulator {
                 }
             });
         }
+    }
+
+    std::vector<std::vector<uint8_t>> EmulatorUnit::GetMemory(uint64_t from, uint64_t to) {
+        // TODO: get memory from EmulatorUnit
+        std::vector<std::vector<uint8_t>> memory;
+
+        // TODO: remove
+        for (uint64_t i = from; i <= to; ++i) {
+            std::vector<uint8_t> v;
+            for (int j = 0; j < 16; ++j) {
+                v.push_back(rand() % 255);
+            }
+            memory.push_back(v);
+        }
+        return memory;
+    }
+
+    std::vector<std::tuple<std::string, uint32_t>> EmulatorUnit::GetRegisters() {
+        // TODO: get registers from EmulatorUnit
+        std::vector<std::tuple<std::string, uint32_t>> registers;
+
+        // TODO: remove
+        registers.emplace_back("x0", 0);
+        registers.emplace_back("x1", 0x5f880900);
+        registers.emplace_back("x2", 0x5f880900);
+        registers.emplace_back("x3", 0x5f880900);
+        registers.emplace_back("x4", 0x5f880900);
+        registers.emplace_back("x5", 0x5f880900);
+        registers.emplace_back("x6", 0x5f880900);
+        registers.emplace_back("x20", 0x5f880900);
+        registers.emplace_back("x31", 0x5f880900);
+        registers.emplace_back("pc", 0x00037a40);
+
+        return registers;
     }
 
 }

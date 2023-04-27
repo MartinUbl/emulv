@@ -41,18 +41,18 @@ Controller::Controller(int argc, char **argv) {
 }
 
 void Controller::CreatePeripherals_() {
-    ActivePeripherals_["PORT_A"] = new modules::GPIO_Port(emitter_, 0x40010800, 0x40010BFF);
-    ActivePeripherals_["PORT_B"] = new modules::GPIO_Port(emitter_, 0x40010C00, 0x40010FFF);
+    activePeripherals_["PORT_A"] = new modules::GPIO_Port(emitter_, 0x40010800, 0x40010BFF);
+    activePeripherals_["PORT_B"] = new modules::GPIO_Port(emitter_, 0x40010C00, 0x40010FFF);
 }
 
 void Controller::RegisterPeripherals_() {
-    emulatorUnit_->RegisterPeripherals(ActivePeripherals_);
+    emulatorUnit_->RegisterPeripherals(activePeripherals_);
 }
 
 Controller::~Controller() {
     delete emulatorUnit_;
     //Delete peripheral objects
-    for (auto const &x: ActivePeripherals_) {
+    for (auto const &x: activePeripherals_) {
         delete x.second;
     }
 }
@@ -82,35 +82,9 @@ bool Controller::IsFileLoaded() {
 }
 
 std::vector<std::vector<uint8_t>> Controller::GetMemory(const uint64_t from, const uint64_t to) {
-    // TODO: get memory from EmulatorUnit
-    std::vector<std::vector<uint8_t>> memory;
-
-    // TODO: remove
-    for (uint64_t i = from; i <= to; ++i) {
-        std::vector<uint8_t> v;
-        for (int j = 0; j < 16; ++j) {
-            v.push_back(rand() % 255);
-        }
-        memory.push_back(v);
-    }
-    return memory;
+    return emulatorUnit_->GetMemory(from, to);
 }
 
 std::vector<std::tuple<std::string, uint32_t>> Controller::GetRegisters() {
-    // TODO: get registers from EmulatorUnit
-    std::vector<std::tuple<std::string, uint32_t>> registers;
-
-    // TODO: remove
-    registers.emplace_back("x0", 0);
-    registers.emplace_back("x1", 0x5f880900);
-    registers.emplace_back("x2", 0x5f880900);
-    registers.emplace_back("x3", 0x5f880900);
-    registers.emplace_back("x4", 0x5f880900);
-    registers.emplace_back("x5", 0x5f880900);
-    registers.emplace_back("x6", 0x5f880900);
-    registers.emplace_back("x20", 0x5f880900);
-    registers.emplace_back("x31", 0x5f880900);
-    registers.emplace_back("pc", 0x00037a40);
-
-    return registers;
+    return emulatorUnit_->GetRegisters();
 }

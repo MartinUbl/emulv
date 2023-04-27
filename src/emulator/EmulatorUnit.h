@@ -1,5 +1,6 @@
 #ifndef EMULV_EMULATORUNIT_H
 #define EMULV_EMULATORUNIT_H
+
 #include <vector>
 #include "../utils/events/EventEmitter.h"
 #include "../modules/PeripheralDevice.h"
@@ -27,13 +28,19 @@ namespace emulator {
     private:
         EventEmitter &emitter_;
         std::vector<uint8_t> binary_;
+        riscv::Machine<riscv::RISCV64> *activeMachine_;
         std::map<std::string, modules::PeripheralDevice *> *peripheral_devices_ = nullptr;
         std::map<uint64_t, std::vector<modules::PeripheralDevice *>> page_peripherals_;
+
+
         static std::string InstructonToString_(riscv::CPU<8> const &cpu, riscv::instruction_format format);
 
         uint64_t GetPageStart_(uint64_t address);
+
         void MapDeviceToPage_(modules::PeripheralDevice *device);
+
         modules::PeripheralDevice *GetRealDevice_(uint64_t address);
+
         void SetupMemoryTraps_(riscv::Machine<riscv::RISCV64> &machine);
 
     public:
@@ -46,6 +53,10 @@ namespace emulator {
         std::vector<std::string> Disassemble();
 
         void RegisterPeripherals(std::map<std::string, modules::PeripheralDevice *> &devices);
+
+        std::vector<std::vector<uint8_t>> GetMemory(uint64_t from, uint64_t to);
+
+        std::vector<std::tuple<std::string, uint32_t>> GetRegisters();
     };
 
 }
