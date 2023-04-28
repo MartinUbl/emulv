@@ -8,6 +8,12 @@ set(CMAKE_AUTORCC ON)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
+SET(ADDITIONAL_CMAKE_CXX_FLAGS "-pthread")
+SET(ADDITIONAL_CMAKE_EXE_LINKER_FLAGS "-lpthread")
+
+SET(CMAKE_CXX_FLAGS  "${CMAKE_CXX_FLAGS} ${ADDITIONAL_CMAKE_CXX_FLAGS}")
+SET(CMAKE_EXE_LINKER_FLAGS  "${CMAKE_EXE_LINKER_FLAGS} ${ADDITIONAL_CMAKE_EXE_LINKER_FLAGS}")
+
 #################################################################################
 #Setup QT GUI #1
 #################################################################################
