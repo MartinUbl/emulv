@@ -84,7 +84,7 @@ int main() {
     
     // (PC13) Set OCTL13 to HIGH using BOP.
     address = (uint32_t *) GPIOC_BOP;
-    value = 0b00000000000000000000000000000010;
+    value = 0b00000000000000000010000000000000;
     *address = value;
 
     // END MANUAL SWITCH OUTPUT HIGH
