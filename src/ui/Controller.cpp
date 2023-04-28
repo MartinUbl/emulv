@@ -62,11 +62,18 @@ Controller::~Controller() {
 //######################################################################################################################
 
 int Controller::RunProgram() {
-    std::vector<std::string> arguments{"Program", "30"};
+    std::vector<std::string> arguments{"Program", "30"}; //TODO: remove
     std::cout << std::endl << "Running program..." << std::endl;
     int exitCode = emulatorUnit_->Execute(arguments);
     return exitCode;
 }
+
+void Controller::DebugProgram() {
+    std::vector<std::string> arguments{"Program", "30"}; //TODO: remove
+    std::cout << std::endl << "Running program in debug mode..." << std::endl;
+    emulatorUnit_->Debug(arguments);
+}
+
 
 std::vector<std::string> Controller::GetDisassembly() {
     return this->emulatorUnit_->Disassemble();
@@ -87,4 +94,27 @@ std::vector<std::vector<uint8_t>> Controller::GetMemory(const uint64_t from, con
 
 std::vector<std::tuple<std::string, uint32_t>> Controller::GetRegisters() {
     return emulatorUnit_->GetRegisters();
+<<<<<<< Updated upstream
+=======
+}
+
+bool Controller::DebugStep() {
+    return emulatorUnit_->DebugStep();
+}
+
+uint64_t Controller::GetPc() {
+    return emulatorUnit_->GetPc();
+}
+
+uint64_t Controller::GetMemoryStartAddress() {
+    return emulatorUnit_->GetMemoryStartAddress();
+}
+
+uint64_t Controller::GetMemoryEndAddress() {
+    return emulatorUnit_->GetMemoryEndAddress();
+}
+
+bool Controller::DebugContinue(const std::unordered_set<int64_t>& breakpointAddresses) {
+    return emulatorUnit_->DebugContinue(breakpointAddresses);
+>>>>>>> Stashed changes
 }

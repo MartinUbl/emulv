@@ -20,6 +20,7 @@ set(PROJECT_SOURCES
         ui/aboutwindow.h ui/aboutwindow.cpp ui/aboutwindow.ui
         ui/disassemblywidget.h ui/disassemblywidget.cpp
         ui/Controller.cpp ui/Controller.h
+<<<<<<< Updated upstream
 		ui/peripherals/gpio/GPIOPortWidget.cpp ui/peripherals/gpio/GPIOPortWidget.h
 		ui/peripherals/gpio/GPIOPinButton.cpp ui/peripherals/gpio/GPIOPinButton.h
 		ui/peripherals/gpio/GPIOWidget.cpp ui/peripherals/gpio/GPIOWidget.h
@@ -28,6 +29,16 @@ set(PROJECT_SOURCES
 		ui/BreakpointAreaWidget.cpp ui/BreakpointAreaWidget.h
 		ui/RegistersWidget.cpp ui/RegistersWidget.h
 		ui/MemoryWidget.cpp ui/MemoryWidget.h)
+=======
+        ui/peripherals/gpio/GPIOPortWidget.cpp ui/peripherals/gpio/GPIOPortWidget.h
+        ui/peripherals/gpio/GPIOPinButton.cpp ui/peripherals/gpio/GPIOPinButton.h
+        ui/peripherals/gpio/GPIOWidget.cpp ui/peripherals/gpio/GPIOWidget.h
+        ui/peripherals/uart/UARTWidget.cpp ui/peripherals/uart/UARTWidget.h
+        ui/peripherals/PeripheralsTabWidget.cpp ui/peripherals/PeripheralsTabWidget.h
+        ui/BreakpointAreaWidget.cpp ui/BreakpointAreaWidget.h
+        ui/RegistersWidget.cpp ui/RegistersWidget.h
+        ui/MemoryWidget.cpp ui/MemoryWidget.h)
+>>>>>>> Stashed changes
 
 #################################################################################
 #Download libraries from git repositories
@@ -44,16 +55,16 @@ FetchContent_MakeAvailable(libriscv)
 
 #Download riscv-disassembler library
 FetchContent_Declare(
-		riscv-disassembler
-		GIT_REPOSITORY https://github.com/michaeljclark/riscv-disassembler.git
+        riscv-disassembler
+        GIT_REPOSITORY https://github.com/michaeljclark/riscv-disassembler.git
 )
 FetchContent_MakeAvailable(riscv-disassembler)
 include_directories(${riscv-disassembler_SOURCE_DIR}/src)
 
 #Download the json parser library
 FetchContent_Declare(
-		json-lib
-		GIT_REPOSITORY https://github.com/nlohmann/json.git
+        json-lib
+        GIT_REPOSITORY https://github.com/nlohmann/json.git
 )
 FetchContent_MakeAvailable(json-lib)
 
@@ -63,20 +74,20 @@ FetchContent_MakeAvailable(json-lib)
 
 add_library(emulator ./emulator/EmulatorUnit.cpp)
 add_library(modules modules/gpio.cpp modules/gpio.h ./modules/PeripheralDevice.h modules/ExampleDevice.cpp modules/ExampleDevice.h)
-add_library(events utils/events/EventEmitter.cpp utils/events/EventEmitter.h utils/events/AbstractEvent.h utils/events/SimpleEvent.cpp utils/events/SimpleEvent.h)
+add_library(events utils/events/EventEmitter.cpp utils/events/EventEmitter.h utils/events/AbstractEvent.h utils/events/SimpleEvent.cpp utils/events/SimpleEvent.h utils/events/gpio_events.cpp utils/events/gpio_events.h)
 
 #################################################################################
 #Set up project target executable file
 #################################################################################
 
 if (${QT_VERSION_MAJOR} GREATER_EQUAL 6)
-	qt_add_executable(emulv
-			${PROJECT_SOURCES}
-			)
+    qt_add_executable(emulv
+            ${PROJECT_SOURCES}
+            )
 else ()
-	add_executable(emulv
-			${PROJECT_SOURCES}
-			)
+    add_executable(emulv
+            ${PROJECT_SOURCES}
+            )
 endif ()
 
 #################################################################################
@@ -108,11 +119,11 @@ target_link_libraries(${PROJECT_NAME} PRIVATE events)
 #################################################################################
 target_link_libraries(emulv PRIVATE Qt${QT_VERSION_MAJOR}::Widgets)
 set_target_properties(emulv PROPERTIES
-		MACOSX_BUNDLE_GUI_IDENTIFIER my.example.com
-		MACOSX_BUNDLE_SHORT_VERSION_STRING ${PROJECT_VERSION_MAJOR}.${PROJECT_VERSION_MINOR}
-		MACOSX_BUNDLE TRUE
-		WIN32_EXECUTABLE TRUE
-		)
+        MACOSX_BUNDLE_GUI_IDENTIFIER my.example.com
+        MACOSX_BUNDLE_SHORT_VERSION_STRING ${PROJECT_VERSION_MAJOR}.${PROJECT_VERSION_MINOR}
+        MACOSX_BUNDLE TRUE
+        WIN32_EXECUTABLE TRUE
+        )
 install(TARGETS emulv
-		BUNDLE DESTINATION .
-		LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR})
+        BUNDLE DESTINATION .
+        LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR})
