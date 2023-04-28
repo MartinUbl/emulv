@@ -41,18 +41,18 @@ Controller::Controller(int argc, char **argv) {
 }
 
 void Controller::CreatePeripherals_() {
-    ActivePeripherals_["PORT_A"] = new modules::GPIO_Port(emitter_, 0x40010800, 0x40010BFF);
-    ActivePeripherals_["PORT_B"] = new modules::GPIO_Port(emitter_, 0x40010C00, 0x40010FFF);
+    activePeripherals_["PORT_A"] = new modules::GPIO_Port(emitter_, 0x40010800, 0x40010BFF);
+    activePeripherals_["PORT_B"] = new modules::GPIO_Port(emitter_, 0x40010C00, 0x40010FFF);
 }
 
 void Controller::RegisterPeripherals_() {
-    emulatorUnit_->RegisterPeripherals(ActivePeripherals_);
+    emulatorUnit_->RegisterPeripherals(activePeripherals_);
 }
 
 Controller::~Controller() {
     delete emulatorUnit_;
     //Delete peripheral objects
-    for (auto const &x: ActivePeripherals_) {
+    for (auto const &x: activePeripherals_) {
         delete x.second;
     }
 }
@@ -62,11 +62,18 @@ Controller::~Controller() {
 //######################################################################################################################
 
 int Controller::RunProgram() {
-    std::vector<std::string> arguments{"Program", "30"};
+    std::vector<std::string> arguments{"Program", "30"}; //TODO: remove
     std::cout << std::endl << "Running program..." << std::endl;
     int exitCode = emulatorUnit_->Execute(arguments);
     return exitCode;
 }
+
+void Controller::DebugProgram() {
+    std::vector<std::string> arguments{"Program", "30"}; //TODO: remove
+    std::cout << std::endl << "Running program in debug mode..." << std::endl;
+    emulatorUnit_->Debug(arguments);
+}
+
 
 std::vector<std::string> Controller::GetDisassembly() {
     return this->emulatorUnit_->Disassemble();
@@ -82,35 +89,29 @@ bool Controller::IsFileLoaded() {
 }
 
 std::vector<std::vector<uint8_t>> Controller::GetMemory(const uint64_t from, const uint64_t to) {
-    // TODO: get memory from EmulatorUnit
-    std::vector<std::vector<uint8_t>> memory;
-
-    // TODO: remove
-    for (uint64_t i = from; i <= to; ++i) {
-        std::vector<uint8_t> v;
-        for (int j = 0; j < 16; ++j) {
-            v.push_back(rand() % 255);
-        }
-        memory.push_back(v);
-    }
-    return memory;
+    return emulatorUnit_->GetMemory(from, to);
 }
 
 std::vector<std::tuple<std::string, uint32_t>> Controller::GetRegisters() {
-    // TODO: get registers from EmulatorUnit
-    std::vector<std::tuple<std::string, uint32_t>> registers;
+    return emulatorUnit_->GetRegisters();
+}
 
-    // TODO: remove
-    registers.emplace_back("x0", 0);
-    registers.emplace_back("x1", 0x5f880900);
-    registers.emplace_back("x2", 0x5f880900);
-    registers.emplace_back("x3", 0x5f880900);
-    registers.emplace_back("x4", 0x5f880900);
-    registers.emplace_back("x5", 0x5f880900);
-    registers.emplace_back("x6", 0x5f880900);
-    registers.emplace_back("x20", 0x5f880900);
-    registers.emplace_back("x31", 0x5f880900);
-    registers.emplace_back("pc", 0x00037a40);
+bool Controller::DebugStep() {
+    return emulatorUnit_->DebugStep();
+}
 
-    return registers;
+uint64_t Controller::GetPc() {
+    return emulatorUnit_->GetPc();
+}
+
+uint64_t Controller::GetMemoryStartAddress() {
+    return emulatorUnit_->GetMemoryStartAddress();
+}
+
+uint64_t Controller::GetMemoryEndAddress() {
+    return emulatorUnit_->GetMemoryEndAddress();
+}
+
+bool Controller::DebugContinue(const std::unordered_set<int64_t>& breakpointAddresses) {
+    return emulatorUnit_->DebugContinue(breakpointAddresses);
 }

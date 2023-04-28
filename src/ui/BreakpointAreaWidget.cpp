@@ -67,3 +67,7 @@ void BreakpointAreaWidget::setMaximumBreakpoints(int max) {
 
     max_breakpoints_ = max;
 }
+
+std::unordered_map<int, QWidget *> BreakpointAreaWidget::getBreakpoints() {
+    return breakpoints_;
+}

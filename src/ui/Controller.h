@@ -5,6 +5,7 @@
 #ifndef EMULV_CONTROLLER_H
 #define EMULV_CONTROLLER_H
 
+#include <unordered_set>
 #include "../utils/events/EventEmitter.h"
 #include "../emulator/EmulatorUnit.h"
 #include "../modules/PeripheralDevice.h"
@@ -20,7 +21,7 @@ private:
     std::string openedFile_;
     void CreatePeripherals_();
     void RegisterPeripherals_();
-    std::map<std::string, modules::PeripheralDevice*> ActivePeripherals_;
+    std::map<std::string, modules::PeripheralDevice*> activePeripherals_;
 public:
     Controller(int argc, char **argv);
     ~Controller();
@@ -32,6 +33,18 @@ public:
     std::vector<std::string> GetDisassembly();
     std::vector<std::vector<uint8_t>> GetMemory(uint64_t from, uint64_t to);
     std::vector<std::tuple<std::string, uint32_t>> GetRegisters();
+
+    void DebugProgram();
+
+    bool DebugStep();
+
+    uint64_t GetPc();
+
+    bool DebugContinue(const std::unordered_set<int64_t>& breakpointAddresses);
+
+    uint64_t GetMemoryStartAddress();
+
+    uint64_t GetMemoryEndAddress();
 };
 
 

@@ -29,6 +29,7 @@ private slots:
     void on_btnDebug_clicked();
     void on_btnStep_clicked();
     void on_btnTerminate_clicked();
+    void on_btnContinue_clicked();
 
 private:
     Controller *controller;

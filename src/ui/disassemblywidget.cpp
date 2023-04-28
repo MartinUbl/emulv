@@ -5,6 +5,8 @@
 #include <QTextBlock>
 #include <QScrollBar>
 #include <QAbstractItemModel>
+#include <iostream>
+#include <unordered_set>
 
 DisassemblyWidget::DisassemblyWidget(QWidget *parent)
         : QGroupBox{parent},
@@ -122,6 +124,27 @@ void DisassemblyWidget::updateScroll(int value) {
     sbInstr->setValue(value);
 }
 
+uint64_t DisassemblyWidget::computeLineNumber(uint64_t pc_value) {
+    uint64_t first_address = getFirstAddress();
+    return (pc_value - first_address) / 4;
+}
+
+std::unordered_set<int64_t> DisassemblyWidget::getBreakpointAddresses() {
+    std::unordered_set<int64_t> addresses;
+    uint64_t first_address = getFirstAddress();
+
+    for (auto const &it: breakpointAreaWidget->getBreakpoints()) {
+        addresses.insert(first_address + (it.first * 4));
+    }
+
+    return addresses;
+}
+
+uint64_t DisassemblyWidget::getFirstAddress() const {
+    const std::string &str = addressArea->document()->findBlockByLineNumber(0).text().toStdString();
+    return std::stoi(str);
+}
+
 void DisassemblyWidget::addInstructionsList(const std::vector<std::string> &instructionsList) {
     addressArea->clear();
     instructionArea->clear();
@@ -134,7 +157,7 @@ void DisassemblyWidget::addInstructionsList(const std::vector<std::string> &inst
     std::stringstream ssAddresses;
     std::stringstream ssInstructions;
 
-    for (const std::string &instructionString : instructionsList) {
+    for (const std::string &instructionString: instructionsList) {
         //Parse the instruction string
         std::string address;
         std::string instruction;

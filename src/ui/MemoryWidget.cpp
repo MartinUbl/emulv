@@ -137,7 +137,12 @@ void MemoryWidget::setAddressRangeLimit(const int min, const int max) {
 }
 
 void MemoryWidget::updateMemory() {
-    memory_ = controller_->GetMemory(memory_from_, memory_to_);
+    try {
+        memory_ = controller_->GetMemory(memory_from_, memory_to_);
+    } catch (...) {
+        //TODO: Cannot read memory warning
+    }
+
     updateMemory_();
 }
 

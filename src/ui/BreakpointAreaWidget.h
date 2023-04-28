@@ -15,6 +15,7 @@ public:
     void setMaximumBreakpoints(int max);
     void removeBreakpoint(int line);
     void clear();
+    std::unordered_map<int, QWidget *> getBreakpoints();
 
 private:
     int max_breakpoints_ = 1;

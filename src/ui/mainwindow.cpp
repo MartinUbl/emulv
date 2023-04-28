@@ -7,6 +7,7 @@
 #include <QStringListModel>
 
 #include <sstream>
+#include <iostream>
 
 MainWindow::MainWindow(QWidget *parent, Controller *controller)
 : QMainWindow(parent)
@@ -209,17 +210,21 @@ void MainWindow::on_btnRun_clicked()
 void MainWindow::on_btnDebug_clicked()
 {
     setDebug(true);
+    controller->DebugProgram();
     updateRegisters();
+    ui->statusbar->showMessage(QString::fromStdString("Debugger started."));
+    memoryWidget_->setAddressRangeLimit(controller->GetMemoryStartAddress(), controller->GetMemoryEndAddress());
 }
 
 void MainWindow::on_btnStep_clicked()
 {
+    bool hasTerminated = controller->DebugStep();
     updateMemory();
     updateRegisters();
 
-    disassemblyWidget->highlightLine(disassemblyWidget->getHighlightedLine() + 1);
+    disassemblyWidget->highlightLine(disassemblyWidget->computeLineNumber(controller->GetPc()));
 
-    if (disassemblyWidget->getHighlightedLine() == disassemblyWidget->getInstructionCount())
+    if (hasTerminated || (disassemblyWidget->getHighlightedLine() == disassemblyWidget->getInstructionCount()) )
     {
         on_btnTerminate_clicked();
     }
@@ -229,4 +234,18 @@ void MainWindow::on_btnTerminate_clicked()
 {
     setDebug(false);
     updateRegisters();
+}
+
+void MainWindow::on_btnContinue_clicked() {
+    bool hasTerminated = controller->DebugContinue(disassemblyWidget->getBreakpointAddresses());
+
+    updateMemory();
+    updateRegisters();
+
+    disassemblyWidget->highlightLine(disassemblyWidget->computeLineNumber(controller->GetPc()));
+
+    if (hasTerminated || (disassemblyWidget->getHighlightedLine() == disassemblyWidget->getInstructionCount()) )
+    {
+        on_btnTerminate_clicked();
+    }
 }
