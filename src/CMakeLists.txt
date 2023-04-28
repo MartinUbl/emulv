@@ -20,16 +20,6 @@ set(PROJECT_SOURCES
         ui/aboutwindow.h ui/aboutwindow.cpp ui/aboutwindow.ui
         ui/disassemblywidget.h ui/disassemblywidget.cpp
         ui/Controller.cpp ui/Controller.h
-<<<<<<< Updated upstream
-		ui/peripherals/gpio/GPIOPortWidget.cpp ui/peripherals/gpio/GPIOPortWidget.h
-		ui/peripherals/gpio/GPIOPinButton.cpp ui/peripherals/gpio/GPIOPinButton.h
-		ui/peripherals/gpio/GPIOWidget.cpp ui/peripherals/gpio/GPIOWidget.h
-		ui/peripherals/uart/UARTWidget.cpp ui/peripherals/uart/UARTWidget.h
-		ui/peripherals/PeripheralsTabWidget.cpp ui/peripherals/PeripheralsTabWidget.h
-		ui/BreakpointAreaWidget.cpp ui/BreakpointAreaWidget.h
-		ui/RegistersWidget.cpp ui/RegistersWidget.h
-		ui/MemoryWidget.cpp ui/MemoryWidget.h)
-=======
         ui/peripherals/gpio/GPIOPortWidget.cpp ui/peripherals/gpio/GPIOPortWidget.h
         ui/peripherals/gpio/GPIOPinButton.cpp ui/peripherals/gpio/GPIOPinButton.h
         ui/peripherals/gpio/GPIOWidget.cpp ui/peripherals/gpio/GPIOWidget.h
@@ -38,7 +28,6 @@ set(PROJECT_SOURCES
         ui/BreakpointAreaWidget.cpp ui/BreakpointAreaWidget.h
         ui/RegistersWidget.cpp ui/RegistersWidget.h
         ui/MemoryWidget.cpp ui/MemoryWidget.h)
->>>>>>> Stashed changes
 
 #################################################################################
 #Download libraries from git repositories

@@ -94,8 +94,6 @@ std::vector<std::vector<uint8_t>> Controller::GetMemory(const uint64_t from, con
 
 std::vector<std::tuple<std::string, uint32_t>> Controller::GetRegisters() {
     return emulatorUnit_->GetRegisters();
-<<<<<<< Updated upstream
-=======
 }
 
 bool Controller::DebugStep() {
@@ -116,5 +114,4 @@ uint64_t Controller::GetMemoryEndAddress() {
 
 bool Controller::DebugContinue(const std::unordered_set<int64_t>& breakpointAddresses) {
     return emulatorUnit_->DebugContinue(breakpointAddresses);
->>>>>>> Stashed changes
 }

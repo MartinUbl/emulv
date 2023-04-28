@@ -29,19 +29,11 @@ namespace emulator {
     private:
         EventEmitter &emitter_;
         std::vector<uint8_t> binary_;
-<<<<<<< Updated upstream
-        riscv::Machine<riscv::RISCV64> *activeMachine_;
-        std::map<std::string, modules::PeripheralDevice *> *peripheral_devices_ = nullptr;
-        std::map<uint64_t, std::vector<modules::PeripheralDevice *>> page_peripherals_;
-
-
-=======
         riscv::Machine<riscv::RISCV64> *active_machine_ = nullptr;
         std::vector<std::tuple<std::string, uint32_t>> latest_register_values_;
         std::map<std::string, modules::PeripheralDevice *> *peripheral_devices_ = nullptr;
         std::map<uint64_t, std::vector<modules::PeripheralDevice *>> page_peripherals_;
 
->>>>>>> Stashed changes
         static std::string InstructonToString_(riscv::CPU<8> const &cpu, riscv::instruction_format format);
 
         uint64_t GetPageStart_(uint64_t address);
@@ -69,11 +61,6 @@ namespace emulator {
 
         void RegisterPeripherals(std::map<std::string, modules::PeripheralDevice *> &devices);
 
-<<<<<<< Updated upstream
-        std::vector<std::vector<uint8_t>> GetMemory(uint64_t from, uint64_t to);
-
-        std::vector<std::tuple<std::string, uint32_t>> GetRegisters();
-=======
         std::vector<std::tuple<std::string, uint32_t>> GetRegisters();
 
         std::vector<std::vector<uint8_t>> GetMemory(uint64_t from, uint64_t to);
@@ -89,7 +76,7 @@ namespace emulator {
         uint64_t GetMemoryStartAddress();
 
         uint64_t GetMemoryEndAddress();
->>>>>>> Stashed changes
+
     };
 
 }

@@ -2,7 +2,7 @@
  * Represents a header file related to GPIO peripheral device.
  * 
  * @author Stanislav Kafara
- * @version 2023-04-18
+ * @version 2023-04-27
  */
 
 
@@ -60,6 +60,8 @@ namespace modules {
             static constexpr size_t kPin_Count = 16;
             static constexpr size_t kReg_Size = 32;
             static constexpr uint32_t kReg_CTL_RESET_VALUE = 0x44444444;
+            static constexpr size_t kReg_CTL_Pin_Count = kPin_Count / 2;
+            static constexpr size_t kPin_Mode_Bits_Count = kReg_Size / kReg_CTL_Pin_Count;
 
             /** Port Control Register 0 */
             std::bitset<kReg_Size> Reg_CTL0;
@@ -69,6 +71,12 @@ namespace modules {
             std::bitset<kReg_Size> Reg_ISTAT;
             /** Port Output Control Register */
             std::bitset<kReg_Size> Reg_OCTL;
+
+            void Handle_Reg_CTL_Write(std::bitset<kReg_Size> &reg, const size_t regIndex, const uint32_t value);
+
+            // Announcing state changes
+            void Announce_Pin_Level_Change(const size_t pinNo, const GPIO_Pin_Level previousLevel, const GPIO_Pin_Level currentLevel) const;
+            void Announce_Pin_Mode_Change(const size_t pinNo, const GPIO_Pin_Mode previousMode, const GPIO_Pin_Mode currentMode) const;
 
         public:
             GPIO_Port(EventEmitter &emitter, uint64_t start_address, uint64_t end_address);
