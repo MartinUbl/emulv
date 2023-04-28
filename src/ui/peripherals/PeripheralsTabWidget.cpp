@@ -23,7 +23,7 @@ PeripheralsTabWidget::PeripheralsTabWidget(QWidget *parent, Controller *controll
 
         gpioPortWidget->setPinMode(event->Pin_No, event->Current_Mode);
 
-        delete event;
+        delete res;
     });
 
     controller_->GetEventEmitter().On(GPIO_Pin_Level_Changed_Event_Description, [this](AbstractEvent *res) {
@@ -33,11 +33,12 @@ PeripheralsTabWidget::PeripheralsTabWidget(QWidget *parent, Controller *controll
 
         gpioPortWidget->setPinStatus(event->Pin_No, event->Current_Level);
 
-        delete event;
+        delete res;
     });
 }
 
 void PeripheralsTabWidget::updateWidgets() {
+    clear();
     auto peripherals = controller_->GetPeripherals();
 
     for (const auto& peripheral : peripherals) {
@@ -46,7 +47,13 @@ void PeripheralsTabWidget::updateWidgets() {
 }
 
 void PeripheralsTabWidget::clear() {
-    tabWidget_->clear();
+    widgets_.clear();
+    delete tabWidget_;
+    delete gpioWidget_;
+    gpioWidget_ = nullptr;
+
+    tabWidget_ = new QTabWidget(this);
+    layout()->addWidget(tabWidget_);
 }
 
 void PeripheralsTabWidget::addWidget_(modules::PeripheralDevice *peripheralDevice, const std::string &label) {
