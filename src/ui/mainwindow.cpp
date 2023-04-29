@@ -144,6 +144,11 @@ void MainWindow::updateWidgetsEnabled() {
             peripheralsTabWidget_->setReadonly(false);
             break;
         case emulator::kDebugPaused:
+            memoryWidget_->setEnabled(true);
+            registersWidget_->setEnabled(true);
+            peripheralsTabWidget_->setEnabled(true);
+            peripheralsTabWidget_->setReadonly(false);
+            break;
         case emulator::kTerminated:
             memoryWidget_->setEnabled(true);
             registersWidget_->setEnabled(true);

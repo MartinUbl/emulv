@@ -15,7 +15,8 @@ class GPIOWidget : public PeripheralWidget {
 public:
     GPIOWidget(QWidget *parent = nullptr);
     void addPort(GPIOPortWidget *port_widget);
-    void setReadonly(bool readonly);
+    void setReadonly(bool readonly) override;
+
 private:
     std::unordered_map<std::string, GPIOPortWidget *> ports_;
 };
