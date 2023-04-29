@@ -87,7 +87,13 @@ MainWindow::MainWindow(QWidget *parent, Controller *controller)
 }
 
 MainWindow::~MainWindow() {
+    controller->Terminate();
+
     delete ui;
+
+    if (mRun_Thread && mRun_Thread->joinable()) {
+        mRun_Thread->join();
+    }
 }
 
 void MainWindow::updateUI() {
@@ -95,6 +101,15 @@ void MainWindow::updateUI() {
     updateWidgetsEnabled();
     updateToolBarButtons();
 
+    if (controller->GetProgramState() == emulator::kTerminated) {
+        // TODO: remove
+        uint64_t start_address = controller->GetMemoryStartAddress();
+        uint64_t end_address = start_address + 0xFFF;
+        memoryWidget_->setAddressRangeLimit(start_address, end_address);
+
+        updateRegisters();
+        updateMemory();
+    }
     // Breakpoint reached
     if (controller->GetProgramState() == emulator::kDebugPaused) {
         disassemblyWidget->highlightLine(controller->GetPc());
@@ -228,10 +243,6 @@ void MainWindow::on_btnStep_clicked() {
 
 void MainWindow::on_btnTerminate_clicked() {
     controller->Terminate();
-
-    uint64_t start_address = controller->GetMemoryStartAddress();
-    uint64_t end_address = start_address + 0xFFF;
-    memoryWidget_->setAddressRangeLimit(start_address, end_address);
 
     updateRegisters();
     updateMemory();
