@@ -54,10 +54,13 @@ void PeripheralsTabWidget::updateWidgets() {
 
 void PeripheralsTabWidget::clear() {
     widgets_.clear();
-    delete tabWidget_;
-    delete gpioWidget_;
-    gpioWidget_ = nullptr;
 
+    if (gpioWidget_ != nullptr) {
+        delete gpioWidget_;
+        gpioWidget_ = nullptr;
+    }
+
+    delete tabWidget_;
     tabWidget_ = new QTabWidget(this);
     layout()->addWidget(tabWidget_);
 }
