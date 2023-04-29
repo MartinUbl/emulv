@@ -5,27 +5,23 @@
 #ifndef EMULV_GPIOPIN_H
 #define EMULV_GPIOPIN_H
 
+#include <QObject>
 #include <QToolButton>
-
-enum class GPIO_PinMode {
-    kInput,
-    kOutput
-};
+#include "../../../utils/events/gpio_events.h"
 
 class GPIOPinButton : public QToolButton {
     Q_OBJECT
 public:
-    GPIOPinButton(QWidget *parent = nullptr);
-    void setMode(GPIO_PinMode mode);
+    GPIOPinButton(QWidget *parent = nullptr, int id = 0);
+    void setMode(modules::GPIO_Pin_Mode mode);
     void setStatus(bool status);
-    GPIO_PinMode mode();
+    int id() { return id_; }
+    modules::GPIO_Pin_Mode mode();
     bool status();
 
-private slots:
-    void on_clicked();
-
 private:
-    GPIO_PinMode mode_ = GPIO_PinMode::kInput;
+    int id_;
+    modules::GPIO_Pin_Mode mode_ = modules::GPIO_Pin_Mode::INPUT;
     bool status_ = false;
     void update_button();
 };

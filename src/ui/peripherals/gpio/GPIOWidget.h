@@ -14,7 +14,7 @@ class GPIOWidget : public QWidget {
 public:
     GPIOWidget(QWidget *parent = nullptr);
     void addPort(GPIOPortWidget *port_widget);
-    void setPinMode(std::string port, int pin_id, GPIO_PinMode mode);
+    void setPinMode(std::string port, int pin_id, modules::GPIO_Pin_Mode mode);
     void setPinStatus(std::string port, int pin_id, bool status);
 
 private:

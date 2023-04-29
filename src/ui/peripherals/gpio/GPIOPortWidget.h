@@ -8,18 +8,23 @@
 #include <QFrame>
 #include "GPIOPinButton.h"
 
+#include "../../Controller.h"
+
 class GPIOPortWidget : public QFrame {
     Q_OBJECT
 public:
-    GPIOPortWidget(QWidget *parent = nullptr, std::string label = "", std::vector<int> pin_ids = {});
-    void setPinMode(int pin_id, GPIO_PinMode input);
+    GPIOPortWidget(QWidget *parent = nullptr, Controller *controller = nullptr, std::string label = "", std::vector<int> pin_ids = {});
+    void setPinMode(int pin_id, modules::GPIO_Pin_Mode mode);
     void setPinStatus(int pin_id, bool status);
     std::string label();
 
 private:
+    Controller *controller_;
     std::string label_;
-    int pin_count_;
     std::unordered_map<int, GPIOPinButton *> pins_;
+
+private slots:
+    void onPinButtonClicked();
 };
 
 #endif //EMULV_GPIOPORTWIDGET_H

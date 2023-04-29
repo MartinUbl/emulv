@@ -8,6 +8,12 @@ set(CMAKE_AUTORCC ON)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
+SET(ADDITIONAL_CMAKE_CXX_FLAGS "-pthread")
+SET(ADDITIONAL_CMAKE_EXE_LINKER_FLAGS "-lpthread")
+
+SET(CMAKE_CXX_FLAGS  "${CMAKE_CXX_FLAGS} ${ADDITIONAL_CMAKE_CXX_FLAGS}")
+SET(CMAKE_EXE_LINKER_FLAGS  "${CMAKE_EXE_LINKER_FLAGS} ${ADDITIONAL_CMAKE_EXE_LINKER_FLAGS}")
+
 #################################################################################
 #Setup QT GUI #1
 #################################################################################
@@ -63,7 +69,7 @@ FetchContent_MakeAvailable(json-lib)
 
 add_library(emulator ./emulator/EmulatorUnit.cpp)
 add_library(modules modules/gpio.cpp modules/gpio.h ./modules/PeripheralDevice.h modules/ExampleDevice.cpp modules/ExampleDevice.h)
-add_library(events utils/events/EventEmitter.cpp utils/events/EventEmitter.h utils/events/AbstractEvent.h utils/events/SimpleEvent.cpp utils/events/SimpleEvent.h utils/events/gpio_events.cpp utils/events/gpio_events.h)
+add_library(events utils/events/EventEmitter.cpp utils/events/EventEmitter.h utils/events/AbstractEvent.h utils/events/SimpleEvent.cpp utils/events/SimpleEvent.h utils/events/PeripheralDeviceEvent.h utils/events/gpio_events.cpp utils/events/gpio_events.h)
 
 #################################################################################
 #Set up project target executable file

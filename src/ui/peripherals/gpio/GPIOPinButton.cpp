@@ -4,7 +4,9 @@
 
 #include "GPIOPinButton.h"
 
-GPIOPinButton::GPIOPinButton(QWidget *parent) : QToolButton(parent) {
+GPIOPinButton::GPIOPinButton(QWidget *parent, int id)
+    : QToolButton(parent)
+    , id_(id) {
     this->setFixedSize(25, 25);
     this->update_button();
     this->setIconSize(QSize(height() - 2, height() - 2));
@@ -12,7 +14,7 @@ GPIOPinButton::GPIOPinButton(QWidget *parent) : QToolButton(parent) {
     connect(this, SIGNAL(clicked(bool)), this, SLOT(on_clicked()));
 }
 
-void GPIOPinButton::setMode(GPIO_PinMode mode) {
+void GPIOPinButton::setMode(modules::GPIO_Pin_Mode mode) {
     mode_ = mode;
     update_button();
 }
@@ -22,7 +24,7 @@ void GPIOPinButton::setStatus(bool status) {
     update_button();
 }
 
-GPIO_PinMode GPIOPinButton::mode() {
+modules::GPIO_Pin_Mode GPIOPinButton::mode() {
     return mode_;
 }
 
@@ -30,14 +32,8 @@ bool GPIOPinButton::status() {
     return status_;
 }
 
-void GPIOPinButton::on_clicked() {
-    if (mode_ == GPIO_PinMode::kInput) {
-        setStatus(!status_);
-    }
-}
-
 void GPIOPinButton::update_button() {
-    if (mode_ == GPIO_PinMode::kInput) {
+    if (mode_ == modules::GPIO_Pin_Mode::INPUT) {
         this->setCursor(Qt::PointingHandCursor);
 
         if (status_ == false) {
@@ -47,7 +43,7 @@ void GPIOPinButton::update_button() {
             this->setIcon(QIcon(":img/gpio_input_high.svg"));
         }
     }
-    else if (mode_ == GPIO_PinMode::kOutput) {
+    else if (mode_ == modules::GPIO_Pin_Mode::OUTPUT) {
         this->unsetCursor();
 
         if (status_ == false) {

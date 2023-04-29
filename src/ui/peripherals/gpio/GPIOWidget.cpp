@@ -24,7 +24,7 @@ void GPIOWidget::addPort(GPIOPortWidget *port_widget) {
     this->layout()->addWidget(widget);
 }
 
-void GPIOWidget::setPinMode(std::string port, int pin_id, GPIO_PinMode mode) {
+void GPIOWidget::setPinMode(std::string port, int pin_id, modules::GPIO_Pin_Mode mode) {
     ports_[port]->setPinMode(pin_id, mode);
 }
 

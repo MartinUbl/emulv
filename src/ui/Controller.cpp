@@ -41,12 +41,17 @@ Controller::Controller(int argc, char **argv) {
 }
 
 void Controller::CreatePeripherals_() {
-    activePeripherals_["PORT_A"] = new modules::GPIO_Port(emitter_, 0x40010800, 0x40010BFF);
-    activePeripherals_["PORT_B"] = new modules::GPIO_Port(emitter_, 0x40010C00, 0x40010FFF);
+    activePeripherals_["PORT_A"] = new modules::GPIO_Port("PORT_A", emitter_, 0x40010800, 0x40010BFF);
+    activePeripherals_["PORT_B"] = new modules::GPIO_Port("PORT_B", emitter_, 0x40010C00, 0x40010FFF);
+    activePeripherals_["PORT_C"] = new modules::GPIO_Port("PORT_C", emitter_, 0x40011000, 0x40011BFF);
 }
 
 void Controller::RegisterPeripherals_() {
     emulatorUnit_->RegisterPeripherals(activePeripherals_);
+}
+
+std::map<std::string, modules::PeripheralDevice*> Controller::GetPeripherals() {
+    return activePeripherals_;
 }
 
 Controller::~Controller() {
@@ -115,3 +120,17 @@ uint64_t Controller::GetMemoryEndAddress() {
 bool Controller::DebugContinue(const std::unordered_set<int64_t>& breakpointAddresses) {
     return emulatorUnit_->DebugContinue(breakpointAddresses);
 }
+
+void Controller::SetPinStatus(std::string module, int pin, bool status) {
+    auto port = dynamic_cast<modules::GPIO_Port*>(activePeripherals_[module]);
+    if (port == nullptr) {
+        return;
+    }
+
+    port->Set_Pin_Level(pin, status ? modules::GPIO_Pin_Level::HIGH : modules::GPIO_Pin_Level::LOW);
+}
+
+EventEmitter &Controller::GetEventEmitter() {
+    return emitter_;
+}
+
