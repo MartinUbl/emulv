@@ -13,7 +13,7 @@ MainWindow::MainWindow(QWidget *parent, Controller *controller)
 : QMainWindow(parent)
 , ui(new Ui::MainWindow)
 , controller(controller)
-, disassemblyWidget(new DisassemblyWidget(this))
+, disassemblyWidget(new DisassemblyWidget(this, controller))
 , registersWidget_(new RegistersWidget(this))
 , memoryWidget_(new MemoryWidget(this, controller))
 , peripheralsTabWidget_(new PeripheralsTabWidget(this, controller)) {
@@ -77,67 +77,96 @@ MainWindow::MainWindow(QWidget *parent, Controller *controller)
 
     peripheralsTabWidget_->updateWidgets();
 
-    // Following code is only for ui testing purposes and will eventually be removed
-    memoryWidget_->setAddressRangeLimit(0, 0xfff);
+    memoryWidget_->setEnabled(false);
+    registersWidget_->setEnabled(false);
+    peripheralsTabWidget_->setEnabled(false);
+
+    controller->GetEventEmitter().On(emulator::State_Changed_Event_Description, [this](AbstractEvent *res) {
+        QMetaObject::invokeMethod(this, "updateUI");
+    });
 }
 
-MainWindow::~MainWindow()
-{
+MainWindow::~MainWindow() {
     delete ui;
 }
 
-void MainWindow::setRunning(bool running)
-{
-    this->running = running;
-
+void MainWindow::updateUI() {
+    updateRunningIndicator();
+    updateWidgetsEnabled();
     updateToolBarButtons();
-    updateMemoryWidgetEnabled();
-    updateRegistersWidgetEnabled();
 
-    ui->line->setVisible(!running);
-    ui->runningIndicator->setVisible(running);
-    ui->statusbar->showMessage(running ? "Running ..." : "");
+    // Breakpoint reached
+    if (controller->GetProgramState() == emulator::kDebugPaused) {
+        disassemblyWidget->highlightLine(controller->GetPc());
+
+        updateRegisters();
+        updateMemory();
+    }
+    else {
+        disassemblyWidget->highlightLine(-1);
+    }
 }
 
-void MainWindow::setDebug(bool debug)
-{
-    this->debug = debug;
-    setRunning(debug);
-
-    updateMemory();
-    updateRegisters();
-
-    disassemblyWidget->highlightLine(debug ? 0 : -1);
-
-    if (debug)
-    {
-        ui->runningIndicator->setVisible(false);
+void MainWindow::updateRunningIndicator() {
+    switch (controller->GetProgramState()) {
+        case emulator::kRunning:
+        case emulator::kRunningDebug:
+        case emulator::kDebugPaused:
+            ui->runningIndicator->setVisible(false);
+            ui->debugIndicator->setVisible(true);
+            break;
+        default:
+            ui->runningIndicator->setVisible(false);
+            ui->debugIndicator->setVisible(false);
+            break;
     }
-
-    ui->debugIndicator->setVisible(debug);
-    ui->statusbar->showMessage(debug ? "Running in debug mode ..." : "");
 }
 
-void MainWindow::updateMemoryWidgetEnabled()
-{
-    if (this->running && !this->debug)
-    {
-        ui->memoryWidget->setEnabled(false);
-        return;
+void MainWindow::updateWidgetsEnabled() {
+    switch (controller->GetProgramState()) {
+        case emulator::kRunning:
+        case emulator::kRunningDebug:
+            memoryWidget_->setEnabled(false);
+            registersWidget_->setEnabled(false);
+            peripheralsTabWidget_->setEnabled(true);
+            break;
+        case emulator::kDebugPaused:
+        case emulator::kTerminated:
+            memoryWidget_->setEnabled(true);
+            registersWidget_->setEnabled(true);
+            peripheralsTabWidget_->setEnabled(true);
+            break;
+        default:
+            memoryWidget_->setEnabled(false);
+            registersWidget_->setEnabled(false);
+            peripheralsTabWidget_->setEnabled(false);
+            break;
     }
-
-    ui->memoryWidget->setEnabled(true);
 }
 
-void MainWindow::updateRegistersWidgetEnabled()
-{
-    if (this->running && !this->debug)
-    {
-        ui->registersWidget->setEnabled(false);
-        return;
-    }
+void MainWindow::updateToolBarButtons() {
+    auto state = controller->GetProgramState();
 
-    ui->registersWidget->setEnabled(true);
+    bool notRunningButtonsVisible = state == emulator::kDefault ||
+                             state == emulator::kReady ||
+                             state == emulator::kTerminated;
+
+    bool runningButtonsVisible = !notRunningButtonsVisible;
+
+    ui->btnRun->setEnabled(state == emulator::kReady || state == emulator::kTerminated);
+    ui->btnRun->setVisible(notRunningButtonsVisible);
+
+    ui->btnDebug->setEnabled(state == emulator::kReady || state == emulator::kTerminated);
+    ui->btnDebug->setVisible(notRunningButtonsVisible);
+
+    ui->btnTerminate->setEnabled(runningButtonsVisible);
+    ui->btnTerminate->setVisible(runningButtonsVisible);
+
+    ui->btnStep->setEnabled(state == emulator::kDebugPaused);
+    ui->btnStep->setVisible(runningButtonsVisible);
+
+    ui->btnContinue->setEnabled(state == emulator::kDebugPaused);
+    ui->btnContinue->setVisible(runningButtonsVisible);
 }
 
 void MainWindow::updateRegisters() {
@@ -148,47 +177,30 @@ void MainWindow::updateMemory() {
     memoryWidget_->updateMemory();
 }
 
-void MainWindow::updateToolBarButtons()
-{
-    ui->btnRun->setEnabled(!running && controller->IsFileLoaded());
-    ui->btnRun->setVisible(!running);
-
-    ui->btnDebug->setEnabled(!running && controller->IsFileLoaded());
-    ui->btnDebug->setVisible(!running);
-
-    ui->btnStep->setEnabled(debug);
-    ui->btnStep->setVisible(debug);
-
-    ui->btnTerminate->setEnabled(running);
-    ui->btnTerminate->setVisible(running);
-
-    ui->btnContinue->setEnabled(debug);
-    ui->btnContinue->setVisible(debug);
-}
-
-void MainWindow::on_action_Open_triggered()
-{
+void MainWindow::on_action_Open_triggered() {
     QString fileName = QFileDialog::getOpenFileName(this, "Select binary file", ".");
     ui->statusbar->showMessage(fileName);
     //If no file was selected
     if (fileName.isEmpty()) {
         return;
     }
+
     controller->LoadFile(fileName.toStdString());
     disassemblyWidget->addInstructionsList(controller->GetDisassembly());
     updateToolBarButtons();
+
+    registersWidget_->setEnabled(false);
+    memoryWidget_->setEnabled(false);
+    peripheralsTabWidget_->setEnabled(false);
 }
 
-void MainWindow::on_action_About_RISCVEmulator_triggered()
-{
+void MainWindow::on_action_About_RISCVEmulator_triggered() {
     AboutWindow aboutWindow;
     aboutWindow.setModal(true);
     aboutWindow.exec();
 }
 
-void MainWindow::on_btnRun_clicked()
-{
-    setRunning(true);
+void MainWindow::on_btnRun_clicked() {
     if (mRun_Thread && mRun_Thread->joinable()) {
         mRun_Thread->join();
     }
@@ -196,45 +208,39 @@ void MainWindow::on_btnRun_clicked()
     mRun_Thread = std::make_unique<std::thread>(&Controller::RunProgram, controller);
 }
 
-void MainWindow::on_btnDebug_clicked()
-{
-    setDebug(true);
-    controller->DebugProgram();
-    updateRegisters();
-    ui->statusbar->showMessage(QString::fromStdString("Debugger started."));
-    memoryWidget_->setAddressRangeLimit(controller->GetMemoryStartAddress(), controller->GetMemoryEndAddress());
-}
-
-void MainWindow::on_btnStep_clicked()
-{
-    bool hasTerminated = controller->DebugStep();
-    updateMemory();
-    updateRegisters();
-
-    disassemblyWidget->highlightLine(disassemblyWidget->computeLineNumber(controller->GetPc()));
-
-    if (hasTerminated || (disassemblyWidget->getHighlightedLine() == disassemblyWidget->getInstructionCount()) )
-    {
-        on_btnTerminate_clicked();
+void MainWindow::on_btnDebug_clicked() {
+    if (mRun_Thread && mRun_Thread->joinable()) {
+        mRun_Thread->join();
     }
+
+    ui->statusbar->showMessage(QString::fromStdString("Debugger started."));
+    mRun_Thread = std::make_unique<std::thread>(&Controller::DebugProgram, controller);
 }
 
-void MainWindow::on_btnTerminate_clicked()
-{
-    setDebug(false);
+void MainWindow::on_btnStep_clicked() {
+    controller->DebugStep();
+
     updateRegisters();
+    updateMemory();
+
+    disassemblyWidget->highlightLine(controller->GetPc());
+}
+
+void MainWindow::on_btnTerminate_clicked() {
+    controller->Terminate();
+
+    uint64_t start_address = controller->GetMemoryStartAddress();
+    uint64_t end_address = start_address + 0xFFF;
+    memoryWidget_->setAddressRangeLimit(start_address, end_address);
+
+    updateRegisters();
+    updateMemory();
 }
 
 void MainWindow::on_btnContinue_clicked() {
-    bool hasTerminated = controller->DebugContinue(disassemblyWidget->getBreakpointAddresses());
-
-    updateMemory();
-    updateRegisters();
-
-    disassemblyWidget->highlightLine(disassemblyWidget->computeLineNumber(controller->GetPc()));
-
-    if (hasTerminated || (disassemblyWidget->getHighlightedLine() == disassemblyWidget->getInstructionCount()) )
-    {
-        on_btnTerminate_clicked();
+    if (mRun_Thread && mRun_Thread->joinable()) {
+        mRun_Thread->join();
     }
+
+    mRun_Thread = std::make_unique<std::thread>(&Controller::DebugContinue, controller);
 }

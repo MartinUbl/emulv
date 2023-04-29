@@ -66,11 +66,10 @@ Controller::~Controller() {
 //# UI interface methods
 //######################################################################################################################
 
-int Controller::RunProgram() {
+void Controller::RunProgram() {
     std::vector<std::string> arguments{"Program", "30"}; //TODO: remove
     std::cout << std::endl << "Running program..." << std::endl;
-    int exitCode = emulatorUnit_->Execute(arguments);
-    return exitCode;
+    emulatorUnit_->Execute(arguments);
 }
 
 void Controller::DebugProgram() {
@@ -101,8 +100,12 @@ std::vector<std::tuple<std::string, uint32_t>> Controller::GetRegisters() {
     return emulatorUnit_->GetRegisters();
 }
 
-bool Controller::DebugStep() {
-    return emulatorUnit_->DebugStep();
+emulator::EmulatorState Controller::GetProgramState() {
+    return emulatorUnit_->GetState();
+}
+
+void Controller::DebugStep() {
+    emulatorUnit_->DebugStep();
 }
 
 uint64_t Controller::GetPc() {
@@ -110,15 +113,19 @@ uint64_t Controller::GetPc() {
 }
 
 uint64_t Controller::GetMemoryStartAddress() {
-    return emulatorUnit_->GetMemoryStartAddress();
+    return emulatorUnit_->GetMemoryStartAddress() / 16;
 }
 
 uint64_t Controller::GetMemoryEndAddress() {
-    return emulatorUnit_->GetMemoryEndAddress();
+    return emulatorUnit_->GetMemoryEndAddress() / 16;
 }
 
-bool Controller::DebugContinue(const std::unordered_set<int64_t>& breakpointAddresses) {
-    return emulatorUnit_->DebugContinue(breakpointAddresses);
+void Controller::DebugContinue() {
+    emulatorUnit_->DebugContinue();
+}
+
+void Controller::Terminate() {
+    emulatorUnit_->Terminate();
 }
 
 void Controller::SetPinStatus(std::string module, int pin, bool status) {
@@ -132,5 +139,17 @@ void Controller::SetPinStatus(std::string module, int pin, bool status) {
 
 EventEmitter &Controller::GetEventEmitter() {
     return emitter_;
+}
+
+int Controller::GetProgramReturnValue() {
+    emulatorUnit_->GetReturnValue();
+}
+
+void Controller::AddBreakpoint(uint64_t address) {
+    emulatorUnit_->AddBreakpoint(address);
+}
+
+void Controller::RemoveBreakpoint(uint64_t address) {
+    emulatorUnit_->RemoveBreakpoint(address);
 }
 

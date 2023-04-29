@@ -4,10 +4,11 @@
 
 #include <QLabel>
 #include "BreakpointAreaWidget.h"
+#include "../utils/events/BreakpointAreaWidgetEvents.h"
 
-BreakpointAreaWidget::BreakpointAreaWidget(QWidget *parent)
+BreakpointAreaWidget::BreakpointAreaWidget(QWidget *parent, Controller *controller)
     : QFrame(parent)
-    , breakpoints_() {
+    , controller_(controller) {
 
 }
 
@@ -23,13 +24,13 @@ void BreakpointAreaWidget::mousePressEvent(QMouseEvent *event) {
     int clicked_y = event->pos().y();
 
     // Ignore top padding
-    if (clicked_y < 6) {
+    if (clicked_y < kTopPadding) {
         return;
     }
 
     int breakpoint_height = this->width();
-    int line = (clicked_y - 6) / breakpoint_height;
-    int y = line * breakpoint_height + 6;
+    int line = (clicked_y - kTopPadding) / breakpoint_height;
+    int y = line * breakpoint_height + kTopPadding;
 
     if (line > max_breakpoints_ - 1) {
         return;
@@ -52,12 +53,16 @@ void BreakpointAreaWidget::mousePressEvent(QMouseEvent *event) {
     breakpoint->show();
 
     breakpoints_[line] = breakpoint;
+
+    controller_->GetEventEmitter().Emit(Breakpoint_Added_Event_Description, new BreakpointAreaWidgetEvent(line));
 }
 
 void BreakpointAreaWidget::removeBreakpoint(int line) {
     QWidget *breakpoint = breakpoints_[line];
     breakpoints_.erase(line);
     delete breakpoint;
+
+    controller_->GetEventEmitter().Emit(Breakpoint_Removed_Event_Description, new BreakpointAreaWidgetEvent(line));
 }
 
 void BreakpointAreaWidget::setMaximumBreakpoints(int max) {
@@ -66,8 +71,4 @@ void BreakpointAreaWidget::setMaximumBreakpoints(int max) {
     }
 
     max_breakpoints_ = max;
-}
-
-std::unordered_map<int, QWidget *> BreakpointAreaWidget::getBreakpoints() {
-    return breakpoints_;
 }
