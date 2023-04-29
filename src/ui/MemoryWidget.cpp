@@ -138,7 +138,7 @@ void MemoryWidget::setAddressRangeLimit(const int min, const int max) {
 
 void MemoryWidget::updateMemory() {
     try {
-        memory_ = controller_->GetMemory(memory_from_, memory_to_);
+        memory_ = controller_->GetMemory(memory_from_ * 16, memory_to_ * 16);
     } catch (...) {
         //TODO: Cannot read memory warning
     }
@@ -205,12 +205,14 @@ void MemoryWidget::updateMemory_() {
         ++address;
     }
 
-    int scroll = te_memory_->verticalScrollBar()->value();
+    int v_scroll = te_memory_->verticalScrollBar()->value();
+    int h_scroll = te_memory_->horizontalScrollBar()->value();
 
     te_header_->setText(QString::fromStdString(formatHeader_()));
     te_memory_->setText(QString::fromStdString(ss.str()));
 
-    te_memory_->verticalScrollBar()->setValue(scroll);
+    te_memory_->verticalScrollBar()->setValue(v_scroll);
+    te_memory_->horizontalScrollBar()->setValue(h_scroll);
 }
 
 void MemoryWidget::updateMemorySpinBoxes_() {

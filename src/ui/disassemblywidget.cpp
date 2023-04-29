@@ -8,17 +8,20 @@
 #include <iostream>
 #include <unordered_set>
 
-DisassemblyWidget::DisassemblyWidget(QWidget *parent)
-        : QGroupBox{parent},
-          addressArea(new QTextEdit(this)),
-          instructionArea(new QTextEdit(this)),
-          breakpointScrollArea(new QScrollArea(this)) {
+#include "../../../utils/events/BreakpointAreaWidgetEvents.h"
+
+DisassemblyWidget::DisassemblyWidget(QWidget *parent, Controller *controller)
+: QGroupBox{parent}
+, controller_(controller)
+, addressArea(new QTextEdit(this))
+, instructionArea(new QTextEdit(this))
+, breakpointScrollArea(new QScrollArea(this)) {
     QFont font("Monospace");
     font.setStyleHint(QFont::TypeWriter);
     addressArea->setFont(font);
     instructionArea->setFont(font);
 
-    breakpointAreaWidget = new BreakpointAreaWidget(breakpointScrollArea);
+    breakpointAreaWidget = new BreakpointAreaWidget(breakpointScrollArea, controller);
 
     breakpointAreaWidget->setFixedWidth(addressArea->fontMetrics().height());
     breakpointAreaWidget->setObjectName("breakpointAreaWidget");
@@ -46,7 +49,7 @@ DisassemblyWidget::DisassemblyWidget(QWidget *parent)
     instructionArea->setLineWidth(0);
     instructionArea->setWordWrapMode(QTextOption::NoWrap);
 
-    QHBoxLayout *layout = new QHBoxLayout(this);
+    auto *layout = new QHBoxLayout(this);
     layout->addWidget(breakpointScrollArea);
     layout->addWidget(addressArea);
     layout->addWidget(instructionArea);
@@ -58,19 +61,24 @@ DisassemblyWidget::DisassemblyWidget(QWidget *parent)
             SLOT(onBreakpointScrollAreaScroll()));
     connect(addressArea->verticalScrollBar(), SIGNAL(valueChanged(int)), this, SLOT(onAddressAreaScroll()));
     connect(instructionArea->verticalScrollBar(), SIGNAL(valueChanged(int)), this, SLOT(onInstructionAreaScroll()));
+
+    controller_->GetEventEmitter().On(Breakpoint_Added_Event_Description, [this](AbstractEvent *res) {
+        auto event = dynamic_cast<BreakpointAreaWidgetEvent *>(res);
+        addBreakpoint_(event->Line);
+        delete res;
+    });
+
+    controller_->GetEventEmitter().On(Breakpoint_Removed_Event_Description, [this](AbstractEvent *res) {
+        auto event = dynamic_cast<BreakpointAreaWidgetEvent *>(res);
+        removeBreakpoint_(event->Line);
+        delete res;
+    });
 }
 
-void DisassemblyWidget::addInstruction(QString address, QString instruction) {
-    addressArea->append(address);
-    instructionArea->append(instruction);
-    updateBreakpointWidget();
-}
-
-
-void DisassemblyWidget::highlightLine(int line) {
+void DisassemblyWidget::highlightLine(uint64_t address) {
     QList<QTextEdit::ExtraSelection> extraSelections;
 
-    highlightedLine = line;
+    int line = findLine_(address);
 
     if (line >= 0) {
         QTextEdit::ExtraSelection selection;
@@ -89,14 +97,6 @@ void DisassemblyWidget::highlightLine(int line) {
     }
 
     instructionArea->setExtraSelections(extraSelections);
-}
-
-int DisassemblyWidget::getHighlightedLine() {
-    return highlightedLine;
-}
-
-int DisassemblyWidget::getInstructionCount() {
-    return addressArea->document()->blockCount();
 }
 
 void DisassemblyWidget::onBreakpointScrollAreaScroll() {
@@ -124,28 +124,9 @@ void DisassemblyWidget::updateScroll(int value) {
     sbInstr->setValue(value);
 }
 
-uint64_t DisassemblyWidget::computeLineNumber(uint64_t pc_value) {
-    uint64_t first_address = getFirstAddress();
-    return (pc_value - first_address) / 4;
-}
-
-std::unordered_set<int64_t> DisassemblyWidget::getBreakpointAddresses() {
-    std::unordered_set<int64_t> addresses;
-    uint64_t first_address = getFirstAddress();
-
-    for (auto const &it: breakpointAreaWidget->getBreakpoints()) {
-        addresses.insert(first_address + (it.first * 4));
-    }
-
-    return addresses;
-}
-
-uint64_t DisassemblyWidget::getFirstAddress() const {
-    const std::string &str = addressArea->document()->findBlockByLineNumber(0).text().toStdString();
-    return std::stoi(str);
-}
-
 void DisassemblyWidget::addInstructionsList(const std::vector<std::string> &instructionsList) {
+    addresses_.clear();
+    address_lines_.clear();
     addressArea->clear();
     instructionArea->clear();
     breakpointAreaWidget->clear();
@@ -157,6 +138,7 @@ void DisassemblyWidget::addInstructionsList(const std::vector<std::string> &inst
     std::stringstream ssAddresses;
     std::stringstream ssInstructions;
 
+    int line = 0;
     for (const std::string &instructionString: instructionsList) {
         //Parse the instruction string
         std::string address;
@@ -165,6 +147,10 @@ void DisassemblyWidget::addInstructionsList(const std::vector<std::string> &inst
 
         ssAddresses << address << "\n";
         ssInstructions << instruction << "\n";
+
+        int i_address = std::stoi(address);
+        addresses_.push_back(i_address);
+        address_lines_[i_address] = line++;
     }
 
     std::string addressAreaText = ssAddresses.str();
@@ -184,7 +170,7 @@ void DisassemblyWidget::updateBreakpointWidget() {
     int lines = addressArea->document()->blockCount();
 
     breakpointAreaWidget->setMaximumBreakpoints(lines);
-    breakpointAreaWidget->setFixedHeight(lines * lineHeight + 8);
+    breakpointAreaWidget->setFixedHeight(lines * lineHeight + kBottomPadding);
 }
 
 void DisassemblyWidget::ParseInstructionString(const std::string &instructionString, std::string &address,
@@ -210,4 +196,21 @@ void DisassemblyWidget::ParseInstructionString(const std::string &instructionStr
             break;
         }
     }
+}
+
+int DisassemblyWidget::findLine_(uint64_t address) {
+    auto it = address_lines_.find(address);
+    if (it == address_lines_.end()) {
+        return -1;
+    }
+
+    return it->second;
+}
+
+void DisassemblyWidget::addBreakpoint_(int line) {
+    controller_->AddBreakpoint(addresses_.at(line));
+}
+
+void DisassemblyWidget::removeBreakpoint_(int line) {
+    controller_->RemoveBreakpoint(addresses_.at(line));
 }

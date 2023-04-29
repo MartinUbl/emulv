@@ -69,7 +69,7 @@ FetchContent_MakeAvailable(json-lib)
 
 add_library(emulator ./emulator/EmulatorUnit.cpp)
 add_library(modules modules/gpio.cpp modules/gpio.h ./modules/PeripheralDevice.h modules/ExampleDevice.cpp modules/ExampleDevice.h)
-add_library(events utils/events/EventEmitter.cpp utils/events/EventEmitter.h utils/events/AbstractEvent.h utils/events/SimpleEvent.cpp utils/events/SimpleEvent.h utils/events/PeripheralDeviceEvent.h utils/events/gpio_events.cpp utils/events/gpio_events.h)
+add_library(events utils/events/EventEmitter.cpp utils/events/EventEmitter.h utils/events/AbstractEvent.h utils/events/SimpleEvent.cpp utils/events/SimpleEvent.h utils/events/PeripheralDeviceEvent.h utils/events/gpio_events.cpp utils/events/gpio_events.h utils/events/BreakpointAreaWidgetEvents.cpp utils/events/BreakpointAreaWidgetEvents.h)
 
 #################################################################################
 #Set up project target executable file

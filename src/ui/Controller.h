@@ -27,7 +27,7 @@ public:
     ~Controller();
 
     int ShowWindow();
-    int RunProgram();
+    void RunProgram();
     EventEmitter &GetEventEmitter();
     std::vector<std::string> GetDisassembly();
     std::map<std::string, modules::PeripheralDevice*> GetPeripherals();
@@ -37,13 +37,23 @@ public:
     std::vector<std::vector<uint8_t>> GetMemory(uint64_t from, uint64_t to);
     std::vector<std::tuple<std::string, uint32_t>> GetRegisters();
 
+    emulator::EmulatorState GetProgramState();
+
     void DebugProgram();
 
-    bool DebugStep();
+    void DebugStep();
 
     uint64_t GetPc();
 
-    bool DebugContinue(const std::unordered_set<int64_t>& breakpointAddresses);
+    void DebugContinue();
+
+    void Terminate();
+
+    int GetProgramReturnValue();
+
+    void AddBreakpoint(uint64_t address);
+
+    void RemoveBreakpoint(uint64_t address);
 
     uint64_t GetMemoryStartAddress();
 

@@ -24,15 +24,23 @@
 #include "libriscv/machine.hpp"
 
 namespace emulator {
+    enum EmulatorState {
+        kDefault, kReady, kRunning, kRunningDebug, kDebugPaused, kTerminated
+    };
+
+    const std::string State_Changed_Event_Description {"emulator-state-changed"};
 
     class EmulatorUnit {
     private:
         EventEmitter &emitter_;
+
+        EmulatorState state_ = kDefault;
         std::vector<uint8_t> binary_;
         riscv::Machine<riscv::RISCV64> *active_machine_ = nullptr;
         std::vector<std::tuple<std::string, uint32_t>> latest_register_values_;
         std::map<std::string, modules::PeripheralDevice *> *peripheral_devices_ = nullptr;
         std::map<uint64_t, std::vector<modules::PeripheralDevice *>> page_peripherals_;
+        std::unordered_set<uint64_t> breakpoints_;
 
         static std::string InstructonToString_(riscv::CPU<8> const &cpu, riscv::instruction_format format);
 
@@ -44,6 +52,7 @@ namespace emulator {
 
         void SetupMemoryTraps_(riscv::Machine<riscv::RISCV64> &machine);
 
+        void SetState_(EmulatorState state);
     public:
         EmulatorUnit(EventEmitter &emitter) : emitter_(emitter), page_peripherals_() {
             for (int i = 0; i < 33; i++) {
@@ -55,7 +64,9 @@ namespace emulator {
 
         void LoadElfFile(const std::string &file_path);
 
-        int Execute(const std::vector<std::string> &machine_arguments);
+        EmulatorState GetState();
+
+        void Execute(const std::vector<std::string> &machine_arguments);
 
         std::vector<std::string> Disassemble();
 
@@ -67,11 +78,19 @@ namespace emulator {
 
         void Debug(const std::vector<std::string> &machine_arguments);
 
-        bool DebugStep();
+        void DebugStep();
 
         uint64_t GetPc();
 
-        bool DebugContinue(const std::unordered_set<int64_t>& breakpointAddresses);
+        void DebugContinue();
+
+        void Terminate();
+
+        int GetReturnValue();
+
+        void AddBreakpoint(uint64_t address);
+
+        void RemoveBreakpoint(uint64_t address);
 
         uint64_t GetMemoryStartAddress();
 

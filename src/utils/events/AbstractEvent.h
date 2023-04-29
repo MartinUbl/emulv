@@ -10,6 +10,7 @@
  */
 enum class eventType {
     SimpleEvent,
+    Breakpoint_Area_Widget_Event,
     GPIO_Pin_Mode_Changed_Event,
     GPIO_Pin_Level_Changed_Event
 };

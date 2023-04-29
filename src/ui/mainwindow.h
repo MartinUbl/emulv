@@ -24,6 +24,7 @@ public:
     ~MainWindow();
 
 private slots:
+    void updateUI();
     void on_action_Open_triggered();
     void on_action_About_RISCVEmulator_triggered();
     void on_btnRun_clicked();
@@ -43,14 +44,8 @@ private:
 
     std::unique_ptr<std::thread> mRun_Thread;
 
-    bool running = false;
-    bool debug = false;
-
-    void setRunning(bool running);
-    void setDebug(bool debug);
-
-    void updateMemoryWidgetEnabled();
-    void updateRegistersWidgetEnabled();
+    void updateRunningIndicator();
+    void updateWidgetsEnabled();
     void updateRegisters();
     void updateMemory();
     void updateToolBarButtons();

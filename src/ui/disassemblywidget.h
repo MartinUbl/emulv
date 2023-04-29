@@ -13,23 +13,13 @@
 class DisassemblyWidget : public QGroupBox {
 Q_OBJECT
 public:
-    explicit DisassemblyWidget(QWidget *parent = nullptr);
-
-    void addInstruction(QString address, QString instruction);
+    explicit DisassemblyWidget(QWidget *parent = nullptr, Controller *controller = nullptr);
 
     void addInstructionsList(const std::vector<std::string> &instructionsList);
 
-    void highlightLine(int line);
-
-    int getHighlightedLine();
-
-    int getInstructionCount();
+    void highlightLine(uint64_t address);
 
     void updateBreakpointWidget();
-
-    uint64_t computeLineNumber(uint64_t pc_value);
-
-    std::unordered_set<int64_t> getBreakpointAddresses();
 
 private slots:
 
@@ -40,19 +30,26 @@ private slots:
     void onInstructionAreaScroll();
 
 private:
+    static constexpr int kBottomPadding = 8;
+
+    Controller *controller_;
     QTextEdit *addressArea;
     QTextEdit *instructionArea;
     QScrollArea *breakpointScrollArea;
     BreakpointAreaWidget *breakpointAreaWidget;
 
-    int highlightedLine = -1;
+    std::vector<uint64_t> addresses_;
+    std::unordered_map<uint64_t, int> address_lines_;
 
     void updateScroll(int value);
 
     static void
     ParseInstructionString(const std::string &instructionString, std::string &address, std::string &instruction);
 
-    uint64_t getFirstAddress() const;
+    int findLine_(uint64_t address);
+
+    void addBreakpoint_(int line);
+    void removeBreakpoint_(int line);
 };
 
 #endif // DISASSEMBLYWIDGET_H

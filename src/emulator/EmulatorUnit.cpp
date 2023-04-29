@@ -1,5 +1,6 @@
 #include <fstream>
 #include <iostream>
+#include <limits>
 
 #include <libriscv/machine.hpp>
 #include "EmulatorUnit.h"
@@ -25,6 +26,18 @@ namespace emulator {
                 std::istreambuf_iterator<char>()
         );
 
+        SetState_(kReady);
+    }
+
+    void EmulatorUnit::SetState_(emulator::EmulatorState state) {
+        if (state != state_) {
+            state_ = state;
+            emitter_.Emit(emulator::State_Changed_Event_Description, nullptr);
+        }
+    }
+
+    emulator::EmulatorState EmulatorUnit::GetState() {
+        return state_;
     }
 
     /**
@@ -33,6 +46,11 @@ namespace emulator {
      * @return Exit code of the program
      */
     void EmulatorUnit::Debug(const std::vector<std::string> &machine_arguments) {
+        //Delete old machine
+        if (active_machine_ != nullptr) {
+            delete active_machine_;
+        }
+
         // Create a new 64-bit RISC-V machine
         active_machine_ = new riscv::Machine<riscv::RISCV64>{binary_};
 
@@ -41,37 +59,61 @@ namespace emulator {
                 machine_arguments,
                 {"LC_TYPE=C", "LC_ALL=C", "USER=root"});
         active_machine_->setup_linux_syscalls();
-        active_machine_->set_max_instructions(16'000'000);
+        active_machine_->set_max_instructions(std::numeric_limits<uint64_t>::max());
 
         // Setup memory traps for peripherals
         if (peripheral_devices_ != nullptr)
             SetupMemoryTraps_(*active_machine_);
+
+        SetState_(kRunningDebug);
+        try {
+            while (!active_machine_->stopped()) {
+                if (breakpoints_.count(active_machine_->cpu.pc())) {
+                    SetState_(kDebugPaused);
+                    return;
+                }
+                active_machine_->cpu.step_one();
+            }
+        } catch (const std::exception &e) {
+            std::cout << "Program error: " << e.what() << std::endl;
+            SetState_(kTerminated);
+            return;
+        }
+
+        //This will save the last register values
+        GetRegisters();
+        SetState_(kTerminated);
     }
 
-    bool EmulatorUnit::DebugStep() {
+    void EmulatorUnit::DebugStep() {
         if (active_machine_ == nullptr) {
             throw std::runtime_error("EmulatorUnit::DebugStep: active_machine_ is equal to null!");
         }
 
         if (!active_machine_->stopped()) {
             active_machine_->cpu.step_one();
-            return false;
         }
-        return true;
+
+        if (active_machine_->stopped()) {
+            SetState_(kTerminated);
+        }
     }
 
-    bool EmulatorUnit::DebugContinue(const std::unordered_set<int64_t> &breakpointAddresses) {
+    void EmulatorUnit::DebugContinue() {
         if (active_machine_ == nullptr) {
             throw std::runtime_error("EmulatorUnit::DebugStep: active_machine_ is equal to null!");
         }
 
+        SetState_(kRunningDebug);
         while (!active_machine_->stopped()) {
             active_machine_->cpu.step_one();
-            if (breakpointAddresses.count(active_machine_->cpu.pc())) {
-                return false;
+            if (breakpoints_.count(active_machine_->cpu.pc())) {
+                SetState_(kDebugPaused);
+                return;
             }
         }
-        return true;
+
+        SetState_(kTerminated);
     }
 
     /**
@@ -79,7 +121,12 @@ namespace emulator {
      * @param machine_arguments Arguments of the program
      * @return Exit code of the program
      */
-    int EmulatorUnit::Execute(const std::vector<std::string> &machine_arguments) {
+    void EmulatorUnit::Execute(const std::vector<std::string> &machine_arguments) {
+        //Delete old machine
+        if (active_machine_ != nullptr) {
+            delete active_machine_;
+        }
+
         // Create a new 64-bit RISC-V machine
         active_machine_ = new riscv::Machine<riscv::RISCV64>{binary_};
 
@@ -88,28 +135,34 @@ namespace emulator {
                 machine_arguments,
                 {"LC_TYPE=C", "LC_ALL=C", "USER=root"});
         active_machine_->setup_linux_syscalls();
+        active_machine_->set_max_instructions(std::numeric_limits<uint64_t>::max());
 
         // Setup memory traps for peripherals
         if (peripheral_devices_ != nullptr)
             SetupMemoryTraps_(*active_machine_);
 
+        SetState_(kRunning);
         try {
-            // Run the program, but timeout after 128bn instructions
-            active_machine_->simulate(128'000'000'000uLL);
+            while (!active_machine_->stopped()) {
+                active_machine_->cpu.step_one();
+            }
         } catch (const std::exception &e) {
             std::cout << "Program error: " << e.what() << std::endl;
-            return EXIT_FAILURE;
+            SetState_(kTerminated);
+            return;
         }
-        long return_value = active_machine_->return_value<long>();
-
         //This will save the last register values
         GetRegisters();
+        SetState_(kTerminated);
+    }
 
-        //Delete the machine
-        delete active_machine_;
-        active_machine_ = nullptr;
+    void EmulatorUnit::Terminate() {
+        if (active_machine_ == nullptr) {
+            return;
+        }
+        active_machine_->stop();
 
-        return return_value;
+        SetState_(kTerminated);
     }
 
     /**
@@ -345,4 +398,19 @@ namespace emulator {
         }
     }
 
+    void EmulatorUnit::AddBreakpoint(uint64_t address) {
+        breakpoints_.insert(address);
+    }
+
+    void EmulatorUnit::RemoveBreakpoint(uint64_t address) {
+        breakpoints_.erase(address);
+    }
+
+    int EmulatorUnit::GetReturnValue() {
+        if (active_machine_ == nullptr) {
+            return -1;
+        }
+
+        return active_machine_->return_value<long>();
+    }
 }
