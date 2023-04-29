@@ -7,20 +7,20 @@
 #include "GPIOPortWidget.h"
 
 GPIOPortWidget::GPIOPortWidget(QWidget *parent, Controller *controller, std::string label, std::vector<int> pin_ids)
-    : QFrame(parent)
+    : PeripheralWidget(parent)
     , controller_(controller)
     , label_(label)
     , pins_() {
     this->setStyleSheet("GPIOPinButton, GPIOPinButton:pressed { border: 0px; background-color: transparent; }");
 
-    QGridLayout *layout = new QGridLayout(this);
+    auto layout = new QGridLayout(this);
     layout->setContentsMargins(0, 0, 0, 0);
 
     layout->addWidget(new QLabel(QString::fromStdString(label), this), 1, 0, 2, 1, Qt::AlignRight);
 
     for (int i = 0; i < pin_ids.size(); ++i) {
         int id = pin_ids[i];
-        GPIOPinButton *pin = new GPIOPinButton(this, id);
+        auto pin = new GPIOPinButton(this, id);
         pins_[id] = pin;
 
         connect(pin, SIGNAL(clicked(bool)), this, SLOT(onPinButtonClicked()));
@@ -40,12 +40,17 @@ void GPIOPortWidget::setPinStatus(int pin_id, bool status) {
     this->pins_[pin_id]->setStatus(status);
 }
 
+void GPIOPortWidget::setReadonly(bool readonly) {
+    for (auto pin : pins_) {
+        pin.second->setEnabled(!readonly);
+    }
+}
+
 std::string GPIOPortWidget::label() {
     return label_;
 }
 
-void GPIOPortWidget::onPinButtonClicked()
-{
+void GPIOPortWidget::onPinButtonClicked() {
     auto pin = dynamic_cast<GPIOPinButton*>(QObject::sender());
     if (pin->mode() == modules::GPIO_Pin_Mode::INPUT) {
         pin->setStatus(!pin->status());

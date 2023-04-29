@@ -33,7 +33,8 @@ set(PROJECT_SOURCES
         ui/peripherals/PeripheralsTabWidget.cpp ui/peripherals/PeripheralsTabWidget.h
         ui/BreakpointAreaWidget.cpp ui/BreakpointAreaWidget.h
         ui/RegistersWidget.cpp ui/RegistersWidget.h
-        ui/MemoryWidget.cpp ui/MemoryWidget.h)
+        ui/MemoryWidget.cpp ui/MemoryWidget.h
+        ui/peripherals/PeripheralWidget.h)
 
 #################################################################################
 #Download libraries from git repositories

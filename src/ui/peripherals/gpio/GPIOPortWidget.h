@@ -7,15 +7,16 @@
 
 #include <QFrame>
 #include "GPIOPinButton.h"
-
 #include "../../Controller.h"
+#include "../PeripheralWidget.h"
 
-class GPIOPortWidget : public QFrame {
+class GPIOPortWidget : public PeripheralWidget {
     Q_OBJECT
 public:
     GPIOPortWidget(QWidget *parent = nullptr, Controller *controller = nullptr, std::string label = "", std::vector<int> pin_ids = {});
     void setPinMode(int pin_id, modules::GPIO_Pin_Mode mode);
     void setPinStatus(int pin_id, bool status);
+    void setReadonly(bool readonly) override;
     std::string label();
 
 private:

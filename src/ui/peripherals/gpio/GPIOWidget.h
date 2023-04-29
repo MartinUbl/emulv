@@ -8,15 +8,14 @@
 #include <QWidget>
 #include "GPIOPortWidget.h"
 #include "GPIOPinButton.h"
+#include "../PeripheralWidget.h"
 
-class GPIOWidget : public QWidget {
+class GPIOWidget : public PeripheralWidget {
     Q_OBJECT
 public:
     GPIOWidget(QWidget *parent = nullptr);
     void addPort(GPIOPortWidget *port_widget);
-    void setPinMode(std::string port, int pin_id, modules::GPIO_Pin_Mode mode);
-    void setPinStatus(std::string port, int pin_id, bool status);
-
+    void setReadonly(bool readonly);
 private:
     std::unordered_map<std::string, GPIOPortWidget *> ports_;
 };
