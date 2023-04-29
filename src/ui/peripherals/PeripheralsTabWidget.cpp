@@ -59,17 +59,24 @@ void PeripheralsTabWidget::clear() {
 void PeripheralsTabWidget::addWidget_(modules::PeripheralDevice *peripheralDevice, const std::string &label) {
     auto gpioPort = dynamic_cast<modules::GPIO_Port *>(peripheralDevice);
     if (gpioPort != nullptr) {
-        addGPIOPortWidget_(label);
+        addGPIOPortWidget_(gpioPort, label);
     }
 }
 
-void PeripheralsTabWidget::addGPIOPortWidget_(const std::string &label) {
+void PeripheralsTabWidget::addGPIOPortWidget_(modules::GPIO_Port *gpioPort, const std::string &label) {
     if (gpioWidget_ == nullptr) {
         gpioWidget_ = new GPIOWidget(tabWidget_);
         tabWidget_->addTab(gpioWidget_, "GPIO");
     }
 
-    auto portWidget = new GPIOPortWidget(gpioWidget_, controller_, label, {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15});
+    auto pins = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15};
+    auto portWidget = new GPIOPortWidget(gpioWidget_, controller_, label, pins);
     widgets_[label] = portWidget;
     gpioWidget_->addPort(portWidget);
+
+    // Initialize default port modes and levels
+    for (auto pin : pins) {
+        portWidget->setPinMode(pin, gpioPort->Get_Pin_Mode(pin));
+        portWidget->setPinStatus(pin, gpioPort->Get_Pin_Level(pin));
+    }
 }

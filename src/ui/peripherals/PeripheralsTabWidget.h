@@ -26,7 +26,7 @@ private:
     std::unordered_map<std::string, QWidget *> widgets_;
 
     void addWidget_(modules::PeripheralDevice *peripheralDevice, const std::string &label);
-    void addGPIOPortWidget_(const std::string &label);
+    void addGPIOPortWidget_(modules::GPIO_Port *gpioPort, const std::string &label);
 };
 
 #endif //EMULV_PERIPHERALSTABWIDGET_H
