@@ -1,12 +1,9 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
 #include "aboutwindow.h"
-#include "peripherals/gpio/GPIOPortWidget.h"
 
 #include <QAction>
 #include <QStringListModel>
-
-#include <sstream>
 #include <iostream>
 
 MainWindow::MainWindow(QWidget *parent, Controller *controller)
@@ -144,17 +141,20 @@ void MainWindow::updateWidgetsEnabled() {
             memoryWidget_->setEnabled(false);
             registersWidget_->setEnabled(false);
             peripheralsTabWidget_->setEnabled(true);
+            peripheralsTabWidget_->setReadonly(false);
             break;
         case emulator::kDebugPaused:
         case emulator::kTerminated:
             memoryWidget_->setEnabled(true);
             registersWidget_->setEnabled(true);
             peripheralsTabWidget_->setEnabled(true);
+            peripheralsTabWidget_->setReadonly(true);
             break;
         default:
             memoryWidget_->setEnabled(false);
             registersWidget_->setEnabled(false);
             peripheralsTabWidget_->setEnabled(false);
+            peripheralsTabWidget_->setReadonly(true);
             break;
     }
 }

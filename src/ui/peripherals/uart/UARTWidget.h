@@ -10,11 +10,13 @@
 #include <QPlainTextEdit>
 #include <QLineEdit>
 #include <QComboBox>
+#include "../PeripheralWidget.h"
 
-class UARTWidget : public QWidget {
+class UARTWidget : public PeripheralWidget {
     Q_OBJECT
 public:
     UARTWidget(QWidget *parent = nullptr);
+    void setReadonly(bool readonly) override;
     void appendMessage(std::string message);
     void clear();
 

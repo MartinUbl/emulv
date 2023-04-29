@@ -6,7 +6,7 @@
 #include "UARTWidget.h"
 
 UARTWidget::UARTWidget(QWidget *parent)
-    : QWidget(parent)
+    : PeripheralWidget(parent)
     , textEditMessages_(new QTextEdit(this))
     , lineEditSendMessage_(new QLineEdit(this))
     , comboBoxLineSeparator_(new QComboBox(this))
@@ -44,6 +44,12 @@ UARTWidget::UARTWidget(QWidget *parent)
     send_layout->addWidget(lineEditSendMessage_);
     send_layout->addWidget(comboBoxLineSeparator_);
     send_layout->addWidget(buttonSendMessage_);
+}
+
+void UARTWidget::setReadonly(bool readonly) {
+    textEditMessages_->setReadOnly(readonly);
+    comboBoxLineSeparator_->setEnabled(!readonly);
+    buttonSendMessage_->setEnabled(!readonly);
 }
 
 void UARTWidget::appendMessage(std::string message) {

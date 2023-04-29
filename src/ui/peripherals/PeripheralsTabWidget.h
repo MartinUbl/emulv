@@ -8,6 +8,7 @@
 #include <QWidget>
 #include <QTabWidget>
 
+#include "PeripheralWidget.h"
 #include "../Controller.h"
 #include "gpio/GPIOWidget.h"
 
@@ -15,6 +16,7 @@ class PeripheralsTabWidget : public QWidget {
     Q_OBJECT
 public:
     PeripheralsTabWidget(QWidget *parent = nullptr, Controller *controller = nullptr);
+    void setReadonly(bool readonly);
     void updateWidgets();
     void clear();
 
@@ -23,7 +25,7 @@ private:
     QTabWidget *tabWidget_;
     GPIOWidget *gpioWidget_ = nullptr;
 
-    std::unordered_map<std::string, QWidget *> widgets_;
+    std::unordered_map<std::string, PeripheralWidget *> widgets_;
 
     void addWidget_(modules::PeripheralDevice *peripheralDevice, const std::string &label);
     void addGPIOPortWidget_(modules::GPIO_Port *gpioPort, const std::string &label);

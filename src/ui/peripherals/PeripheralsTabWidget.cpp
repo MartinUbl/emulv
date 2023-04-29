@@ -37,6 +37,12 @@ PeripheralsTabWidget::PeripheralsTabWidget(QWidget *parent, Controller *controll
     });
 }
 
+void PeripheralsTabWidget::setReadonly(bool readonly) {
+    for (auto widget : widgets_) {
+        widget.second->setReadonly(readonly);
+    }
+}
+
 void PeripheralsTabWidget::updateWidgets() {
     clear();
     auto peripherals = controller_->GetPeripherals();
