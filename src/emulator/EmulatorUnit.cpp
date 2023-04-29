@@ -248,7 +248,7 @@ namespace emulator {
         std::vector<std::tuple<std::string, uint32_t>> registers;
         latest_register_values_.clear();
 
-        for (int i = 0; i < 33; i++) {
+        for (int i = 0; i < 32; i++) {
             std::string reg_prefix = "x";
             registers.emplace_back(reg_prefix + std::to_string(i), active_machine_->cpu.reg(i));
         }
