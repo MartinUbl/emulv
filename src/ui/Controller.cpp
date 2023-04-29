@@ -142,7 +142,7 @@ EventEmitter &Controller::GetEventEmitter() {
 }
 
 int Controller::GetProgramReturnValue() {
-    emulatorUnit_->GetReturnValue();
+    return emulatorUnit_->GetReturnValue();
 }
 
 void Controller::AddBreakpoint(uint64_t address) {

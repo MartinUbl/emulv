@@ -8,7 +8,7 @@
 #include <iostream>
 #include <unordered_set>
 
-#include "../../../utils/events/BreakpointAreaWidgetEvents.h"
+#include "../utils/events/BreakpointAreaWidgetEvents.h"
 
 DisassemblyWidget::DisassemblyWidget(QWidget *parent, Controller *controller)
 : QGroupBox{parent}
