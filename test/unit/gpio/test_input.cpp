@@ -7,7 +7,7 @@ class Test_GPIO_Port_Input : public Test_GPIO_Port {
         static constexpr size_t Tested_Pin_No = 9;
 
         void SetUp() override {
-            GPIO_Port = new modules::GPIO_Port {rEmitter, kStart_Address, kEnd_Address};
+            GPIO_Port = new modules::GPIO_Port {"GPIO", rEmitter, kStart_Address, kEnd_Address};
             constexpr uint32_t bits = 0b00000000000000000000000010000000;
             GPIO_Port->WriteWord(kOffset_CTLO1, bits);
         }
