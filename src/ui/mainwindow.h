@@ -44,6 +44,9 @@ private:
 
     std::unique_ptr<std::thread> mRun_Thread;
 
+    void joinThread();
+    static void showMessageBox(const QString& title, const QString& message);
+
     void updateRunningIndicator();
     void updateWidgetsEnabled();
     void updateRegisters();

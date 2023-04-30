@@ -5,6 +5,7 @@
 #include <QAction>
 #include <QStringListModel>
 #include <iostream>
+#include <QMessageBox>
 
 MainWindow::MainWindow(QWidget *parent, Controller *controller)
 : QMainWindow(parent)
@@ -85,12 +86,9 @@ MainWindow::MainWindow(QWidget *parent, Controller *controller)
 
 MainWindow::~MainWindow() {
     controller->Terminate();
+    joinThread();
 
     delete ui;
-
-    if (mRun_Thread && mRun_Thread->joinable()) {
-        mRun_Thread->join();
-    }
 }
 
 void MainWindow::updateUI() {
@@ -197,21 +195,42 @@ void MainWindow::updateMemory() {
     memoryWidget_->updateMemory();
 }
 
+void MainWindow::showMessageBox(const QString& title, const QString& message) {
+    QMessageBox messageBox;
+    messageBox.setWindowTitle(title);
+    messageBox.setText(message);
+    messageBox.exec();
+}
+
+void MainWindow::joinThread() {
+    if (mRun_Thread && mRun_Thread->joinable()) {
+        mRun_Thread->join();
+    }
+}
+
 void MainWindow::on_action_Open_triggered() {
     QString fileName = QFileDialog::getOpenFileName(this, "Select binary file", ".");
-    ui->statusbar->showMessage(fileName);
+
     //If no file was selected
     if (fileName.isEmpty()) {
         return;
     }
 
-    controller->LoadFile(fileName.toStdString());
-    disassemblyWidget->setInstructions(controller->GetDisassembly());
-    updateToolBarButtons();
+    controller->Terminate();
+    joinThread();
 
-    registersWidget_->setEnabled(false);
-    memoryWidget_->setEnabled(false);
-    peripheralsTabWidget_->setEnabled(false);
+    try {
+        controller->LoadFile(fileName.toStdString());
+        disassemblyWidget->setInstructions(controller->GetDisassembly());
+    }
+    catch (const std::exception &e) {
+        showMessageBox("File error", "Could not load file " + fileName + '\n' + e.what());
+        return;
+    }
+
+    memoryWidget_->clear();
+    registersWidget_->setRegisters({});
+    ui->statusbar->showMessage(fileName);
 }
 
 void MainWindow::on_action_About_RISCVEmulator_triggered() {
@@ -221,18 +240,12 @@ void MainWindow::on_action_About_RISCVEmulator_triggered() {
 }
 
 void MainWindow::on_btnRun_clicked() {
-    if (mRun_Thread && mRun_Thread->joinable()) {
-        mRun_Thread->join();
-    }
-
+    joinThread();
     mRun_Thread = std::make_unique<std::thread>(&Controller::RunProgram, controller);
 }
 
 void MainWindow::on_btnDebug_clicked() {
-    if (mRun_Thread && mRun_Thread->joinable()) {
-        mRun_Thread->join();
-    }
-
+    joinThread();
     ui->statusbar->showMessage(QString::fromStdString("Debugger started."));
     mRun_Thread = std::make_unique<std::thread>(&Controller::DebugProgram, controller);
 }
@@ -248,15 +261,13 @@ void MainWindow::on_btnStep_clicked() {
 
 void MainWindow::on_btnTerminate_clicked() {
     controller->Terminate();
+    joinThread();
 
     updateRegisters();
     updateMemory();
 }
 
 void MainWindow::on_btnContinue_clicked() {
-    if (mRun_Thread && mRun_Thread->joinable()) {
-        mRun_Thread->join();
-    }
-
+    joinThread();
     mRun_Thread = std::make_unique<std::thread>(&Controller::DebugContinue, controller);
 }
