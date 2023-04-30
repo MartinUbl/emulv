@@ -8,12 +8,37 @@
 #include "riscv-disas.h"
 
 namespace emulator {
+    //##################################################################################################################
+    //# Core control and initialisation methods
+    //##################################################################################################################
+    void EmulatorUnit::Execute(const std::vector<std::string> &machine_arguments) {
+        CreateNewMachine_(machine_arguments);
 
+        SetState_(kRunning);
+        try {
+            while (!active_machine_->stopped()) {
+                active_machine_->cpu.step_one();
+            }
+        } catch (const std::exception &e) {
+            std::cout << "Program error: " << e.what() << std::endl;
+            SetState_(kTerminated);
+            return;
+        }
 
-    /**
-     * Loads an executable risc-v ELF file into this emulator instance.
-     * @param file_path Path of the file
-     */
+        //This will save the last register values
+        GetRegisters();
+        SetState_(kTerminated);
+    }
+
+    void EmulatorUnit::Terminate() {
+        if (active_machine_ == nullptr) {
+            return;
+        }
+        active_machine_->stop();
+
+        SetState_(kTerminated);
+    }
+
     void EmulatorUnit::LoadElfFile(const std::string &file_path) {
         // Read the RISC-V program into a std::vector:
         std::ifstream stream(file_path, std::ios::in | std::ios::binary);
@@ -40,49 +65,14 @@ namespace emulator {
         return state_;
     }
 
-    /**
-     * Debug the loaded program.
-     * @param machine_arguments Arguments of the program
-     * @return Exit code of the program
-     */
+    //##################################################################################################################
+    //# Debugger methods
+    //##################################################################################################################
     void EmulatorUnit::Debug(const std::vector<std::string> &machine_arguments) {
-        //Delete old machine
-        if (active_machine_ != nullptr) {
-            delete active_machine_;
-        }
+        CreateNewMachine_(machine_arguments);
 
-        // Create a new 64-bit RISC-V machine
-        active_machine_ = new riscv::Machine<riscv::RISCV64>{binary_};
-
-        // Use string vector as arguments to the RISC-V program
-        active_machine_->setup_linux(
-                machine_arguments,
-                {"LC_TYPE=C", "LC_ALL=C", "USER=root"});
-        active_machine_->setup_linux_syscalls();
-        active_machine_->set_max_instructions(std::numeric_limits<uint64_t>::max());
-
-        // Setup memory traps for peripherals
-        if (peripheral_devices_ != nullptr)
-            SetupMemoryTraps_(*active_machine_);
-
-        SetState_(kRunningDebug);
-        try {
-            while (!active_machine_->stopped()) {
-                if (breakpoints_.count(active_machine_->cpu.pc())) {
-                    SetState_(kDebugPaused);
-                    return;
-                }
-                active_machine_->cpu.step_one();
-            }
-        } catch (const std::exception &e) {
-            std::cout << "Program error: " << e.what() << std::endl;
-            SetState_(kTerminated);
-            return;
-        }
-
-        //This will save the last register values
-        GetRegisters();
-        SetState_(kTerminated);
+        //Run until the first breakpoint is reached
+        DebugContinue();
     }
 
     void EmulatorUnit::DebugStep() {
@@ -92,11 +82,10 @@ namespace emulator {
 
         if (!active_machine_->stopped()) {
             active_machine_->cpu.step_one();
-        }
-
-        if (active_machine_->stopped()) {
+        } else {
             SetState_(kTerminated);
         }
+
     }
 
     void EmulatorUnit::DebugContinue() {
@@ -104,232 +93,50 @@ namespace emulator {
             throw std::runtime_error("EmulatorUnit::DebugStep: active_machine_ is equal to null!");
         }
 
-        SetState_(kRunningDebug);
-        while (!active_machine_->stopped()) {
-            active_machine_->cpu.step_one();
-            if (breakpoints_.count(active_machine_->cpu.pc())) {
+        try {
+            //Handle special case - First line of the program has a breakpoint
+            if (GetState() != kDebugPaused && breakpoints_.count(active_machine_->cpu.pc())) {
                 SetState_(kDebugPaused);
                 return;
             }
-        }
 
-        SetState_(kTerminated);
-    }
-
-    /**
-     * Execute the loaded ELF file.
-     * @param machine_arguments Arguments of the program
-     * @return Exit code of the program
-     */
-    void EmulatorUnit::Execute(const std::vector<std::string> &machine_arguments) {
-        //Delete old machine
-        if (active_machine_ != nullptr) {
-            delete active_machine_;
-        }
-
-        // Create a new 64-bit RISC-V machine
-        active_machine_ = new riscv::Machine<riscv::RISCV64>{binary_};
-
-        // Use string vector as arguments to the RISC-V program
-        active_machine_->setup_linux(
-                machine_arguments,
-                {"LC_TYPE=C", "LC_ALL=C", "USER=root"});
-        active_machine_->setup_linux_syscalls();
-        active_machine_->set_max_instructions(std::numeric_limits<uint64_t>::max());
-
-        // Setup memory traps for peripherals
-        if (peripheral_devices_ != nullptr)
-            SetupMemoryTraps_(*active_machine_);
-
-        SetState_(kRunning);
-        try {
+            //Run until the next breakpoint is reached
+            SetState_(kRunningDebug);
             while (!active_machine_->stopped()) {
                 active_machine_->cpu.step_one();
+                if (breakpoints_.count(active_machine_->cpu.pc())) {
+                    SetState_(kDebugPaused);
+                    return;
+                }
             }
         } catch (const std::exception &e) {
             std::cout << "Program error: " << e.what() << std::endl;
             SetState_(kTerminated);
             return;
         }
+        //Continues here if the emulated program has exited
+
         //This will save the last register values
         GetRegisters();
         SetState_(kTerminated);
     }
 
-    void EmulatorUnit::Terminate() {
-        if (active_machine_ == nullptr) {
-            return;
-        }
-        active_machine_->stop();
-
-        SetState_(kTerminated);
+    void EmulatorUnit::AddBreakpoint(uint64_t address) {
+        breakpoints_.insert(address);
     }
 
-    /**
-     * Disassembles the loaded ELF file.
-     * @return A string vector containing lines of the disassembled program
-     */
-    std::vector<std::string> EmulatorUnit::Disassemble() {
-        riscv::Machine<riscv::RISCV64> machine{binary_};
-
-        machine.setup_linux(
-                {"myprogram"},
-                {"LC_TYPE=C", "LC_ALL=C", "USER=root"});
-        machine.setup_linux_syscalls();
-
-        // Instruction limit is used to keep running
-        machine.set_max_instructions(1'000'000UL);
-
-        std::vector<std::string> output;
-
-        while (!machine.stopped()) {
-            auto &cpu = machine.cpu;
-
-            //Stop the machine when end of executable segment is reached
-            if (cpu.pc() == cpu.current_execute_segment()->exec_end()) {
-                break;
-            }
-
-            // Read next instruction
-            const auto instruction = cpu.read_next_instruction();
-
-            // Store the disassembled instruction
-            output.push_back(std::to_string(cpu.pc()) + " " + InstructonToString_(cpu, instruction));
-
-            // Increment PC to next instruction, and increment instruction counter
-            cpu.increment_pc(instruction.length());
-            machine.increment_counter(1);
-        }
-
-        return output;
+    void EmulatorUnit::RemoveBreakpoint(uint64_t address) {
+        breakpoints_.erase(address);
     }
 
-    /**
-     * Loads a map of peripheral devices into the peripheral_devices_ class attribute,
-     * key of the map is a name of the peripheral, value is the instance of the PeripheralDevice class
-     * @param devices A map of peripheral devices
-     */
+    //##################################################################################################################
+    //# Memory controller methods
+    //##################################################################################################################
+
     void EmulatorUnit::RegisterPeripherals(std::map<std::string, modules::PeripheralDevice *> &devices) {
         peripheral_devices_ = &devices;
     }
 
-    std::vector<std::vector<uint8_t>> EmulatorUnit::GetMemory(uint64_t from, uint64_t to) {
-        std::vector<std::vector<uint8_t>> memory;
-
-        if (active_machine_ == nullptr) {
-            //Machine is inactive. Return empty memory.
-            return memory;
-        }
-
-        std::vector<uint8_t> v;
-        int v_cap = 0;
-
-        //Get memory content from machine.
-        for (uint64_t i = from; i <= to; ++i) {
-            v.push_back(active_machine_->memory.read<uint8_t>(i));
-            v_cap++;
-
-            if (v_cap >= 16) {
-                memory.push_back(v);
-                v_cap = 0;
-                v.clear();
-            }
-        }
-
-        return memory;
-    }
-
-    std::vector<std::tuple<std::string, uint32_t>> EmulatorUnit::GetRegisters() {
-        if (active_machine_ == nullptr) {
-            //Machine is inactive. Return the last saved register values.
-            return latest_register_values_;
-        }
-
-        std::vector<std::tuple<std::string, uint32_t>> registers;
-        latest_register_values_.clear();
-
-        for (int i = 0; i < 32; i++) {
-            std::string reg_prefix = "x";
-            registers.emplace_back(reg_prefix + std::to_string(i), active_machine_->cpu.reg(i));
-        }
-        registers.emplace_back("pc", active_machine_->cpu.pc());
-
-        latest_register_values_ = registers;
-        return registers;
-    }
-
-    uint64_t EmulatorUnit::GetPc() {
-        if (active_machine_ == nullptr) {
-            throw std::runtime_error("EmulatorUnit::GetPc: active_machine_ is equal to null!");
-        }
-
-        return active_machine_->cpu.pc();
-    }
-
-    uint64_t EmulatorUnit::GetMemoryStartAddress() {
-        if (active_machine_ == nullptr) {
-            throw std::runtime_error("EmulatorUnit::GetMemoryStartAddress: active_machine_ is equal to null!");
-        }
-        //TODO what is "start_address"?
-        return active_machine_->memory.start_address();
-    }
-
-    uint64_t EmulatorUnit::GetMemoryEndAddress() {
-        if (active_machine_ == nullptr) {
-            throw std::runtime_error("EmulatorUnit::GetMemoryEndAddress: active_machine_ is equal to null!");
-        }
-
-        return active_machine_->memory.exit_address();
-    }
-
-    /**
-     * Disassembles instructions via the disassembler library
-     * @param cpu riscv CPU object
-     * @param format Instruction format
-     * @return Disassembled instruction
-     */
-    std::string EmulatorUnit::InstructonToString_(riscv::CPU<8> const &cpu, riscv::instruction_format format) {
-        char buf[256] = {0};
-        disasm_inst(buf, sizeof(buf), rv32, cpu.pc(), (uint16_t) format.whole);
-
-        auto result = std::string(buf);
-        return result;
-    }
-
-    uint64_t EmulatorUnit::GetPageStart_(uint64_t address) {
-        return address & 0xFFFFFFFFFFFFF000;
-    }
-
-    void EmulatorUnit::MapDeviceToPage_(modules::PeripheralDevice *device) {
-        uint64_t page_start = GetPageStart_(device->GetStartAddress());
-
-        auto entry = page_peripherals_.find(page_start);
-        if (entry != page_peripherals_.end()) {
-            entry->second.push_back(device);
-        } else {
-            auto peripherals = std::vector<modules::PeripheralDevice *>();
-            peripherals.push_back(device);
-            page_peripherals_[page_start] = peripherals;
-        }
-    }
-
-    modules::PeripheralDevice *EmulatorUnit::GetRealDevice_(uint64_t address) {
-        uint64_t page_start = GetPageStart_(address);
-        auto page_peripherals = this->page_peripherals_[page_start];
-
-        for (auto p: page_peripherals) {
-            if (p->GetStartAddress() <= address && address <= p->GetEndAddress()) {
-                return p;
-            }
-        }
-        return nullptr;
-    }
-
-    /**
-     * Setups the required memory traps of peripheral devices on this machine instance.
-     * PeripheralDevices must first be registered using the RegisterPeripherals() method.
-     * @param machine The current emulated machine instance
-     */
     void EmulatorUnit::SetupMemoryTraps_(riscv::Machine<riscv::RISCV64> &machine) {
         for (const auto &p: *peripheral_devices_) {
             //TODO: Remove print
@@ -398,12 +205,148 @@ namespace emulator {
         }
     }
 
-    void EmulatorUnit::AddBreakpoint(uint64_t address) {
-        breakpoints_.insert(address);
+    void EmulatorUnit::MapDeviceToPage_(modules::PeripheralDevice *device) {
+        uint64_t page_start = GetPageStart_(device->GetStartAddress());
+
+        auto entry = page_peripherals_.find(page_start);
+        if (entry != page_peripherals_.end()) {
+            entry->second.push_back(device);
+        } else {
+            auto peripherals = std::vector<modules::PeripheralDevice *>();
+            peripherals.push_back(device);
+            page_peripherals_[page_start] = peripherals;
+        }
     }
 
-    void EmulatorUnit::RemoveBreakpoint(uint64_t address) {
-        breakpoints_.erase(address);
+    modules::PeripheralDevice *EmulatorUnit::GetRealDevice_(uint64_t address) {
+        uint64_t page_start = GetPageStart_(address);
+        auto page_peripherals = this->page_peripherals_[page_start];
+
+        for (auto p: page_peripherals) {
+            if (p->GetStartAddress() <= address && address <= p->GetEndAddress()) {
+                return p;
+            }
+        }
+        return nullptr;
+    }
+
+    uint64_t EmulatorUnit::GetPageStart_(uint64_t address) {
+        return address & 0xFFFFFFFFFFFFF000;
+    }
+
+    uint64_t EmulatorUnit::GetMemoryStartAddress() {
+        if (active_machine_ == nullptr) {
+            throw std::runtime_error("EmulatorUnit::GetMemoryStartAddress: active_machine_ is equal to null!");
+        }
+        //TODO what is "start_address"?
+        return active_machine_->memory.start_address();
+    }
+
+    uint64_t EmulatorUnit::GetMemoryEndAddress() {
+        if (active_machine_ == nullptr) {
+            throw std::runtime_error("EmulatorUnit::GetMemoryEndAddress: active_machine_ is equal to null!");
+        }
+
+        return active_machine_->memory.exit_address();
+    }
+
+    std::vector<std::vector<uint8_t>> EmulatorUnit::GetMemory(uint64_t from, uint64_t to) {
+        std::vector<std::vector<uint8_t>> memory;
+
+        if (active_machine_ == nullptr) {
+            //Machine is inactive. Return empty memory.
+            return memory;
+        }
+
+        std::vector<uint8_t> v;
+        int v_cap = 0;
+
+        //Get memory content from machine.
+        for (uint64_t i = from; i <= to; ++i) {
+            v.push_back(active_machine_->memory.read<uint8_t>(i));
+            v_cap++;
+
+            if (v_cap >= 16) {
+                memory.push_back(v);
+                v_cap = 0;
+                v.clear();
+            }
+        }
+
+        return memory;
+    }
+
+    //##################################################################################################################
+    //# Utility methods
+    //##################################################################################################################
+    std::vector<std::string> EmulatorUnit::Disassemble() {
+        riscv::Machine<riscv::RISCV64> disassembly_machine{binary_};
+
+        disassembly_machine.setup_linux(
+                {"myprogram"},
+                {"LC_TYPE=C", "LC_ALL=C", "USER=root"});
+        disassembly_machine.setup_linux_syscalls();
+
+        // Instruction limit is used to keep running
+        disassembly_machine.set_max_instructions(1'000'000UL);
+
+        std::vector<std::string> output;
+
+        while (!disassembly_machine.stopped()) {
+            auto &cpu = disassembly_machine.cpu;
+
+            //Stop the machine when end of executable segment is reached
+            if (cpu.pc() == cpu.current_execute_segment()->exec_end()) {
+                break;
+            }
+
+            // Read next instruction
+            const auto instruction = cpu.read_next_instruction();
+
+            // Store the disassembled instruction
+            output.push_back(std::to_string(cpu.pc()) + " " + InstructonToString_(cpu.pc(), instruction));
+
+            // Increment PC to next instruction, and increment instruction counter
+            cpu.increment_pc(instruction.length());
+            disassembly_machine.increment_counter(1);
+        }
+
+        return output;
+    }
+
+    std::string EmulatorUnit::InstructonToString_(uint64_t pc_value, riscv::instruction_format format) {
+        char buf[256] = {0};
+        disasm_inst(buf, sizeof(buf), rv32, pc_value, (uint16_t) format.whole);
+
+        auto result = std::string(buf);
+        return result;
+    }
+
+    std::vector<std::tuple<std::string, uint32_t>> EmulatorUnit::GetRegisters() {
+        if (active_machine_ == nullptr) {
+            //Machine is inactive. Return the last saved register values.
+            return latest_register_values_;
+        }
+
+        std::vector<std::tuple<std::string, uint32_t>> registers;
+        latest_register_values_.clear();
+
+        for (int reg_num = 0; reg_num < X_REGISTER_COUNT; reg_num++) {
+            std::string reg_prefix = "x";
+            registers.emplace_back(reg_prefix + std::to_string(reg_num), active_machine_->cpu.reg(reg_num));
+        }
+        registers.emplace_back("pc", active_machine_->cpu.pc());
+
+        latest_register_values_ = registers;
+        return registers;
+    }
+
+    uint64_t EmulatorUnit::GetPc() {
+        if (active_machine_ == nullptr) {
+            throw std::runtime_error("EmulatorUnit::GetPc: active_machine_ is equal to null!");
+        }
+
+        return active_machine_->cpu.pc();
     }
 
     int EmulatorUnit::GetReturnValue() {
@@ -413,4 +356,27 @@ namespace emulator {
 
         return active_machine_->return_value<long>();
     }
+
+    //##################################################################################################################
+    //# Internal helper methods
+    //##################################################################################################################
+    void EmulatorUnit::CreateNewMachine_(const std::vector<std::string> &machine_arguments) {//Delete old machine
+        if (active_machine_ != nullptr) {
+            delete active_machine_;
+        }
+
+        // Create a new 64-bit RISC-V machine
+        active_machine_ = new riscv::Machine<riscv::RISCV64>{binary_};
+        // Use string vector as arguments to the RISC-V program
+        active_machine_->setup_linux(
+                machine_arguments,
+                {"LC_TYPE=C", "LC_ALL=C", "USER=root"});
+        active_machine_->setup_linux_syscalls();
+        active_machine_->set_max_instructions(std::numeric_limits<uint64_t>::max());
+
+        // Setup memory traps for peripherals
+        if (peripheral_devices_ != nullptr)
+            SetupMemoryTraps_(*active_machine_);
+    }
+
 }
