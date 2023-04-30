@@ -149,9 +149,9 @@ namespace emulator {
 
         /**
          * Disassembles the loaded ELF file.
-         * @return A string vector containing lines of the disassembled program
+         * @return A vector of tuples with addresses and instruction strings of the disassembled program
          */
-        std::vector<std::string> Disassemble();
+        std::vector<std::tuple<uint64_t, std::string>> Disassemble();
 
         /**
          * Loads a map of peripheral devices into the peripheral_devices_ class attribute.

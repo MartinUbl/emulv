@@ -206,7 +206,7 @@ void MainWindow::on_action_Open_triggered() {
     }
 
     controller->LoadFile(fileName.toStdString());
-    disassemblyWidget->addInstructionsList(controller->GetDisassembly());
+    disassemblyWidget->setInstructions(controller->GetDisassembly());
     updateToolBarButtons();
 
     registersWidget_->setEnabled(false);

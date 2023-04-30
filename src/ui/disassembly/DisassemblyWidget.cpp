@@ -1,4 +1,4 @@
-#include "disassemblywidget.h"
+#include "DisassemblyWidget.h"
 
 #include <sstream>
 #include <QLayout>
@@ -7,8 +7,9 @@
 #include <QAbstractItemModel>
 #include <iostream>
 #include <unordered_set>
+#include <iomanip>
 
-#include "../utils/events/BreakpointAreaWidgetEvents.h"
+#include "../../utils/events/BreakpointAreaWidgetEvents.h"
 
 DisassemblyWidget::DisassemblyWidget(QWidget *parent, Controller *controller)
 : QGroupBox{parent}
@@ -124,33 +125,29 @@ void DisassemblyWidget::updateScroll(int value) {
     sbInstr->setValue(value);
 }
 
-void DisassemblyWidget::addInstructionsList(const std::vector<std::string> &instructionsList) {
+void DisassemblyWidget::setInstructions(const std::vector<std::tuple<uint64_t, std::string>> &instructions) {
     addresses_.clear();
     address_lines_.clear();
     addressArea->clear();
     instructionArea->clear();
     breakpointAreaWidget->clear();
 
-    //Block UI signals
-    QSignalBlocker blocker1(this);
-    QSignalBlocker blocker2(this->parent());
-
     std::stringstream ssAddresses;
-    std::stringstream ssInstructions;
+    std::stringstream ssInstructions;;
 
     int line = 0;
-    for (const std::string &instructionString: instructionsList) {
-        //Parse the instruction string
-        std::string address;
-        std::string instruction;
-        ParseInstructionString(instructionString, address, instruction);
+    for (const auto &instructionString: instructions) {
+        uint64_t address = std::get<0>(instructionString);
+        std::string instruction = std::get<1>(instructionString);
 
-        ssAddresses << address << "\n";
-        ssInstructions << instruction << "\n";
+        std::stringstream ssAddress;
+        ssAddress << std::uppercase << std::hex << std::setw(8) << std::setfill('0') << address;
 
-        int i_address = std::stoi(address);
-        addresses_.push_back(i_address);
-        address_lines_[i_address] = line++;
+        ssAddresses << ssAddress.str() << '\n';
+        ssInstructions << instructionSubstring_(instruction) << '\n';
+
+        addresses_.push_back(address);
+        address_lines_[address] = line++;
     }
 
     std::string addressAreaText = ssAddresses.str();
@@ -173,29 +170,16 @@ void DisassemblyWidget::updateBreakpointWidget() {
     breakpointAreaWidget->setFixedHeight(lines * lineHeight + kBottomPadding);
 }
 
-void DisassemblyWidget::ParseInstructionString(const std::string &instructionString, std::string &address,
-                                               std::string &instruction) {
-    int mode = 0;
-    for (std::string::size_type i = 0; i < instructionString.size(); ++i) {
-        if (instructionString[i] == ' ' && mode == 0) {
-            address = instructionString.substr(0, i);
-            mode++;
-        }
+std::string DisassemblyWidget::instructionSubstring_(const std::string &fullString) {
+    std::string::size_type i = 0;
 
-        if (instructionString[i] != ' ' && mode == 1) {
-            mode++;
-        }
+    // Skip binary representation
+    for (; i < fullString.size() && fullString[i] != ' '; ++i) {}
 
-        if (instructionString[i] == ' ' && mode == 2) {
-            //Binary representation of instruction
-            mode++;
-        }
+    // Skip space after binary representation
+    for (; i < fullString.size() && fullString[i] == ' '; ++i) {}
 
-        if (instructionString[i] != ' ' && mode == 3) {
-            instruction = instructionString.substr(i, instructionString.size());
-            break;
-        }
-    }
+    return fullString.substr(i);
 }
 
 int DisassemblyWidget::findLine_(uint64_t address) {

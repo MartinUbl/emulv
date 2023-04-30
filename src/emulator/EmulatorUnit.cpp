@@ -273,7 +273,7 @@ namespace emulator {
     //##################################################################################################################
     //# Utility methods
     //##################################################################################################################
-    std::vector<std::string> EmulatorUnit::Disassemble() {
+    std::vector<std::tuple<uint64_t, std::string>> EmulatorUnit::Disassemble() {
         riscv::Machine<riscv::RISCV64> disassembly_machine{binary_};
 
         disassembly_machine.setup_linux(
@@ -284,7 +284,7 @@ namespace emulator {
         // Instruction limit is used to keep running
         disassembly_machine.set_max_instructions(1'000'000UL);
 
-        std::vector<std::string> output;
+        std::vector<std::tuple<uint64_t, std::string>> output;
 
         while (!disassembly_machine.stopped()) {
             auto &cpu = disassembly_machine.cpu;
@@ -298,7 +298,7 @@ namespace emulator {
             const auto instruction = cpu.read_next_instruction();
 
             // Store the disassembled instruction
-            output.push_back(std::to_string(cpu.pc()) + " " + InstructonToString_(cpu.pc(), instruction));
+            output.emplace_back(cpu.pc(), InstructonToString_(cpu.pc(), instruction));
 
             // Increment PC to next instruction, and increment instruction counter
             cpu.increment_pc(instruction.length());

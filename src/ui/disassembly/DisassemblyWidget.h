@@ -15,7 +15,7 @@ Q_OBJECT
 public:
     explicit DisassemblyWidget(QWidget *parent = nullptr, Controller *controller = nullptr);
 
-    void addInstructionsList(const std::vector<std::string> &instructionsList);
+    void setInstructions(const std::vector<std::tuple<uint64_t, std::string>> &instructions);
 
     void highlightLine(uint64_t address);
 
@@ -43,8 +43,7 @@ private:
 
     void updateScroll(int value);
 
-    static void
-    ParseInstructionString(const std::string &instructionString, std::string &address, std::string &instruction);
+    static std::string instructionSubstring_(const std::string &fullString);
 
     int findLine_(uint64_t address);
 

@@ -8,7 +8,7 @@
 #include <QObject>
 #include <QFrame>
 #include <QMouseEvent>
-#include "Controller.h"
+#include "../Controller.h"
 
 class BreakpointAreaWidget : public QFrame {
     Q_OBJECT
