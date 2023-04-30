@@ -220,6 +220,11 @@ namespace emulator {
         void RemoveBreakpoint(uint64_t address);
 
         /**
+         * Removes all set breakpoints.
+         */
+        void ClearBreakpoints();
+
+        /**
          * Gets the first memory address of the machine's memory area.
          * @return Memory start address
          */

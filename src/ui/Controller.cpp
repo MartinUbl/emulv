@@ -86,6 +86,7 @@ std::vector<std::string> Controller::GetDisassembly() {
 void Controller::LoadFile(std::string file_path) {
     this->openedFile_ = file_path;
     this->emulatorUnit_->LoadElfFile(file_path);
+    this->emulatorUnit_->ClearBreakpoints();
 }
 
 bool Controller::IsFileLoaded() {
