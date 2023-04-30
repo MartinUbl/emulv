@@ -46,10 +46,15 @@ namespace emulator {
             throw std::runtime_error("EmulatorUnit::LoadElfFle: File not found or is inaccessible!");
         }
 
-        binary_ = std::vector<uint8_t>(
+        auto binary = std::vector<uint8_t>(
                 (std::istreambuf_iterator<char>(stream)),
                 std::istreambuf_iterator<char>()
         );
+
+        // Try to create a machine with the given file, throws an exception if failed
+        new riscv::Machine<riscv::RISCV64>{binary};
+
+        binary_ = binary;
 
         SetState_(kReady);
     }
