@@ -254,27 +254,17 @@ namespace emulator {
         return active_machine_->memory.exit_address();
     }
 
-    std::vector<std::vector<uint8_t>> EmulatorUnit::GetMemory(uint64_t from, uint64_t to) {
-        std::vector<std::vector<uint8_t>> memory;
+    std::vector<uint8_t> EmulatorUnit::GetMemory(uint64_t from, uint64_t to) {
+        std::vector<uint8_t> memory;
 
         if (active_machine_ == nullptr) {
             //Machine is inactive. Return empty memory.
             return memory;
         }
 
-        std::vector<uint8_t> v;
-        int v_cap = 0;
-
         //Get memory content from machine.
         for (uint64_t i = from; i <= to; ++i) {
-            v.push_back(active_machine_->memory.read<uint8_t>(i));
-            v_cap++;
-
-            if (v_cap >= 16) {
-                memory.push_back(v);
-                v_cap = 0;
-                v.clear();
-            }
+            memory.push_back(active_machine_->memory.read<uint8_t>(i));
         }
 
         return memory;

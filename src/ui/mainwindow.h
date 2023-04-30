@@ -10,7 +10,7 @@
 #include "peripherals/uart/UARTWidget.h"
 #include "peripherals/PeripheralsTabWidget.h"
 #include "RegistersWidget.h"
-#include "MemoryWidget.h"
+#include "memory/MemoryWidget.h"
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class MainWindow; }
