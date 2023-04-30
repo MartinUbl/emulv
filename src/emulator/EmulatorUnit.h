@@ -115,6 +115,13 @@ namespace emulator {
          */
         void CreateNewMachine_(const std::vector<std::string> &machine_arguments);
 
+
+        /**
+         * Validates the passed ELF file. Throws exception if file is invalid.
+         * @param m_binary The ELF file
+         */
+        static void ValidateElf_(std::vector<uint8_t> &binary);
+
     public:
 
         /**
@@ -235,7 +242,6 @@ namespace emulator {
          * @return Memory end address
          */
         uint64_t GetMemoryEndAddress();
-
     };
 
 }

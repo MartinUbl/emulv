@@ -51,11 +51,12 @@ namespace emulator {
                 std::istreambuf_iterator<char>()
         );
 
-        // Try to create a machine with the given file, throws an exception if failed
-        new riscv::Machine<riscv::RISCV64>{binary};
+        //Use this if ValidateElf_() stops working:
+        //auto *pMachine = new riscv::Machine<riscv::RISCV64>{binary};
+        //delete pMachine;
+        ValidateElf_(binary);
 
         binary_ = binary;
-
         SetState_(kReady);
     }
 
@@ -359,7 +360,8 @@ namespace emulator {
     //##################################################################################################################
     //# Internal helper methods
     //##################################################################################################################
-    void EmulatorUnit::CreateNewMachine_(const std::vector<std::string> &machine_arguments) {//Delete old machine
+    void EmulatorUnit::CreateNewMachine_(const std::vector<std::string> &machine_arguments) {
+        //Delete old machine
         if (active_machine_ != nullptr) {
             delete active_machine_;
         }
@@ -376,6 +378,40 @@ namespace emulator {
         // Setup memory traps for peripherals
         if (peripheral_devices_ != nullptr)
             SetupMemoryTraps_(*active_machine_);
+    }
+
+    void EmulatorUnit::ValidateElf_(std::vector<uint8_t> &binary) {
+        std::basic_string_view<char> m_binary(reinterpret_cast<char *>(binary.data()), binary.size());
+
+        // Taken from libriscv-src\lib\libriscv\memory.cpp - binary_loader()
+        if (m_binary.size() < sizeof(riscv::Elf<8>::Ehdr)) {
+            throw std::runtime_error("ELF program too short");
+        }
+        auto const *elf = (riscv::Elf<8>::Ehdr *) m_binary.data();
+        if (!riscv::validate_header<riscv::Elf<8>::Ehdr>(elf)) {
+            throw std::runtime_error("Invalid ELF header! Mixup between 32- and 64-bit?");
+        }
+        if (elf->e_type != ET_EXEC) {
+            throw std::runtime_error("ELF program is not an executable type. Trying to load a dynamic library?");
+        }
+        if (elf->e_machine != EM_RISCV) {
+            throw std::runtime_error("ELF program is not a RISC-V executable. Wrong architecture.");
+        }
+
+        // Enumerate & validate loadable segments
+        const auto program_headers = elf->e_phnum;
+        if (program_headers <= 0) {
+            throw std::runtime_error("ELF with no program-headers");
+        }
+        if (program_headers >= 16) {
+            throw std::runtime_error("ELF with too many program-headers");
+        }
+        if (elf->e_phoff > 0x4000) {
+            throw std::runtime_error("ELF program-headers have bogus offset");
+        }
+        if (elf->e_phoff + program_headers * sizeof(riscv::Elf<8>::Phdr) > m_binary.size()) {
+            throw std::runtime_error("ELF program-headers are outside the binary");
+        }
     }
 
 }
