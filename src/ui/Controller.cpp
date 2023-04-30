@@ -93,7 +93,7 @@ bool Controller::IsFileLoaded() {
     return !this->openedFile_.empty();
 }
 
-std::vector<std::vector<uint8_t>> Controller::GetMemory(const uint64_t from, const uint64_t to) {
+std::vector<uint8_t> Controller::GetMemory(const uint64_t from, const uint64_t to) {
     return emulatorUnit_->GetMemory(from, to);
 }
 
@@ -114,11 +114,11 @@ uint64_t Controller::GetPc() {
 }
 
 uint64_t Controller::GetMemoryStartAddress() {
-    return emulatorUnit_->GetMemoryStartAddress() / 16;
+    return emulatorUnit_->GetMemoryStartAddress();
 }
 
 uint64_t Controller::GetMemoryEndAddress() {
-    return emulatorUnit_->GetMemoryEndAddress() / 16;
+    return emulatorUnit_->GetMemoryEndAddress();
 }
 
 void Controller::DebugContinue() {

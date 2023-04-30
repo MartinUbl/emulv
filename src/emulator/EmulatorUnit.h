@@ -172,7 +172,7 @@ namespace emulator {
          * @param to Will stop reading at this address
          * @return A vector containing memory bytes. Or an empty vector if machine is inactive or invalid values were entered.
          */
-        std::vector<std::vector<uint8_t>> GetMemory(uint64_t from, uint64_t to);
+        std::vector<uint8_t> GetMemory(uint64_t from, uint64_t to);
 
         /**
          * Executes the loaded ELF file in debug mode. Stops at first breakpoint.

@@ -9,6 +9,7 @@
 #include <iomanip>
 #include <QGroupBox>
 #include "MemoryWidget.h"
+#include "MemoryFormatter.h"
 
 MemoryWidget::MemoryWidget(QWidget *parent, Controller *controller)
 : QFrame(parent)
@@ -30,13 +31,11 @@ MemoryWidget::MemoryWidget(QWidget *parent, Controller *controller)
 
     sp_memory_from_->setDisplayIntegerBase(16);
     sp_memory_from_->setPrefix("0x");
-    sp_memory_from_->setSuffix("0");
     sp_memory_from_->setMinimumWidth(80);
     sp_memory_from_->setMaximum(memory_to_);
 
     sp_memory_to_->setDisplayIntegerBase(16);
     sp_memory_to_->setPrefix("0x");
-    sp_memory_to_->setSuffix("0");
     sp_memory_to_->setMinimumWidth(80);
     sp_memory_to_->setMaximum(memory_to_);
     sp_memory_to_->setValue(sp_memory_to_->maximum());
@@ -138,7 +137,7 @@ void MemoryWidget::setAddressRangeLimit(const int min, const int max) {
 
 void MemoryWidget::updateMemory() {
     try {
-        memory_ = controller_->GetMemory(memory_from_ * 16, memory_to_ * 16);
+        memory_ = controller_->GetMemory(memory_from_, memory_to_);
     } catch (...) {
         //TODO: Cannot read memory warning
     }
@@ -196,20 +195,13 @@ void MemoryWidget::updateScroll_(int value) {
 }
 
 void MemoryWidget::updateMemory_() {
-    std::stringstream ss;
-
-    int address = memory_from_;
-
-    for (const auto& bytes : memory_) {
-        ss << formatLine_(address, bytes) << '\n';
-        ++address;
-    }
+    MemoryFormat format = rb_hex_->isChecked() ? kHex : kDec;
 
     int v_scroll = te_memory_->verticalScrollBar()->value();
     int h_scroll = te_memory_->horizontalScrollBar()->value();
 
-    te_header_->setText(QString::fromStdString(formatHeader_()));
-    te_memory_->setText(QString::fromStdString(ss.str()));
+    te_header_->setText(QString::fromStdString(MemoryFormatter::formatHeader(format)));
+    te_memory_->setText(QString::fromStdString(MemoryFormatter::formatMemory(memory_from_, memory_, format)));
 
     te_memory_->verticalScrollBar()->setValue(v_scroll);
     te_memory_->horizontalScrollBar()->setValue(h_scroll);
@@ -225,62 +217,4 @@ void MemoryWidget::updateMemoryButtons_() {
                    sp_memory_to_->value() != memory_to_;
     btn_search_->setEnabled(enabled);
     btn_restore_->setEnabled(enabled);
-}
-
-char MemoryWidget::formatChar_(uint8_t byte) {
-    return byte >= 32 && byte < 127 ? (char)byte : '.';
-}
-
-std::string MemoryWidget::formatByte_(int byte) {
-    std::stringstream ssByte;
-
-    if (rb_hex_->isChecked()) {
-        ssByte << std::uppercase << std::hex << std::setw(2);
-    }
-    else {
-        ssByte << std::setw(3);
-    }
-
-    ssByte << std::setfill('0') << byte;
-    return ssByte.str();
-}
-
-std::string MemoryWidget::formatHeader_() {
-    if (memory_.empty()) {
-        return "";
-    }
-
-    std::stringstream ss;
-    ss << std::setw(kAddressWidth) << std::setfill(' ') << "";
-
-    if (rb_dec_->isChecked()) {
-        ss << "  00  01  02  03  04  05  06  07  08  09  0A  0B  0C  0D  0E  0F";
-    }
-    else {
-        ss << " 00 01 02 03 04 05 06 07 08 09 0A 0B 0C 0D 0E 0F";
-    }
-
-    // ASCII column header
-    ss << "    0123456789ABCDEF   ";
-
-    return ss.str();
-}
-
-std::string MemoryWidget::formatLine_(int address, const std::vector<uint8_t>& bytes) {
-    std::stringstream ss;
-
-    ss << std::uppercase << std::hex << std::setw(kAddressWidth - 1) << std::setfill('0') << address << "0 ";
-
-    for (auto byte : bytes) {
-        ss << formatByte_(byte) << " ";
-    }
-
-    ss << "   ";
-
-    for (auto byte : bytes) {
-        ss << formatChar_(byte);
-    }
-
-
-    return ss.str();
 }
