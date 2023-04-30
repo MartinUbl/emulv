@@ -4,7 +4,7 @@
 #include <QMainWindow>
 #include <QFileDialog>
 #include <thread>
-#include "disassemblywidget.h"
+#include "disassembly/DisassemblyWidget.h"
 #include "Controller.h"
 #include "peripherals/gpio/GPIOWidget.h"
 #include "peripherals/uart/UARTWidget.h"

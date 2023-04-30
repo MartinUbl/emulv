@@ -24,14 +24,14 @@ set(PROJECT_SOURCES
         main.cpp ui/resources/resources.qrc
         ui/mainwindow.cpp ui/mainwindow.ui
         ui/aboutwindow.h ui/aboutwindow.cpp ui/aboutwindow.ui
-        ui/disassemblywidget.h ui/disassemblywidget.cpp
+        ui/disassembly/DisassemblyWidget.h ui/disassembly/DisassemblyWidget.cpp
         ui/Controller.cpp ui/Controller.h
         ui/peripherals/gpio/GPIOPortWidget.cpp ui/peripherals/gpio/GPIOPortWidget.h
         ui/peripherals/gpio/GPIOPinButton.cpp ui/peripherals/gpio/GPIOPinButton.h
         ui/peripherals/gpio/GPIOWidget.cpp ui/peripherals/gpio/GPIOWidget.h
         ui/peripherals/uart/UARTWidget.cpp ui/peripherals/uart/UARTWidget.h
         ui/peripherals/PeripheralsTabWidget.cpp ui/peripherals/PeripheralsTabWidget.h
-        ui/BreakpointAreaWidget.cpp ui/BreakpointAreaWidget.h
+        ui/disassembly/BreakpointAreaWidget.cpp ui/disassembly/BreakpointAreaWidget.h
         ui/RegistersWidget.cpp ui/RegistersWidget.h
         ui/memory/MemoryWidget.cpp ui/memory/MemoryWidget.h
         ui/memory/MemoryFormatter.cpp ui/memory/MemoryFormatter.h

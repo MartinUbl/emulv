@@ -29,7 +29,7 @@ public:
     int ShowWindow();
     void RunProgram();
     EventEmitter &GetEventEmitter();
-    std::vector<std::string> GetDisassembly();
+    std::vector<std::tuple<uint64_t, std::string>> GetDisassembly();
     std::map<std::string, modules::PeripheralDevice*> GetPeripherals();
     void SetPinStatus(std::string module, int pin, bool status);
     void LoadFile(std::string file_path);

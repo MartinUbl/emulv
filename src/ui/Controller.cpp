@@ -79,7 +79,7 @@ void Controller::DebugProgram() {
 }
 
 
-std::vector<std::string> Controller::GetDisassembly() {
+std::vector<std::tuple<uint64_t, std::string>> Controller::GetDisassembly() {
     return this->emulatorUnit_->Disassemble();
 }
 
