@@ -67,11 +67,18 @@ void RegistersWidget::rb_dec_clicked_() {
 void RegistersWidget::updateRegisters_() {
     std::stringstream ss;
 
-    for (const auto &reg : registers_) {
+    for (size_t i = 0; i < registers_.size(); i++) {
+        const auto &reg = registers_.at(i);
+
         std::string label = std::get<0>(reg);
         uint32_t value = std::get<1>(reg);
 
         ss << std::setw(kRegisterLabelWidth) << std::setfill(' ') << label;
+        std::string regAbi = "";
+        if (i < kRegisters_Count) {
+            regAbi = "(" + kRegisters_ABI_Names.at(i) + ")";
+        }
+        ss << " " << std::setw(kRegisterLabelWidth + 2) << std::setfill(' ') << regAbi;
         ss << "   " << formatValueBytes_(value);
 
         if (rb_dec_->isChecked()) {
