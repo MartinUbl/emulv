@@ -27,6 +27,8 @@ namespace emulator {
 
         //This will save the last register values
         GetRegisters();
+        std::cout << "Program return value: " << active_machine_->return_value<long>() << std::endl; //TODO: remove
+
         SetState_(kTerminated);
     }
 

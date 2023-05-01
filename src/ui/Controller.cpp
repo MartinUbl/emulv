@@ -7,6 +7,7 @@
 #include "mainwindow.h"
 #include "../utils/events/EventEmitter.h"
 #include "../utils/events/SimpleEvent.h"
+#include "../modules/uart.h"
 #include <QApplication>
 
 int Controller::ShowWindow() {
@@ -44,6 +45,8 @@ void Controller::CreatePeripherals_() {
     activePeripherals_["PORT_A"] = new modules::GPIO_Port("PORT_A", emitter_, 0x40010800, 0x40010BFF);
     activePeripherals_["PORT_B"] = new modules::GPIO_Port("PORT_B", emitter_, 0x40010C00, 0x40010FFF);
     activePeripherals_["PORT_C"] = new modules::GPIO_Port("PORT_C", emitter_, 0x40011000, 0x40011BFF);
+
+    activePeripherals_["UART_A"] = new modules::UART_Device("UART_A", emitter_, 0x40013800, 0x40013821);
 }
 
 void Controller::RegisterPeripherals_() {
@@ -152,5 +155,10 @@ void Controller::AddBreakpoint(uint64_t address) {
 
 void Controller::RemoveBreakpoint(uint64_t address) {
     emulatorUnit_->RemoveBreakpoint(address);
+}
+
+void Controller::SendUartMessage(std::string uart_name, std::string message) {
+    auto uart = dynamic_cast<modules::UART_Device*>(activePeripherals_[uart_name]);
+    uart->TransmitToDevice(message);
 }
 

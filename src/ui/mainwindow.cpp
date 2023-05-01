@@ -1,6 +1,7 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
 #include "aboutwindow.h"
+#include "../utils/events/uart_event.h"
 
 #include <QAction>
 #include <QStringListModel>
@@ -8,13 +9,10 @@
 #include <QMessageBox>
 
 MainWindow::MainWindow(QWidget *parent, Controller *controller)
-: QMainWindow(parent)
-, ui(new Ui::MainWindow)
-, controller(controller)
-, disassemblyWidget(new DisassemblyWidget(this, controller))
-, registersWidget_(new RegistersWidget(this))
-, memoryWidget_(new MemoryWidget(this, controller))
-, peripheralsTabWidget_(new PeripheralsTabWidget(this, controller)) {
+        : QMainWindow(parent), ui(new Ui::MainWindow), controller(controller),
+          disassemblyWidget(new DisassemblyWidget(this, controller)), registersWidget_(new RegistersWidget(this)),
+          memoryWidget_(new MemoryWidget(this, controller)),
+          peripheralsTabWidget_(new PeripheralsTabWidget(this, controller)) {
     ui->setupUi(this);
 
     // Initialize toolbar buttons
@@ -82,6 +80,16 @@ MainWindow::MainWindow(QWidget *parent, Controller *controller)
     controller->GetEventEmitter().On(emulator::State_Changed_Event_Description, [this](AbstractEvent *res) {
         QMetaObject::invokeMethod(this, "updateUI");
     });
+
+    controller->GetEventEmitter().On(UART_event_description, [](AbstractEvent *res) {
+        uart_event *uartEvent = dynamic_cast< uart_event *>(res);
+
+        std::cout << "An uart event has been captured: " << uartEvent->getData() << std::endl;
+
+        //Don't forget to free the event object after using it
+        delete res;
+    });
+
 }
 
 MainWindow::~MainWindow() {
@@ -111,8 +119,7 @@ void MainWindow::updateUI() {
 
         updateRegisters();
         updateMemory();
-    }
-    else {
+    } else {
         disassemblyWidget->highlightLine(-1);
     }
 }
@@ -166,8 +173,8 @@ void MainWindow::updateToolBarButtons() {
     auto state = controller->GetProgramState();
 
     bool notRunningButtonsVisible = state == emulator::kDefault ||
-                             state == emulator::kReady ||
-                             state == emulator::kTerminated;
+                                    state == emulator::kReady ||
+                                    state == emulator::kTerminated;
 
     bool runningButtonsVisible = !notRunningButtonsVisible;
 
@@ -195,7 +202,7 @@ void MainWindow::updateMemory() {
     memoryWidget_->updateMemory();
 }
 
-void MainWindow::showMessageBox(const QString& title, const QString& message) {
+void MainWindow::showMessageBox(const QString &title, const QString &message) {
     QMessageBox messageBox;
     messageBox.setWindowTitle(title);
     messageBox.setText(message);
@@ -234,9 +241,10 @@ void MainWindow::on_action_Open_triggered() {
 }
 
 void MainWindow::on_action_About_RISCVEmulator_triggered() {
-    AboutWindow aboutWindow;
-    aboutWindow.setModal(true);
-    aboutWindow.exec();
+//    AboutWindow aboutWindow;
+//    aboutWindow.setModal(true);
+//    aboutWindow.exec();
+    controller->SendUartMessage("UART_A", "C");
 }
 
 void MainWindow::on_btnRun_clicked() {
