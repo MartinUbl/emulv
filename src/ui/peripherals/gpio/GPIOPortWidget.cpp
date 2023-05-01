@@ -7,9 +7,7 @@
 #include "GPIOPortWidget.h"
 
 GPIOPortWidget::GPIOPortWidget(QWidget *parent, Controller *controller, std::string label, std::vector<int> pin_ids)
-    : PeripheralWidget(parent)
-    , controller_(controller)
-    , label_(label)
+    : PeripheralWidget(parent, controller, label)
     , pins_() {
     this->setStyleSheet("GPIOPinButton, GPIOPinButton:pressed { border: 0px; background-color: transparent; }");
 
@@ -44,10 +42,6 @@ void GPIOPortWidget::setReadonly(bool readonly) {
     for (auto pin : pins_) {
         pin.second->setEnabled(!readonly);
     }
-}
-
-std::string GPIOPortWidget::label() {
-    return label_;
 }
 
 void GPIOPortWidget::onPinButtonClicked() {

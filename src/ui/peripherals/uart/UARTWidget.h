@@ -11,13 +11,14 @@
 #include <QLineEdit>
 #include <QComboBox>
 #include "../PeripheralWidget.h"
+#include "../../Controller.h"
 
 class UARTWidget : public PeripheralWidget {
     Q_OBJECT
 public:
-    UARTWidget(QWidget *parent = nullptr);
+    UARTWidget(QWidget *parent = nullptr, Controller *controller = nullptr, std::string label = "");
     void setReadonly(bool readonly) override;
-    void appendMessage(std::string message);
+    void appendChar(char c);
     void clear();
 
 private slots:

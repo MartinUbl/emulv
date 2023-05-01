@@ -5,14 +5,15 @@
 #include <QVBoxLayout>
 #include "UARTWidget.h"
 
-UARTWidget::UARTWidget(QWidget *parent)
-    : PeripheralWidget(parent)
-    , textEditMessages_(new QTextEdit(this))
-    , lineEditSendMessage_(new QLineEdit(this))
-    , comboBoxLineSeparator_(new QComboBox(this))
-    , buttonSendMessage_(new QToolButton(this)) {
-    QVBoxLayout *main_layout = new QVBoxLayout(this);
-    QHBoxLayout *send_layout = new QHBoxLayout(this);
+UARTWidget::UARTWidget(QWidget *parent, Controller *controller, std::string label)
+: PeripheralWidget(parent, controller, label)
+, textEditMessages_(new QTextEdit(this))
+, lineEditSendMessage_(new QLineEdit(this))
+, comboBoxLineSeparator_(new QComboBox(this))
+, buttonSendMessage_(new QToolButton(this)) {
+    auto *main_layout = new QVBoxLayout(this);
+    auto *bot_widget = new QWidget(this);
+    auto *send_layout = new QHBoxLayout(bot_widget);
 
     main_layout->setSpacing(0);
     main_layout->setContentsMargins(0, 0, 0, 0);
@@ -33,13 +34,13 @@ UARTWidget::UARTWidget(QWidget *parent)
     buttonSendMessage_->setIcon(QIcon(":img/send.svg"));
     buttonSendMessage_->setToolTip("Send");
 
-    connect(lineEditSendMessage_, SIGNAL(textChanged(const QString &)), this, SLOT(on_lineEditSendMessage_textChanged()));
+    connect(lineEditSendMessage_, SIGNAL(textChanged(QString)), this, SLOT(on_lineEditSendMessage_textChanged()));
     connect(buttonSendMessage_, SIGNAL(clicked(bool)), this, SLOT(on_buttonSendMessage_clicked()));
 
     this->setLayout(main_layout);
 
     main_layout->addWidget(textEditMessages_);
-    main_layout->addLayout(send_layout);
+    main_layout->addWidget(bot_widget);
 
     send_layout->addWidget(lineEditSendMessage_);
     send_layout->addWidget(comboBoxLineSeparator_);
@@ -52,8 +53,10 @@ void UARTWidget::setReadonly(bool readonly) {
     buttonSendMessage_->setEnabled(!readonly);
 }
 
-void UARTWidget::appendMessage(std::string message) {
-    textEditMessages_->append(QString::fromStdString(message));
+void UARTWidget::appendChar(char c) {
+    textEditMessages_->moveCursor(QTextCursor::End);
+    textEditMessages_->insertPlainText(QChar(c));
+    textEditMessages_->moveCursor(QTextCursor::End);
 }
 
 void UARTWidget::clear() {
@@ -65,14 +68,12 @@ void UARTWidget::on_lineEditSendMessage_textChanged() {
 }
 
 void UARTWidget::on_buttonSendMessage_clicked() {
-    // To be removed
-    textEditMessages_->moveCursor(QTextCursor::End);
-    textEditMessages_->insertPlainText(lineEditSendMessage_->text());
-    textEditMessages_->moveCursor(QTextCursor::End);
+    std::string message = lineEditSendMessage_->text().toStdString();
+    std::string newLine = comboBoxLineSeparator_->currentText() == QString::fromStdString("LF") ? "\n" : "\r\n";
 
-    QString newLine = comboBoxLineSeparator_->currentText() == QString::fromStdString("LF") ? "\n" : "\r\n";
-    textEditMessages_->insertPlainText(newLine);
-    textEditMessages_->moveCursor(QTextCursor::End);
+    message.append(newLine);
+
+    controller_->SendUartMessage(label_, message);
 
     lineEditSendMessage_->clear();
 }

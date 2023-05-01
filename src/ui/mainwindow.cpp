@@ -80,16 +80,6 @@ MainWindow::MainWindow(QWidget *parent, Controller *controller)
     controller->GetEventEmitter().On(emulator::State_Changed_Event_Description, [this](AbstractEvent *res) {
         QMetaObject::invokeMethod(this, "updateUI");
     });
-
-    controller->GetEventEmitter().On(UART_event_description, [](AbstractEvent *res) {
-        uart_event *uartEvent = dynamic_cast< uart_event *>(res);
-
-        std::cout << "An uart event has been captured: " << uartEvent->getData() << std::endl;
-
-        //Don't forget to free the event object after using it
-        delete res;
-    });
-
 }
 
 MainWindow::~MainWindow() {
@@ -241,10 +231,9 @@ void MainWindow::on_action_Open_triggered() {
 }
 
 void MainWindow::on_action_About_RISCVEmulator_triggered() {
-//    AboutWindow aboutWindow;
-//    aboutWindow.setModal(true);
-//    aboutWindow.exec();
-    controller->SendUartMessage("UART_A", "C");
+    AboutWindow aboutWindow;
+    aboutWindow.setModal(true);
+    aboutWindow.exec();
 }
 
 void MainWindow::on_btnRun_clicked() {
