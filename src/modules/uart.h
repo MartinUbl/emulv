@@ -5,6 +5,7 @@
 #pragma once
 
 #include <bitset>
+#include <queue>
 #include "PeripheralDevice.h"
 
 namespace modules {
@@ -15,20 +16,18 @@ namespace modules {
     };
 
     enum UART_Register_Offset {
-        STAT = 0x0, //Status register
-        DATA = 0x4, //Data register
-        BAUD = 0x08, //Baud rate register
-        CTL0 = 0x0C, //Control register 0
-        CTL1 = 0x10, //Control register 1
-        CTL2 = 0x14, //Control register 2
-        GP = 0x18 //Guard time and prescaler register
+        uSTAT = 0x0, //Status register
+        uDATA = 0x4, //Data register
+        uBAUD = 0x08, //Baud rate register
+        uCTL0 = 0x0C, //Control register 0
+        uCTL1 = 0x10, //Control register 1
+        uCTL2 = 0x14, //Control register 2
+        uGP = 0x18 //Guard time and prescaler register
     };
 
     class UART_Controller {
     public:
-//        virtual GPIO_Pin_Mode Get_Pin_Mode(const size_t pinNo) const = 0;
-//        virtual GPIO_Pin_Level Get_Pin_Level(const size_t pinNo) const = 0;
-//        virtual void Set_Pin_Level(const size_t pinNo, GPIO_Pin_Level level) = 0;
+        virtual void TransmitToDevice(std::string message) = 0;
     };
 
     class UART_Device : public PeripheralDevice, public UART_Controller {
@@ -52,6 +51,15 @@ namespace modules {
         /* Guard time and prescaler register */
         std::bitset<kReg_Size> Reg_GP;
 
+        void HandleDataWrite();
+
+        void HandleDataRead();
+
+        void DeviceReceivedFrame(unsigned long frame_data);
+
+        void TransmitFrameToDevice(uint8_t frame_data);
+
+        std::queue<uint32_t> write_buffer;
     public:
         UART_Device(const std::string &name, EventEmitter &emitter, uint64_t start_address, uint64_t end_address);
 
@@ -70,7 +78,7 @@ namespace modules {
         uint64_t GetStartAddress();
         uint64_t GetEndAddress();
 
-
+        void TransmitToDevice(std::string message) override;
     };
 
 
