@@ -23,9 +23,14 @@ public:
 
 private slots:
     void on_lineEditSendMessage_textChanged();
+    void on_lineEditSendMessage_returnPressed();
     void on_buttonSendMessage_clicked();
 
 private:
+    const QString kNoNewLine;
+    const QString kLF = "LF";
+    const QString kCRLF = "CRLF";
+
     QTextEdit *textEditMessages_;
     QLineEdit *lineEditSendMessage_;
     QComboBox *comboBoxLineSeparator_;

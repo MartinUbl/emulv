@@ -27,14 +27,16 @@ UARTWidget::UARTWidget(QWidget *parent, Controller *controller, std::string labe
     lineEditSendMessage_->setClearButtonEnabled(true);
     lineEditSendMessage_->setPlaceholderText("Send message...");
 
-    comboBoxLineSeparator_->addItem("LF");
-    comboBoxLineSeparator_->addItem("CRLF");
+    comboBoxLineSeparator_->addItem(kNoNewLine);
+    comboBoxLineSeparator_->addItem(kLF);
+    comboBoxLineSeparator_->addItem(kCRLF);
 
     buttonSendMessage_->setEnabled(false);
     buttonSendMessage_->setIcon(QIcon(":img/send.svg"));
     buttonSendMessage_->setToolTip("Send");
 
     connect(lineEditSendMessage_, SIGNAL(textChanged(QString)), this, SLOT(on_lineEditSendMessage_textChanged()));
+    connect(lineEditSendMessage_, SIGNAL(returnPressed()), this, SLOT(on_lineEditSendMessage_returnPressed()));
     connect(buttonSendMessage_, SIGNAL(clicked(bool)), this, SLOT(on_buttonSendMessage_clicked()));
 
     this->setLayout(main_layout);
@@ -48,9 +50,9 @@ UARTWidget::UARTWidget(QWidget *parent, Controller *controller, std::string labe
 }
 
 void UARTWidget::setReadonly(bool readonly) {
-    textEditMessages_->setReadOnly(readonly);
+    lineEditSendMessage_->setReadOnly(readonly);
     comboBoxLineSeparator_->setEnabled(!readonly);
-    buttonSendMessage_->setEnabled(!readonly);
+    buttonSendMessage_->setEnabled(!readonly && !lineEditSendMessage_->text().isEmpty());
 }
 
 void UARTWidget::appendChar(char c) {
@@ -67,11 +69,22 @@ void UARTWidget::on_lineEditSendMessage_textChanged() {
     buttonSendMessage_->setEnabled(!lineEditSendMessage_->text().isEmpty());
 }
 
+void UARTWidget::on_lineEditSendMessage_returnPressed() {
+    if (buttonSendMessage_->isEnabled()) {
+        on_buttonSendMessage_clicked();
+    }
+}
+
 void UARTWidget::on_buttonSendMessage_clicked() {
     std::string message = lineEditSendMessage_->text().toStdString();
-    std::string newLine = comboBoxLineSeparator_->currentText() == QString::fromStdString("LF") ? "\n" : "\r\n";
+    QString new_line = comboBoxLineSeparator_->currentText();
 
-    message.append(newLine);
+    if (QString::compare(new_line, kLF) == 0) {
+        message.append("\n");
+    }
+    else if (QString::compare(new_line, kCRLF) == 0) {
+        message.append("\r\n");
+    }
 
     controller_->SendUartMessage(label_, message);
 
