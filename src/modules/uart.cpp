@@ -187,7 +187,7 @@ namespace modules {
 
     void UART_Device::DeviceReceivedFrame(unsigned long frame_data) {
         //frame_data can contain either 8 bits of data, or 9 bits of data.
-        Emitter.Emit(UART_event_description, new uart_event(frame_data));
+        Emitter.Emit(UART_event_description, new uart_event(*this, frame_data));
     }
 
     void UART_Device::TransmitFrameToDevice(uint8_t frame_data) {

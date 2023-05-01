@@ -11,6 +11,7 @@
 #include "PeripheralWidget.h"
 #include "../Controller.h"
 #include "gpio/GPIOWidget.h"
+#include "../../modules/uart.h"
 
 class PeripheralsTabWidget : public QWidget {
     Q_OBJECT
@@ -29,6 +30,7 @@ private:
 
     void addWidget_(modules::PeripheralDevice *peripheralDevice, const std::string &label);
     void addGPIOPortWidget_(modules::GPIO_Port *gpioPort, const std::string &label);
+    void addUARTWidget_(const std::string &label);
 };
 
 #endif //EMULV_PERIPHERALSTABWIDGET_H

@@ -6,6 +6,8 @@
 #include <QVBoxLayout>
 
 #include "PeripheralsTabWidget.h"
+#include "uart/UARTWidget.h"
+#include "../../utils/events/uart_event.h"
 
 PeripheralsTabWidget::PeripheralsTabWidget(QWidget *parent, Controller *controller)
 : QWidget(parent)
@@ -32,6 +34,16 @@ PeripheralsTabWidget::PeripheralsTabWidget(QWidget *parent, Controller *controll
         auto gpioPortWidget = dynamic_cast<GPIOPortWidget *>(widget);
 
         gpioPortWidget->setPinStatus(event->Pin_No, event->Current_Level);
+
+        delete res;
+    });
+
+    controller_->GetEventEmitter().On(UART_event_description, [this](AbstractEvent *res) {
+        auto event = dynamic_cast<uart_event *>(res);
+        auto widget = widgets_[event->getPeripheralDevice().GetName()];
+        auto uartWidget = dynamic_cast<UARTWidget *>(widget);
+
+        uartWidget->appendChar(static_cast<char>(event->getData()));
 
         delete res;
     });
@@ -69,6 +81,13 @@ void PeripheralsTabWidget::addWidget_(modules::PeripheralDevice *peripheralDevic
     auto gpioPort = dynamic_cast<modules::GPIO_Port *>(peripheralDevice);
     if (gpioPort != nullptr) {
         addGPIOPortWidget_(gpioPort, label);
+        return;
+    }
+
+    auto uart = dynamic_cast<modules::UART_Device *>(peripheralDevice);
+    if (uart != nullptr) {
+        addUARTWidget_(uart->GetName());
+        return;
     }
 }
 
@@ -88,4 +107,10 @@ void PeripheralsTabWidget::addGPIOPortWidget_(modules::GPIO_Port *gpioPort, cons
         portWidget->setPinMode(pin, gpioPort->Get_Pin_Mode(pin));
         portWidget->setPinStatus(pin, gpioPort->Get_Pin_Level(pin));
     }
+}
+
+void PeripheralsTabWidget::addUARTWidget_(const std::string &label) {
+    auto uartWidget = new UARTWidget(tabWidget_, controller_, label);
+    widgets_[label] = uartWidget;
+    tabWidget_->addTab(uartWidget, QString::fromStdString(label));
 }

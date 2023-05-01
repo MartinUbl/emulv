@@ -17,11 +17,8 @@ public:
     void setPinMode(int pin_id, modules::GPIO_Pin_Mode mode);
     void setPinStatus(int pin_id, bool status);
     void setReadonly(bool readonly) override;
-    std::string label();
 
 private:
-    Controller *controller_;
-    std::string label_;
     std::unordered_map<int, GPIOPinButton *> pins_;
 
 private slots:
