@@ -43,7 +43,11 @@ PeripheralsTabWidget::PeripheralsTabWidget(QWidget *parent, Controller *controll
         auto widget = widgets_[event->getPeripheralDevice().GetName()];
         auto uartWidget = dynamic_cast<UARTWidget *>(widget);
 
-        uartWidget->appendChar(static_cast<char>(event->getData()));
+        char c = static_cast<char>(event->getData());
+
+        QMetaObject::invokeMethod(uartWidget, [uartWidget, c]() {
+            uartWidget->appendChar(c);
+        });
 
         delete res;
     });
