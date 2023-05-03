@@ -12,14 +12,7 @@ namespace modules {
 
     UART_Device::UART_Device(const std::string &name, EventEmitter &emitter, uint64_t start_address,
                              uint64_t end_address) : PeripheralDevice(name, emitter, start_address, end_address) {
-        Reg_STAT = std::bitset<kReg_Size>{kReset_Value_STAT};
-        Reg_DATA = std::bitset<kReg_Size>{kReset_Value_OTHER};
-        Reg_BAUD = std::bitset<kReg_Size>{kReset_Value_OTHER};
-        Reg_CTL0 = std::bitset<kReg_Size>{kReset_Value_OTHER};
-        Reg_CTL1 = std::bitset<kReg_Size>{kReset_Value_OTHER};
-        Reg_CTL2 = std::bitset<kReg_Size>{kReset_Value_OTHER};
-        Reg_GP = std::bitset<kReg_Size>{kReset_Value_OTHER};
-
+        Reset();
     }
 
     void UART_Device::WriteWord(uint64_t address, uint32_t value) {
@@ -137,6 +130,16 @@ namespace modules {
     uint64_t UART_Device::ReadDoubleword(uint64_t address) {
         //Will read 32 bit value and return it as a 64 bit value.
         return ReadWord(address);
+    }
+
+    void UART_Device::Reset() {
+        Reg_STAT = std::bitset<kReg_Size>{kReset_Value_STAT};
+        Reg_DATA = std::bitset<kReg_Size>{kReset_Value_OTHER};
+        Reg_BAUD = std::bitset<kReg_Size>{kReset_Value_OTHER};
+        Reg_CTL0 = std::bitset<kReg_Size>{kReset_Value_OTHER};
+        Reg_CTL1 = std::bitset<kReg_Size>{kReset_Value_OTHER};
+        Reg_CTL2 = std::bitset<kReg_Size>{kReset_Value_OTHER};
+        Reg_GP = std::bitset<kReg_Size>{kReset_Value_OTHER};
     }
 
     void UART_Device::HandleDataWrite() {

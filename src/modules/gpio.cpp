@@ -16,8 +16,7 @@ namespace modules {
 
     GPIO_Port::GPIO_Port(const std::string &name, EventEmitter &emitter, uint64_t start_address, uint64_t end_address) :
             PeripheralDevice(name, emitter, start_address, end_address) {
-        Reg_CTL0 = std::bitset<kReg_Size>{kReg_CTL_RESET_VALUE};
-        Reg_CTL1 = std::bitset<kReg_Size>{kReg_CTL_RESET_VALUE};
+        Reset();
     }
 
     void GPIO_Port::WriteByte(uint64_t address, uint8_t value) {
@@ -137,6 +136,13 @@ namespace modules {
         }
 
         return static_cast<uint32_t>(reg.to_ulong());
+    }
+
+    void GPIO_Port::Reset() {
+        Reg_CTL0 = std::bitset<kReg_Size> {kReg_CTL_RESET_VALUE};
+        Reg_CTL1 = std::bitset<kReg_Size> {kReg_CTL_RESET_VALUE};
+        Reg_ISTAT = std::bitset<kReg_Size> {};
+        Reg_OCTL = std::bitset<kReg_Size> {};
     }
 
     GPIO_Pin_Mode GPIO_Port::Get_Pin_Mode(const size_t pinNo) const {

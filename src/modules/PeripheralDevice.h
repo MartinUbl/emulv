@@ -37,6 +37,8 @@ namespace modules {
             virtual uint32_t ReadWord(uint64_t address) = 0;
             virtual uint64_t ReadDoubleword(uint64_t address) = 0;
 
+            virtual void Reset() = 0;
+
             std::string GetName() {
                 return Name;
             }
