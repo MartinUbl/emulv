@@ -180,7 +180,7 @@ void DisassemblyWidget::updateBreakpointWidget() {
     int lines = addressArea->document()->blockCount();
 
     breakpointAreaWidget->setMaximumBreakpoints(lines);
-    breakpointAreaWidget->setFixedHeight(lines * lineHeight + kBottomPadding);
+    breakpointAreaWidget->setFixedHeight((lines + 1) * lineHeight);
 }
 
 std::string DisassemblyWidget::instructionSubstring_(const std::string &fullString) {
