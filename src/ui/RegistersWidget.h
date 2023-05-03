@@ -22,6 +22,9 @@ const std::array<std::string, kRegisters_Count> kRegisters_ABI_Names {
 class RegistersWidget : public QFrame {
     Q_OBJECT
 public:
+    QRadioButton *rb_hex_, *rb_dec_;
+    QTextEdit *main_text_edit_;
+
     explicit RegistersWidget(QWidget *parent = nullptr);
     void setRegisters(const std::vector<std::tuple<std::string, uint32_t>> &registers);
 
@@ -32,8 +35,6 @@ private slots:
 private:
     static constexpr size_t kRegisterLabelWidth = 4;
     std::vector<std::tuple<std::string, uint32_t>> registers_;
-    QRadioButton *rb_hex_, *rb_dec_;
-    QTextEdit *main_text_edit_;
 
     void updateRegisters_();
     std::string formatByte_(int byte);

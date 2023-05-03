@@ -16,6 +16,11 @@
 class MemoryWidget : public QFrame {
     Q_OBJECT
 public:
+    QRadioButton *rb_hex_, *rb_dec_;
+    QSpinBox *sp_memory_from_, *sp_memory_to_;
+    QToolButton *btn_search_, *btn_restore_;
+    QTextEdit *te_header_, *te_memory_;
+
     MemoryWidget(QWidget *parent = nullptr, Controller *controller = nullptr);
 
     void setAddressRangeLimit(int min, int max);
@@ -35,10 +40,6 @@ private slots:
 private:
     static constexpr int kMaxAddress = 0x7FFFFFFF;
     Controller *controller_;
-    QRadioButton *rb_hex_, *rb_dec_;
-    QSpinBox *sp_memory_from_, *sp_memory_to_;
-    QToolButton *btn_search_, *btn_restore_;
-    QTextEdit *te_header_, *te_memory_;
 
     int memory_from_, memory_to_;
     std::vector<uint8_t> memory_;

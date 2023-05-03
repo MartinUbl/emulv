@@ -10,8 +10,6 @@ GPIOPinButton::GPIOPinButton(QWidget *parent, int id)
     this->setFixedSize(25, 25);
     this->update_button();
     this->setIconSize(QSize(height() - 2, height() - 2));
-
-    connect(this, SIGNAL(clicked(bool)), this, SLOT(on_clicked()));
 }
 
 void GPIOPinButton::setMode(modules::GPIO_Pin_Mode mode) {

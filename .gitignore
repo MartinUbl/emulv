@@ -4,3 +4,5 @@
 /build/
 /build-src-Desktop-Debug/
 /src/CMakeLists.txt.user
+/test/ui/CMakeLists.txt.user
+/test/ui/build-ui-Desktop-Debug

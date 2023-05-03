@@ -11,8 +11,13 @@
 #include "BreakpointAreaWidget.h"
 
 class DisassemblyWidget : public QGroupBox {
-Q_OBJECT
+    Q_OBJECT
 public:
+    QTextEdit *addressArea;
+    QTextEdit *instructionArea;
+    QScrollArea *breakpointScrollArea;
+    BreakpointAreaWidget *breakpointAreaWidget;
+
     explicit DisassemblyWidget(QWidget *parent = nullptr, Controller *controller = nullptr);
 
     void setInstructions(const std::vector<std::tuple<uint64_t, std::string>> &instructions);
@@ -33,10 +38,6 @@ private:
     static constexpr int kBottomPadding = 8;
 
     Controller *controller_;
-    QTextEdit *addressArea;
-    QTextEdit *instructionArea;
-    QScrollArea *breakpointScrollArea;
-    BreakpointAreaWidget *breakpointAreaWidget;
 
     std::vector<uint64_t> addresses_;
     std::unordered_map<uint64_t, int> address_lines_;

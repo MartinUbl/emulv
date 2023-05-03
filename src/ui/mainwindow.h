@@ -3,7 +3,11 @@
 
 #include <QMainWindow>
 #include <QFileDialog>
+#include <QToolButton>
+#include <QFrame>
+#include <QSplitter>
 #include <thread>
+
 #include "disassembly/DisassemblyWidget.h"
 #include "Controller.h"
 #include "peripherals/gpio/GPIOWidget.h"
@@ -12,16 +16,22 @@
 #include "RegistersWidget.h"
 #include "memory/MemoryWidget.h"
 
-QT_BEGIN_NAMESPACE
-namespace Ui { class MainWindow; }
-QT_END_NAMESPACE
-
-class MainWindow : public QMainWindow
-{
+class MainWindow : public QMainWindow {
     Q_OBJECT
 public:
+    QToolButton *btnTerminate, *btnContinue, *btnRun, *btnDebug, *btnStep;
+    QFrame *runningIndicator, *debugIndicator;
+    QSplitter *mainSplitter, *topSplitter, *botSplitter;
+
+    DisassemblyWidget *disassemblyWidget_;
+    RegistersWidget *registersWidget_;
+    MemoryWidget *memoryWidget_;
+    PeripheralsTabWidget *peripheralsTabWidget_;
+
     MainWindow(QWidget *parent = nullptr, Controller *controller = nullptr);
     ~MainWindow();
+
+    void openFile(std::string path);
 
 private slots:
     void updateUI();
@@ -36,13 +46,9 @@ private slots:
 private:
     Controller *controller;
 
-    Ui::MainWindow *ui;
-    DisassemblyWidget *disassemblyWidget;
-    RegistersWidget *registersWidget_;
-    MemoryWidget *memoryWidget_;
-    PeripheralsTabWidget *peripheralsTabWidget_;
-
     std::unique_ptr<std::thread> mRun_Thread;
+
+    void setupUI();
 
     void joinThread();
     static void showMessageBox(const QString& title, const QString& message);

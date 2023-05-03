@@ -215,6 +215,5 @@ void MemoryWidget::updateMemorySpinBoxes_() {
 void MemoryWidget::updateMemoryButtons_() {
     bool enabled = sp_memory_from_->value() != memory_from_ ||
                    sp_memory_to_->value() != memory_to_;
-    btn_search_->setEnabled(enabled);
     btn_restore_->setEnabled(enabled);
 }
