@@ -15,7 +15,7 @@ int main() {
 	//READING DATA FROM UART (RECEIVER MODE)
 	//---------------------------------------
 	
-	//Set WL bit to 0 (8 bit frames), REN bit to 1 (transmitter enabled), UEN bit to 1 (Enable UART)
+	//Set WL bit to 0 (8 bit frames), REN bit to 1 (receiver enabled), UEN bit to 1 (Enable UART)
     CTL0 = 0b00000000000000000010000000000100;
 	//Set STB bits to 0 (stop bits format)
 	CTL1 = 0b00000000000000000000000000000000;

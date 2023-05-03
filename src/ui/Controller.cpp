@@ -46,7 +46,7 @@ void Controller::CreatePeripherals_() {
     activePeripherals_["PORT_B"] = new modules::GPIO_Port("PORT_B", emitter_, 0x40010C00, 0x40010FFF);
     activePeripherals_["PORT_C"] = new modules::GPIO_Port("PORT_C", emitter_, 0x40011000, 0x40011BFF);
 
-    activePeripherals_["UART_A"] = new modules::UART_Device("UART_A", emitter_, 0x40013800, 0x40013821);
+    activePeripherals_["UART_A"] = new modules::UART_Device("UART_A", emitter_, 0x40013800, 0x40013BFF);
 }
 
 void Controller::RegisterPeripherals_() {
