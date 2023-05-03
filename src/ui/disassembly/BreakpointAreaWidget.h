@@ -19,7 +19,7 @@ public:
     void clear();
 
 private:
-    static constexpr int kTopPadding = 6;
+    static constexpr int kTopPadding = 0;
 
     Controller *controller_;
 

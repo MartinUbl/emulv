@@ -46,7 +46,7 @@ void BreakpointAreaWidget::mousePressEvent(QMouseEvent *event) {
     QLabel *breakpoint = new QLabel(this);
 
     breakpoint->setFixedSize(breakpoint_height, breakpoint_height);
-    breakpoint->move(0, y - 3);
+    breakpoint->move(0, y - 1);
     breakpoint->setStyleSheet("padding: 2px;");
     breakpoint->setPixmap(QPixmap(":img/breakpoint.png"));
     breakpoint->setScaledContents(true);

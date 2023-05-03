@@ -3,6 +3,7 @@
 
 #include <QGroupBox>
 #include <QTextEdit>
+#include <QPlainTextEdit>
 #include <QGridLayout>
 #include <QObject>
 #include <QFrame>
@@ -13,8 +14,8 @@
 class DisassemblyWidget : public QWidget {
     Q_OBJECT
 public:
-    QTextEdit *addressArea;
-    QTextEdit *instructionArea;
+    QPlainTextEdit *addressArea;
+    QPlainTextEdit *instructionArea;
     QScrollArea *breakpointScrollArea;
     BreakpointAreaWidget *breakpointAreaWidget;
 
@@ -27,8 +28,6 @@ public:
     void updateBreakpointWidget();
 
 private slots:
-
-    void onBreakpointScrollAreaScroll();
 
     void onAddressAreaScroll();
 
