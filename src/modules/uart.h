@@ -74,6 +74,8 @@ namespace modules {
         /** Handles reading from GPIO port registers. */
         virtual uint32_t ReadWord(uint64_t address) override;
         virtual uint64_t ReadDoubleword(uint64_t address) override;
+        
+        virtual void Reset() override;
 
         uint64_t GetStartAddress();
         uint64_t GetEndAddress();
