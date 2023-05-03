@@ -1,5 +1,6 @@
 #include <QVBoxLayout>
 #include <QLabel>
+#include <QIcon>
 #include <QTextBrowser>
 #include "aboutwindow.h"
 
