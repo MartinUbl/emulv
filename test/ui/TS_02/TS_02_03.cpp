@@ -21,8 +21,8 @@ private slots:
         main_window_->show();
 
         main_window_->openFile(kMemoryTestElf);
-        QTest::mouseClick(main_window_->btnRun, Qt::LeftButton, Qt::KeyboardModifiers(), QPoint(), 4000);
-        QTest::qWait(500);
+        QTest::mouseClick(main_window_->btnRun, Qt::LeftButton, Qt::KeyboardModifiers(), QPoint(), 1000);
+        QTest::qWait(300);
     }
 
     void cleanup() {

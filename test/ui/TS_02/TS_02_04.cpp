@@ -22,7 +22,7 @@ private slots:
         main_window_->show();
 
         main_window_->openFile(kTestElf);
-        QTest::qWait(1000);
+        QTest::qWait(300);
     }
 
     void cleanupTestCase() {
@@ -46,9 +46,9 @@ private slots:
 
     void TC_02_04_03() {
         QCOMPARE(main_window_->disassemblyWidget_->instructionArea->document()->findBlockByLineNumber(0).text(),
-                 QString("auipc         gp,16384                        # 0x141b8"));
+                 QString(" auipc         gp,16384                        # 0x141b8"));
         QCOMPARE(main_window_->disassemblyWidget_->instructionArea->document()->findBlockByLineNumber(kLines - 1).text(),
-                 QString("j             61440                           # 0x30c4c"));
+                 QString(" j             61440                           # 0x30c4c"));
     }
 
     void TC_02_04_04() {
@@ -70,7 +70,7 @@ private slots:
         QTest::mouseClick(main_window_->disassemblyWidget_->breakpointAreaWidget, Qt::LeftButton, {}, QPoint(7, 24));
 
         main_window_->openFile(kTestElf);
-        QTest::qWait(1000);
+        QTest::qWait(300);
         QCOMPARE(main_window_->disassemblyWidget_->breakpointAreaWidget->children().size(), 0);
     }
 };

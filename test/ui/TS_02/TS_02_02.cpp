@@ -21,12 +21,12 @@ private slots:
         main_window_->show();
 
         main_window_->openFile(kMemoryTestElf);
-        QTest::mouseClick(main_window_->btnRun, Qt::LeftButton, Qt::KeyboardModifiers(), QPoint(), 4000);
-        QTest::qWait(500);
+        QTest::mouseClick(main_window_->btnRun, Qt::LeftButton, Qt::KeyboardModifiers(), QPoint(), 1000);
+        QTest::qWait(300);
 
         main_window_->memoryWidget_->setAddressRangeLimit(0x20000010, 0x2000001F);
 
-        QTest::mouseClick(main_window_->memoryWidget_->btn_search_, Qt::LeftButton, Qt::KeyboardModifiers(), QPoint(), 1000);
+        QTest::mouseClick(main_window_->memoryWidget_->btn_search_, Qt::LeftButton);
     }
 
     void cleanup() {

@@ -28,8 +28,8 @@ private slots:
 
     void TC_01_01_01() {
         main_window_->openFile(kMemoryTestElf);
-        QTest::mouseClick(main_window_->btnRun, Qt::LeftButton, Qt::KeyboardModifiers(), QPoint(), 4000);
-        QTest::qWait(500);
+        QTest::mouseClick(main_window_->btnRun, Qt::LeftButton, Qt::KeyboardModifiers(), QPoint(), 1000);
+        QTest::qWait(300);
 
         QCOMPARE(main_window_->registersWidget_->main_text_edit_->toPlainText(),
                  QString::fromStdString("  x0 (zero)   00 00 00 00 \n"
