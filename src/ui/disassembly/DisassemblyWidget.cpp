@@ -50,7 +50,8 @@ DisassemblyWidget::DisassemblyWidget(QWidget *parent, Controller *controller)
     breakpointAreaWidget = new BreakpointAreaWidget(breakpointScrollArea, controller);
 
     breakpointAreaWidget->setFixedWidth(addressArea->fontMetrics().height());
-    breakpointAreaWidget->setStyleSheet("background-color: rgba(100, 100, 100, 100);");
+    breakpointAreaWidget->setObjectName("breakpointAreaWidget");
+    breakpointAreaWidget->setStyleSheet("#breakpointAreaWidget { background-color: rgba(100, 100, 100, 100); }");
 
     breakpointScrollArea->setFixedWidth(addressArea->fontMetrics().height());
     breakpointScrollArea->setFrameShape(QFrame::Box);
