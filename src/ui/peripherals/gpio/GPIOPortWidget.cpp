@@ -26,8 +26,6 @@ GPIOPortWidget::GPIOPortWidget(QWidget *parent, Controller *controller, std::str
         layout->addWidget(new QLabel(QString::number(id), this), 0, i + 1, Qt::AlignCenter);
         layout->addWidget(pin, 1, i + 1, Qt::AlignCenter);
     }
-
-    this->setLayout(layout);
 }
 
 void GPIOPortWidget::setPinMode(int pin_id, modules::GPIO_Pin_Mode mode) {
