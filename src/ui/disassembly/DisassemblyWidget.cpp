@@ -120,15 +120,15 @@ void DisassemblyWidget::highlightLine(uint64_t address) {
 
 void DisassemblyWidget::onAddressAreaScroll() {
     QScrollBar *sb = addressArea->verticalScrollBar();
-    updateScroll(sb->value());
+    updateScroll_(sb->value());
 }
 
 void DisassemblyWidget::onInstructionAreaScroll() {
     QScrollBar *sb = instructionArea->verticalScrollBar();
-    updateScroll(sb->value());
+    updateScroll_(sb->value());
 }
 
-void DisassemblyWidget::updateScroll(int value) {
+void DisassemblyWidget::updateScroll_(int value) {
     QScrollBar *sbBrk = breakpointScrollArea->verticalScrollBar();
     QScrollBar *sbAddr = addressArea->verticalScrollBar();
     QScrollBar *sbInstr = instructionArea->verticalScrollBar();
