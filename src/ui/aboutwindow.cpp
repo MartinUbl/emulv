@@ -10,6 +10,7 @@ QDialog(parent) {
 
 void AboutWindow::setupUi() {
     setLayout(new QVBoxLayout(this));
+    setWindowIcon(QIcon(":img/logo.ico"));
 
     auto lblTitle = new QLabel("RISV-V Emulator", this);
     lblTitle->setAlignment(Qt::AlignHCenter);

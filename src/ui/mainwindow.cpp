@@ -39,6 +39,8 @@ MainWindow::~MainWindow() {
 
 void MainWindow::setupUI() {
     setWindowTitle("RISC-V Emulator");
+    setWindowIcon(QIcon(":img/logo.ico"));
+    setWindowState(Qt::WindowMaximized);
 
     // <Menu>
     setMenuBar(new QMenuBar(this));
@@ -143,15 +145,6 @@ void MainWindow::setupUI() {
     debugIndicator->setVisible(false);
     centralLayout->addWidget(debugIndicator);
     //   </DebugIndicator>
-
-    //   <Line>
-    auto line = new QFrame(centralWidget);
-    line->setStyleSheet("border: 1px solid black;");
-    line->setFrameShape(QFrame::Box);
-    line->setFrameShadow(QFrame::Plain);
-    line->setLineWidth(1);
-    centralLayout->addWidget(line);
-    //   </Line>
 
     //   <RunIndicator>
     runningIndicator = new QFrame(centralWidget);
