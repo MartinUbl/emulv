@@ -162,3 +162,8 @@ void Controller::SendUartMessage(std::string uart_name, std::string message) {
     uart->TransmitToDevice(message);
 }
 
+void Controller::ResetPeripherals() {
+    for (auto peripheral : activePeripherals_) {
+        peripheral.second->Reset();
+    }
+}

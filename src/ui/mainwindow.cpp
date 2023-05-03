@@ -338,6 +338,9 @@ void MainWindow::openFile(std::string path) {
 
     memoryWidget_->clear();
     registersWidget_->setRegisters({});
+    controller->ResetPeripherals();
+    peripheralsTabWidget_->updateWidgets();
+
     statusBar()->showMessage(QString::fromStdString(path));
 }
 
@@ -355,11 +358,15 @@ void MainWindow::on_action_About_RISCVEmulator_triggered() {
 
 void MainWindow::on_btnRun_clicked() {
     joinThread();
+    controller->ResetPeripherals();
+    peripheralsTabWidget_->updateWidgets();
     mRun_Thread = std::make_unique<std::thread>(&Controller::RunProgram, controller);
 }
 
 void MainWindow::on_btnDebug_clicked() {
     joinThread();
+    controller->ResetPeripherals();
+    peripheralsTabWidget_->updateWidgets();
     statusBar()->showMessage(QString::fromStdString("Debugger started."));
     mRun_Thread = std::make_unique<std::thread>(&Controller::DebugProgram, controller);
 }

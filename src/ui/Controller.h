@@ -60,6 +60,8 @@ public:
     uint64_t GetMemoryEndAddress();
 
     void SendUartMessage(std::string uart_name, std::string message);
+
+    void ResetPeripherals();
 };
 
 
