@@ -11,8 +11,9 @@ QDialog(parent) {
 void AboutWindow::setupUi() {
     setLayout(new QVBoxLayout(this));
     setWindowIcon(QIcon(":img/logo.ico"));
+    setWindowTitle("About RISC-V Emulator");
 
-    auto lblTitle = new QLabel("RISV-V Emulator", this);
+    auto lblTitle = new QLabel("RISC-V Emulator", this);
     lblTitle->setAlignment(Qt::AlignHCenter);
     auto font = lblTitle->font();
     font.setPointSize(12);
@@ -26,6 +27,7 @@ void AboutWindow::setupUi() {
     textBrowser->setStyleSheet("background-color: rgba(0, 0, 0, 0);");
     textBrowser->setFrameShape(QFrame::NoFrame);
     textBrowser->setFrameShadow(QFrame::Plain);
+    textBrowser->setOpenExternalLinks(true);
     textBrowser->setHtml("<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" \"http://www.w3.org/TR/REC-html40/strict.dtd\">\n"
                          "<html><head><meta name=\"qrichtext\" content=\"1\" /><meta charset=\"utf-8\" /><style type=\"text/css\">\n"
                          "p, li { white-space: pre-wrap; }\n"
