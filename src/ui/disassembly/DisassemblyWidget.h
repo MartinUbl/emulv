@@ -3,6 +3,7 @@
 
 #include <QGroupBox>
 #include <QTextEdit>
+#include <QPlainTextEdit>
 #include <QGridLayout>
 #include <QObject>
 #include <QFrame>
@@ -10,43 +11,32 @@
 #include <unordered_set>
 #include "BreakpointAreaWidget.h"
 
-class DisassemblyWidget : public QGroupBox {
-Q_OBJECT
+class DisassemblyWidget : public QWidget {
+    Q_OBJECT
 public:
+    QPlainTextEdit *addressArea;
+    QPlainTextEdit *instructionArea;
+    QScrollArea *breakpointScrollArea;
+    BreakpointAreaWidget *breakpointAreaWidget;
+
     explicit DisassemblyWidget(QWidget *parent = nullptr, Controller *controller = nullptr);
-
     void setInstructions(const std::vector<std::tuple<uint64_t, std::string>> &instructions);
-
     void highlightLine(uint64_t address);
-
     void updateBreakpointWidget();
 
 private slots:
-
-    void onBreakpointScrollAreaScroll();
-
     void onAddressAreaScroll();
-
     void onInstructionAreaScroll();
 
 private:
-    static constexpr int kBottomPadding = 8;
-
     Controller *controller_;
-    QTextEdit *addressArea;
-    QTextEdit *instructionArea;
-    QScrollArea *breakpointScrollArea;
-    BreakpointAreaWidget *breakpointAreaWidget;
 
     std::vector<uint64_t> addresses_;
     std::unordered_map<uint64_t, int> address_lines_;
 
-    void updateScroll(int value);
-
     static std::string instructionSubstring_(const std::string &fullString);
-
+    void updateScroll_(int value);
     int findLine_(uint64_t address);
-
     void addBreakpoint_(int line);
     void removeBreakpoint_(int line);
 };

@@ -13,10 +13,9 @@ class AboutWindow : public QDialog
 
 public:
     explicit AboutWindow(QWidget *parent = nullptr);
-    ~AboutWindow();
 
 private:
-    Ui::AboutWindow *ui;
+    void setupUi();
 };
 
 #endif // ABOUTWINDOW_H

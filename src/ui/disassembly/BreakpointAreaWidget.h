@@ -19,8 +19,6 @@ public:
     void clear();
 
 private:
-    static constexpr int kTopPadding = 6;
-
     Controller *controller_;
 
     int max_breakpoints_ = 1;

@@ -16,6 +16,8 @@ public:
     GPIOPortWidget(QWidget *parent = nullptr, Controller *controller = nullptr, std::string label = "", std::vector<int> pin_ids = {});
     void setPinMode(int pin_id, modules::GPIO_Pin_Mode mode);
     void setPinStatus(int pin_id, bool status);
+    modules::GPIO_Pin_Mode pinMode(int pin_id);
+    bool pinStatus(int pin_id);
     void setReadonly(bool readonly) override;
 
 private:

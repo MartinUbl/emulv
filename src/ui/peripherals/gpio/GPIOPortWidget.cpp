@@ -26,8 +26,6 @@ GPIOPortWidget::GPIOPortWidget(QWidget *parent, Controller *controller, std::str
         layout->addWidget(new QLabel(QString::number(id), this), 0, i + 1, Qt::AlignCenter);
         layout->addWidget(pin, 1, i + 1, Qt::AlignCenter);
     }
-
-    this->setLayout(layout);
 }
 
 void GPIOPortWidget::setPinMode(int pin_id, modules::GPIO_Pin_Mode mode) {
@@ -36,6 +34,14 @@ void GPIOPortWidget::setPinMode(int pin_id, modules::GPIO_Pin_Mode mode) {
 
 void GPIOPortWidget::setPinStatus(int pin_id, bool status) {
     this->pins_[pin_id]->setStatus(status);
+}
+
+modules::GPIO_Pin_Mode GPIOPortWidget::pinMode(int pin_id) {
+    return this->pins_[pin_id]->mode();
+}
+
+bool GPIOPortWidget::pinStatus(int pin_id) {
+    return this->pins_[pin_id]->status();
 }
 
 void GPIOPortWidget::setReadonly(bool readonly) {

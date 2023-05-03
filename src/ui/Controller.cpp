@@ -14,18 +14,6 @@ int Controller::ShowWindow() {
     QApplication a(argc_, argv_);
     MainWindow w(nullptr, this);
 
-    //TODO: Remove
-    emitter_.On("SimpleEventHello1", [](AbstractEvent *res) {
-        SimpleEvent *simpleEvent = dynamic_cast< SimpleEvent *>(res);
-
-        std::cout << "An event has been captured: " << std::endl << "Event Name: SimpleEventHello1" << std::endl
-                  << "The data of this object is: " << simpleEvent->getData() << std::endl;
-
-        //Don't forget to free the event object after using it
-        delete res;
-    });
-    emitter_.Emit("SimpleEventHello1",new SimpleEvent("Hello world. SIMPLE EVENT DATA."));
-
     w.show();
     return a.exec();
 }
@@ -162,3 +150,8 @@ void Controller::SendUartMessage(std::string uart_name, std::string message) {
     uart->TransmitToDevice(message);
 }
 
+void Controller::ResetPeripherals() {
+    for (auto peripheral : activePeripherals_) {
+        peripheral.second->Reset();
+    }
+}

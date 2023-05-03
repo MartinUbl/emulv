@@ -22,8 +22,8 @@ find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS Widgets)
 
 set(PROJECT_SOURCES
         main.cpp ui/resources/resources.qrc
-        ui/mainwindow.cpp ui/mainwindow.ui
-        ui/aboutwindow.h ui/aboutwindow.cpp ui/aboutwindow.ui
+        ui/mainwindow.cpp
+        ui/aboutwindow.h ui/aboutwindow.cpp
         ui/disassembly/DisassemblyWidget.h ui/disassembly/DisassemblyWidget.cpp
         ui/Controller.cpp ui/Controller.h
         ui/peripherals/gpio/GPIOPortWidget.cpp ui/peripherals/gpio/GPIOPortWidget.h

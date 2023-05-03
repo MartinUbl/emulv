@@ -5,6 +5,7 @@
 #include <QTextBlock>
 #include <QScrollBar>
 #include <QAbstractItemModel>
+#include <QLabel>
 #include <iostream>
 #include <unordered_set>
 #include <iomanip>
@@ -12,15 +13,42 @@
 #include "../../utils/events/BreakpointAreaWidgetEvents.h"
 
 DisassemblyWidget::DisassemblyWidget(QWidget *parent, Controller *controller)
-: QGroupBox{parent}
-, controller_(controller)
-, addressArea(new QTextEdit(this))
-, instructionArea(new QTextEdit(this))
-, breakpointScrollArea(new QScrollArea(this)) {
+: QWidget(parent)
+, controller_(controller) {
+    setLayout(new QVBoxLayout(this));
+    layout()->setSpacing(0);
+    layout()->setContentsMargins(0, 0, 0, 0);
+
+    auto top_widget = new QWidget(this);
+    top_widget->setLayout(new QHBoxLayout(top_widget));
+    top_widget->layout()->setSpacing(0);
+    top_widget->layout()->setContentsMargins(0, 0, 0, 0);
+    top_widget->layout()->addWidget(new QLabel("Disassembly", top_widget));
+    top_widget->layout()->addItem(new QSpacerItem(0, 0, QSizePolicy::Expanding));
+
+    auto bot_widget = new QGroupBox(this);
+    bot_widget->setLayout(new QHBoxLayout(bot_widget));
+    bot_widget->layout()->setSpacing(0);
+    bot_widget->layout()->setContentsMargins(0, 0, 0, 0);
+
+    addressArea = new QPlainTextEdit(bot_widget);
+    instructionArea = new QPlainTextEdit(bot_widget);
+    breakpointScrollArea = new QScrollArea(bot_widget);
+
+    bot_widget->layout()->addWidget(breakpointScrollArea);
+    bot_widget->layout()->addWidget(addressArea);
+    bot_widget->layout()->addWidget(instructionArea);
+
+    layout()->addWidget(top_widget);
+    layout()->addWidget(bot_widget);
+
     QFont font("Monospace");
     font.setStyleHint(QFont::TypeWriter);
     addressArea->setFont(font);
     instructionArea->setFont(font);
+
+    addressArea->document()->setDocumentMargin(0);
+    instructionArea->document()->setDocumentMargin(0);
 
     breakpointAreaWidget = new BreakpointAreaWidget(breakpointScrollArea, controller);
 
@@ -32,11 +60,11 @@ DisassemblyWidget::DisassemblyWidget(QWidget *parent, Controller *controller)
     breakpointScrollArea->setFrameShape(QFrame::Box);
     breakpointScrollArea->setLineWidth(0);
     breakpointScrollArea->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+    breakpointScrollArea->verticalScrollBar()->setEnabled(false);
 
     breakpointScrollArea->setWidget(breakpointAreaWidget);
 
-    addressArea->setObjectName("addressArea");
-    addressArea->setStyleSheet("#addressArea { background-color: rgba(100, 100, 100, 100); }");
+    addressArea->setStyleSheet("background-color: rgba(100, 100, 100, 100);");
     addressArea->setMaximumWidth(addressArea->fontMetrics().horizontalAdvance("00000000 "));
     addressArea->setReadOnly(true);
     addressArea->setFrameShape(QFrame::Box);
@@ -50,16 +78,6 @@ DisassemblyWidget::DisassemblyWidget(QWidget *parent, Controller *controller)
     instructionArea->setLineWidth(0);
     instructionArea->setWordWrapMode(QTextOption::NoWrap);
 
-    auto *layout = new QHBoxLayout(this);
-    layout->addWidget(breakpointScrollArea);
-    layout->addWidget(addressArea);
-    layout->addWidget(instructionArea);
-    layout->setSpacing(0);
-    layout->setContentsMargins(0, 0, 0, 0);
-    this->setLayout(layout);
-
-    connect(breakpointScrollArea->verticalScrollBar(), SIGNAL(valueChanged(int)), this,
-            SLOT(onBreakpointScrollAreaScroll()));
     connect(addressArea->verticalScrollBar(), SIGNAL(valueChanged(int)), this, SLOT(onAddressAreaScroll()));
     connect(instructionArea->verticalScrollBar(), SIGNAL(valueChanged(int)), this, SLOT(onInstructionAreaScroll()));
 
@@ -100,27 +118,22 @@ void DisassemblyWidget::highlightLine(uint64_t address) {
     instructionArea->setExtraSelections(extraSelections);
 }
 
-void DisassemblyWidget::onBreakpointScrollAreaScroll() {
-    QScrollBar *sb = breakpointScrollArea->verticalScrollBar();
-    updateScroll(sb->value());
-}
-
 void DisassemblyWidget::onAddressAreaScroll() {
     QScrollBar *sb = addressArea->verticalScrollBar();
-    updateScroll(sb->value());
+    updateScroll_(sb->value());
 }
 
 void DisassemblyWidget::onInstructionAreaScroll() {
     QScrollBar *sb = instructionArea->verticalScrollBar();
-    updateScroll(sb->value());
+    updateScroll_(sb->value());
 }
 
-void DisassemblyWidget::updateScroll(int value) {
+void DisassemblyWidget::updateScroll_(int value) {
     QScrollBar *sbBrk = breakpointScrollArea->verticalScrollBar();
     QScrollBar *sbAddr = addressArea->verticalScrollBar();
     QScrollBar *sbInstr = instructionArea->verticalScrollBar();
 
-    sbBrk->setValue(value);
+    sbBrk->setValue(value * addressArea->fontMetrics().height());
     sbAddr->setValue(value);
     sbInstr->setValue(value);
 }
@@ -144,7 +157,7 @@ void DisassemblyWidget::setInstructions(const std::vector<std::tuple<uint64_t, s
         ssAddress << std::uppercase << std::hex << std::setw(8) << std::setfill('0') << address;
 
         ssAddresses << ssAddress.str() << '\n';
-        ssInstructions << instructionSubstring_(instruction) << '\n';
+        ssInstructions << " " << instructionSubstring_(instruction) << '\n';
 
         addresses_.push_back(address);
         address_lines_[address] = line++;
@@ -167,7 +180,7 @@ void DisassemblyWidget::updateBreakpointWidget() {
     int lines = addressArea->document()->blockCount();
 
     breakpointAreaWidget->setMaximumBreakpoints(lines);
-    breakpointAreaWidget->setFixedHeight(lines * lineHeight + kBottomPadding);
+    breakpointAreaWidget->setFixedHeight((lines + 1) * lineHeight);
 }
 
 std::string DisassemblyWidget::instructionSubstring_(const std::string &fullString) {

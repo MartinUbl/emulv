@@ -16,6 +16,11 @@
 class UARTWidget : public PeripheralWidget {
     Q_OBJECT
 public:
+    QTextEdit *textEditMessages_;
+    QLineEdit *lineEditSendMessage_;
+    QComboBox *comboBoxLineSeparator_;
+    QToolButton *buttonSendMessage_;
+
     UARTWidget(QWidget *parent = nullptr, Controller *controller = nullptr, std::string label = "");
     void setReadonly(bool readonly) override;
     void appendChar(char c);
@@ -30,11 +35,6 @@ private:
     const QString kNoNewLine;
     const QString kLF = "LF";
     const QString kCRLF = "CRLF";
-
-    QTextEdit *textEditMessages_;
-    QLineEdit *lineEditSendMessage_;
-    QComboBox *comboBoxLineSeparator_;
-    QToolButton *buttonSendMessage_;
 };
 
 #endif //EMULV_UARTWIDGET_H

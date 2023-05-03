@@ -23,14 +23,9 @@ void BreakpointAreaWidget::clear() {
 void BreakpointAreaWidget::mousePressEvent(QMouseEvent *event) {
     int clicked_y = event->pos().y();
 
-    // Ignore top padding
-    if (clicked_y < kTopPadding) {
-        return;
-    }
-
     int breakpoint_height = this->width();
-    int line = (clicked_y - kTopPadding) / breakpoint_height;
-    int y = line * breakpoint_height + kTopPadding;
+    int line = clicked_y / breakpoint_height;
+    int y = line * breakpoint_height;
 
     if (line > max_breakpoints_ - 1) {
         return;
@@ -46,7 +41,7 @@ void BreakpointAreaWidget::mousePressEvent(QMouseEvent *event) {
     QLabel *breakpoint = new QLabel(this);
 
     breakpoint->setFixedSize(breakpoint_height, breakpoint_height);
-    breakpoint->move(0, y - 3);
+    breakpoint->move(0, y - 1);
     breakpoint->setStyleSheet("padding: 2px;");
     breakpoint->setPixmap(QPixmap(":img/breakpoint.png"));
     breakpoint->setScaledContents(true);
