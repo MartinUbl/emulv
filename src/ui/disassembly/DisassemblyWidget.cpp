@@ -5,6 +5,7 @@
 #include <QTextBlock>
 #include <QScrollBar>
 #include <QAbstractItemModel>
+#include <QLabel>
 #include <iostream>
 #include <unordered_set>
 #include <iomanip>
@@ -12,11 +13,35 @@
 #include "../../utils/events/BreakpointAreaWidgetEvents.h"
 
 DisassemblyWidget::DisassemblyWidget(QWidget *parent, Controller *controller)
-: QGroupBox{parent}
-, controller_(controller)
-, addressArea(new QTextEdit(this))
-, instructionArea(new QTextEdit(this))
-, breakpointScrollArea(new QScrollArea(this)) {
+: QWidget(parent)
+, controller_(controller) {
+    setLayout(new QVBoxLayout(this));
+    layout()->setSpacing(0);
+    layout()->setContentsMargins(0, 0, 0, 0);
+
+    auto top_widget = new QWidget(this);
+    top_widget->setLayout(new QHBoxLayout(top_widget));
+    top_widget->layout()->setSpacing(0);
+    top_widget->layout()->setContentsMargins(0, 0, 0, 0);
+    top_widget->layout()->addWidget(new QLabel("Disassembly", top_widget));
+    top_widget->layout()->addItem(new QSpacerItem(0, 0, QSizePolicy::Expanding));
+
+    auto bot_widget = new QGroupBox(this);
+    bot_widget->setLayout(new QHBoxLayout(bot_widget));
+    bot_widget->layout()->setSpacing(0);
+    bot_widget->layout()->setContentsMargins(0, 0, 0, 0);
+
+    addressArea = new QTextEdit(bot_widget);
+    instructionArea = new QTextEdit(bot_widget);
+    breakpointScrollArea = new QScrollArea(bot_widget);
+
+    bot_widget->layout()->addWidget(breakpointScrollArea);
+    bot_widget->layout()->addWidget(addressArea);
+    bot_widget->layout()->addWidget(instructionArea);
+
+    layout()->addWidget(top_widget);
+    layout()->addWidget(bot_widget);
+
     QFont font("Monospace");
     font.setStyleHint(QFont::TypeWriter);
     addressArea->setFont(font);
@@ -25,8 +50,7 @@ DisassemblyWidget::DisassemblyWidget(QWidget *parent, Controller *controller)
     breakpointAreaWidget = new BreakpointAreaWidget(breakpointScrollArea, controller);
 
     breakpointAreaWidget->setFixedWidth(addressArea->fontMetrics().height());
-    breakpointAreaWidget->setObjectName("breakpointAreaWidget");
-    breakpointAreaWidget->setStyleSheet("#breakpointAreaWidget { background-color: rgba(100, 100, 100, 100); }");
+    breakpointAreaWidget->setStyleSheet("background-color: rgba(100, 100, 100, 100);");
 
     breakpointScrollArea->setFixedWidth(addressArea->fontMetrics().height());
     breakpointScrollArea->setFrameShape(QFrame::Box);
@@ -35,8 +59,7 @@ DisassemblyWidget::DisassemblyWidget(QWidget *parent, Controller *controller)
 
     breakpointScrollArea->setWidget(breakpointAreaWidget);
 
-    addressArea->setObjectName("addressArea");
-    addressArea->setStyleSheet("#addressArea { background-color: rgba(100, 100, 100, 100); }");
+    addressArea->setStyleSheet("background-color: rgba(100, 100, 100, 100);");
     addressArea->setMaximumWidth(addressArea->fontMetrics().horizontalAdvance("00000000 "));
     addressArea->setReadOnly(true);
     addressArea->setFrameShape(QFrame::Box);
@@ -50,16 +73,7 @@ DisassemblyWidget::DisassemblyWidget(QWidget *parent, Controller *controller)
     instructionArea->setLineWidth(0);
     instructionArea->setWordWrapMode(QTextOption::NoWrap);
 
-    auto *layout = new QHBoxLayout(this);
-    layout->addWidget(breakpointScrollArea);
-    layout->addWidget(addressArea);
-    layout->addWidget(instructionArea);
-    layout->setSpacing(0);
-    layout->setContentsMargins(0, 0, 0, 0);
-    this->setLayout(layout);
-
-    connect(breakpointScrollArea->verticalScrollBar(), SIGNAL(valueChanged(int)), this,
-            SLOT(onBreakpointScrollAreaScroll()));
+    connect(breakpointScrollArea->verticalScrollBar(), SIGNAL(valueChanged(int)), this, SLOT(onBreakpointScrollAreaScroll()));
     connect(addressArea->verticalScrollBar(), SIGNAL(valueChanged(int)), this, SLOT(onAddressAreaScroll()));
     connect(instructionArea->verticalScrollBar(), SIGNAL(valueChanged(int)), this, SLOT(onInstructionAreaScroll()));
 

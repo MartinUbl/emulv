@@ -10,7 +10,7 @@
 #include <unordered_set>
 #include "BreakpointAreaWidget.h"
 
-class DisassemblyWidget : public QGroupBox {
+class DisassemblyWidget : public QWidget {
     Q_OBJECT
 public:
     QTextEdit *addressArea;
