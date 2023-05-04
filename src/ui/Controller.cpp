@@ -39,6 +39,8 @@ void Controller::ClearActivePeripherals() {
         delete x.second;
     }
     activePeripherals_.clear();
+
+    RegisterPeripherals_();
 }
 
 Controller::~Controller() {

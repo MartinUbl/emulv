@@ -150,6 +150,8 @@ namespace emulator {
     }
 
     void EmulatorUnit::SetupMemoryTraps_(riscv::Machine<riscv::RISCV64> &machine) {
+        page_peripherals_.clear();
+
         for (const auto &p: *peripheral_devices_) {
             //TODO: Remove print
             std::cout << "Setting up memory trap for device with name: " << p.first << std::endl;
