@@ -44,11 +44,20 @@ void MainWindow::setupUI() {
 
     // <Menu>
     setMenuBar(new QMenuBar(this));
+
     auto fileMenu = new QMenu("&File", menuBar());
     auto openAction = new QAction("&Open", fileMenu);
     openAction->setShortcut(QKeySequence::fromString("Ctrl+o"));
     connect(openAction, SIGNAL(triggered(bool)), this, SLOT(on_action_Open_triggered()));
     fileMenu->addAction(openAction);
+
+    auto toolsMenu = new QMenu("&Tools", menuBar());
+    auto selectConfigAction = new QAction("&Select configuration", toolsMenu);
+    connect(selectConfigAction, SIGNAL(triggered(bool)), this, SLOT(on_action_SelectConfiguration_triggered()));
+    auto clearConfigAction = new QAction("&Clear configuration", toolsMenu);
+    connect(clearConfigAction, SIGNAL(triggered(bool)), this, SLOT(on_action_ClearConfiguration_triggered()));
+    toolsMenu->addAction(selectConfigAction);
+    toolsMenu->addAction(clearConfigAction);
 
     auto helpMenu = new QMenu("&Help", menuBar());
     auto aboutAction = new QAction("&About", helpMenu);
@@ -56,6 +65,7 @@ void MainWindow::setupUI() {
     helpMenu->addAction(aboutAction);
 
     menuBar()->addMenu(fileMenu);
+    menuBar()->addMenu(toolsMenu);
     menuBar()->addMenu(helpMenu);
     // </Menu>
 
@@ -337,10 +347,49 @@ void MainWindow::openFile(std::string path) {
     statusBar()->showMessage(QString::fromStdString(path));
 }
 
+void MainWindow::selectConfig(std::string path) {
+    if (path.empty()) {
+        return;
+    }
+
+    controller->Terminate();
+    joinThread();
+
+    try {
+        controller->ConfigureEmulator(path);
+    }
+    catch (const std::exception &e) {
+        showMessageBox("File error", QString::fromStdString("Could not load file " + path + '\n' + e.what()));
+        return;
+    }
+
+    memoryWidget_->clear();
+    registersWidget_->setRegisters({});
+    controller->ResetPeripherals();
+    peripheralsTabWidget_->updateWidgets();
+
+    statusBar()->showMessage(QString::fromStdString(path));
+}
+
+void MainWindow::clearConfig() {
+    controller->ClearActivePeripherals();
+    peripheralsTabWidget_->updateWidgets();
+}
+
 void MainWindow::on_action_Open_triggered() {
     QString fileName = QFileDialog::getOpenFileName(this, "Select binary file", ".");
 
     openFile(fileName.toStdString());
+}
+
+void MainWindow::on_action_SelectConfiguration_triggered() {
+    QString fileName = QFileDialog::getOpenFileName(this, "Select config file", ".", "*.json");
+
+    selectConfig(fileName.toStdString());
+}
+
+void MainWindow::on_action_ClearConfiguration_triggered() {
+    clearConfig();
 }
 
 void MainWindow::on_action_About_RISCVEmulator_triggered() {

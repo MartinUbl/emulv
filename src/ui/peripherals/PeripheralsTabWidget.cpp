@@ -63,6 +63,8 @@ void PeripheralsTabWidget::updateWidgets() {
     clear();
     auto peripherals = controller_->GetPeripherals();
 
+    setVisible(!peripherals.empty());
+
     for (const auto& peripheral : peripherals) {
         addWidget_(peripheral.second, peripheral.first);
     }

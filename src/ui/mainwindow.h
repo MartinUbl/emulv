@@ -32,10 +32,14 @@ public:
     ~MainWindow();
 
     void openFile(std::string path);
+    void selectConfig(std::string path);
+    void clearConfig();
 
 private slots:
     void updateUI();
     void on_action_Open_triggered();
+    void on_action_SelectConfiguration_triggered();
+    void on_action_ClearConfiguration_triggered();
     void on_action_About_RISCVEmulator_triggered();
     void on_btnRun_clicked();
     void on_btnDebug_clicked();
