@@ -5,6 +5,7 @@
 #include <QFileDialog>
 #include <QToolButton>
 #include <QFrame>
+#include <QLabel>
 #include <QSplitter>
 #include <thread>
 
@@ -22,6 +23,7 @@ public:
     QToolButton *btnTerminate, *btnContinue, *btnRun, *btnDebug, *btnStep;
     QFrame *runningIndicator, *debugIndicator;
     QSplitter *mainSplitter, *topSplitter, *botSplitter;
+    QLabel *lblFile, *lblConfig, *lblProgramStatus;
 
     DisassemblyWidget *disassemblyWidget_;
     RegistersWidget *registersWidget_;
@@ -48,6 +50,9 @@ private slots:
     void on_btnContinue_clicked();
 
 private:
+    const QString kDefaultFileLabel = "No file loaded";
+    const QString kDefaultConfigLabel = "No config loaded";
+
     Controller *controller;
 
     std::unique_ptr<std::thread> mRun_Thread;
@@ -62,5 +67,7 @@ private:
     void updateRegisters();
     void updateMemory();
     void updateToolBarButtons();
+
+    static std::string formatAddress_(uint64_t address);
 };
 #endif // MAINWINDOW_H
