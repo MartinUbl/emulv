@@ -65,7 +65,7 @@ MemoryWidget::MemoryWidget(QWidget *parent, Controller *controller)
     bot_layout->setContentsMargins(0, 0, 0, 0);
 
     te_header_ = new QTextEdit(bot_widget);
-    te_memory_ = new QTextEdit(bot_widget);
+    te_memory_ = new QPlainTextEdit(bot_widget);
 
     QFont font("Monospace");
     font.setStyleHint(QFont::TypeWriter);
@@ -140,7 +140,7 @@ void MemoryWidget::updateMemory() {
         memory_ = controller_->GetMemory(memory_from_, memory_to_);
         setAddressRangeLimit(controller_->GetRamStartAddress(), controller_->GetRamEndAddress());
     } catch (...) {
-        te_memory_->setText("Failed to read memory");
+        te_memory_->setPlainText("Failed to read memory");
         return;
     }
 
@@ -202,8 +202,8 @@ void MemoryWidget::updateMemory_() {
     int v_scroll = te_memory_->verticalScrollBar()->value();
     int h_scroll = te_memory_->horizontalScrollBar()->value();
 
-    te_header_->setText(QString::fromStdString(MemoryFormatter::formatHeader(format)));
-    te_memory_->setText(QString::fromStdString(MemoryFormatter::formatMemory(memory_from_, memory_, format)));
+    te_header_->setPlainText(QString::fromStdString(MemoryFormatter::formatHeader(format)));
+    te_memory_->setPlainText(QString::fromStdString(MemoryFormatter::formatMemory(memory_from_, memory_, format)));
 
     te_memory_->verticalScrollBar()->setValue(v_scroll);
     te_memory_->horizontalScrollBar()->setValue(h_scroll);

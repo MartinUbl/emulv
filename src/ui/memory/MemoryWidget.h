@@ -9,6 +9,7 @@
 #include <QRadioButton>
 #include <QSpinBox>
 #include <QTextEdit>
+#include <QPlainTextEdit>
 #include <QToolButton>
 #include <QScrollArea>
 #include "../Controller.h"
@@ -19,7 +20,8 @@ public:
     QRadioButton *rb_hex_, *rb_dec_;
     QSpinBox *sp_memory_from_, *sp_memory_to_;
     QToolButton *btn_search_, *btn_restore_;
-    QTextEdit *te_header_, *te_memory_;
+    QTextEdit *te_header_;
+    QPlainTextEdit *te_memory_;
 
     MemoryWidget(QWidget *parent = nullptr, Controller *controller = nullptr);
 
