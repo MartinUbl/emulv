@@ -7,6 +7,8 @@
 #include <QAction>
 #include <QStringListModel>
 #include <iostream>
+#include <iomanip>
+#include <sstream>
 #include <QMessageBox>
 
 MainWindow::MainWindow(QWidget *parent, Controller *controller)
@@ -65,10 +67,6 @@ void MainWindow::setupUI() {
     menuBar()->addMenu(toolsMenu);
     menuBar()->addMenu(helpMenu);
     // </Menu>
-
-    // <StatusBar>
-    setStatusBar(new QStatusBar(this));
-    // </StatusBar>
 
     // <CentralWidget>
     auto centralWidget = new QWidget(this);
@@ -204,27 +202,51 @@ void MainWindow::setupUI() {
     centralLayout->addWidget(mainSplitter);
     //   </MainSplitter>
 
+    // <StatusBar>
+    setStatusBar(new QStatusBar(this));
+    statusBar()->setStyleSheet("QLabel { margin-left: 4px; margin-right: 4px; }");
+    lblFile = new QLabel(kDefaultFileLabel, statusBar());
+    lblConfig = new QLabel(kDefaultConfigLabel, statusBar());
+    lblProgramStatus = new QLabel(statusBar());
+    statusBar()->addWidget(lblFile);
+    statusBar()->addWidget(lblConfig);
+    statusBar()->addWidget(lblProgramStatus);
+    // </StatusBar>
+
     // </CentralWidget>
     setCentralWidget(centralWidget);
 }
 
 void MainWindow::updateUI() {
+    std::string pc_str;
+
     updateRunningIndicator();
     updateWidgetsEnabled();
     updateToolBarButtons();
 
-    if (controller->GetProgramState() == emulator::kTerminated) {
-        updateRegisters();
-        updateMemory();
-    }
-    // Breakpoint reached
-    if (controller->GetProgramState() == emulator::kDebugPaused) {
-        disassemblyWidget_->highlightLine(controller->GetPc());
+    disassemblyWidget_->highlightLine(-1);
 
-        updateRegisters();
-        updateMemory();
-    } else {
-        disassemblyWidget_->highlightLine(-1);
+    switch (controller->GetProgramState()) {
+        case emulator::kRunning:
+            lblProgramStatus->setText("Running ...");
+            break;
+        case emulator::kRunningDebug:
+            lblProgramStatus->setText("Running in debug mode ...");
+            break;
+        case emulator::kTerminated:
+            lblProgramStatus->setText(QString::fromStdString("Program finished with value " + std::to_string(controller->GetProgramReturnValue())));
+            updateRegisters();
+            updateMemory();
+            break;
+        case emulator::kDebugPaused:
+            pc_str = formatAddress_(controller->GetPc());
+            lblProgramStatus->setText(QString::fromStdString("Program hit breakpoint " + pc_str));
+            disassemblyWidget_->highlightLine(controller->GetPc());
+            updateRegisters();
+            updateMemory();
+            break;
+        default:
+            break;
     }
 }
 
@@ -344,7 +366,7 @@ void MainWindow::openFile(std::string path) {
     controller->ResetPeripherals();
     peripheralsTabWidget_->updateWidgets();
 
-    statusBar()->showMessage(QString::fromStdString(path));
+    lblFile->setText(QString::fromStdString(path));
 }
 
 void MainWindow::selectConfig(std::string path) {
@@ -365,11 +387,12 @@ void MainWindow::selectConfig(std::string path) {
 
     peripheralsTabWidget_->updateWidgets();
     updateUI();
+
     memoryWidget_->setAddressRangeLimit(controller->GetRamStartAddress(), controller->GetRamEndAddress());
     memoryWidget_->sp_memory_from_->setValue(controller->GetRamStartAddress());
     memoryWidget_->sp_memory_to_->setValue(controller->GetRamEndAddress());
 
-    statusBar()->showMessage(QString::fromStdString(path));
+    lblConfig->setText(QString::fromStdString(path));
 }
 
 void MainWindow::clearConfig() {
@@ -378,6 +401,8 @@ void MainWindow::clearConfig() {
 
     controller->ClearActivePeripherals();
     peripheralsTabWidget_->updateWidgets();
+
+    lblConfig->setText(kDefaultConfigLabel);
 }
 
 void MainWindow::on_action_Open_triggered() {
@@ -413,7 +438,6 @@ void MainWindow::on_btnDebug_clicked() {
     joinThread();
     controller->ResetPeripherals();
     peripheralsTabWidget_->updateWidgets();
-    statusBar()->showMessage(QString::fromStdString("Debugger started."));
     mRun_Thread = std::make_unique<std::thread>(&Controller::DebugProgram, controller);
 }
 
@@ -423,7 +447,11 @@ void MainWindow::on_btnStep_clicked() {
     updateRegisters();
     updateMemory();
 
-    disassemblyWidget_->highlightLine(controller->GetPc());
+    uint64_t pc = controller->GetPc();
+    disassemblyWidget_->highlightLine(pc);
+
+    std::string pc_str = formatAddress_(pc);
+    lblProgramStatus->setText(QString::fromStdString("Program stepped to " + pc_str));
 }
 
 void MainWindow::on_btnTerminate_clicked() {
@@ -437,4 +465,11 @@ void MainWindow::on_btnTerminate_clicked() {
 void MainWindow::on_btnContinue_clicked() {
     joinThread();
     mRun_Thread = std::make_unique<std::thread>(&Controller::DebugContinue, controller);
+}
+
+std::string MainWindow::formatAddress_(uint64_t address) {
+    std::stringstream ss;
+    ss << std::uppercase << std::hex << std::setw(8) << std::setfill('0') << address;
+
+    return ss.str();
 }
