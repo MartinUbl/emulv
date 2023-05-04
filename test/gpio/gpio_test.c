@@ -1,5 +1,5 @@
 /**
- * @file main.c GPIO peripheral device test
+ * @file gpio_test.c GPIO peripheral device test
  * @author Stanislav Kafara
  * @version 2023-04-17
  */
@@ -8,15 +8,14 @@
 #include <stdint.h>
 
 
+#define APB2EN_REG_OFFSET 0x18
+#define PAEN_BIT_OFFSET 2
+#define PCEN_BIT_OFFSET 4
+
 #define GPIOA_CTL0  0x40010800
 #define GPIOA_ISTAT 0x40010808
 #define GPIOA_OCTL  0x4001080C
 #define GPIOA_BOP   0x40010810
-
-#define GPIOB_CTL0  0x40010C00
-#define GPIOB_ISTAT 0x40010C08
-#define GPIOB_OCTL  0x40010C0C
-#define GPIOB_BOP   0x40010C10
 
 #define GPIOC_CTL1  0x40011004
 #define GPIOC_ISTAT 0x40011008
@@ -41,6 +40,11 @@ int main() {
     uint32_t value;
 
     // BEGIN INITIALIZATION
+
+    // Enable GPIOA, GPIOC in RCU Peripheral Clock Enable register
+    // address = (uint32_t *) APB2EN_REG_OFFSET;
+    // value = 0b00000000000000000000000000010100;
+    // *address = *address | value;
 
     // (PA0) Initialize PA0 as INPUT.
     address = (uint32_t *) GPIOA_CTL0;
@@ -69,15 +73,6 @@ int main() {
     value = 0b00000000000000000000000100000000;
     *address = *address | value;
 
-    // (PB2) Initialize PB2 as OUTPUT.
-    address = (uint32_t *) GPIOB_CTL0;
-    // (PB2) Set CTL2 in CTLO to OUTPUT(PUSH-PULL) (00). (default 01, bit [11:10])
-    // (PB2) Set MD2 in CTL0 to OUTPUT (01). (default 00, bit [9:8])
-    value = 0b11111111111111111111000011111111;
-    *address = *address & value;
-    value = 0b00000000000000000000000100000000;
-    *address = *address | value;
-
     // (PC13) Initialize PC13 as OUTPUT.
     address = (uint32_t *) GPIOC_CTL1;
     // (PC13) Set CTL13 in CTL1 to OUTPUT(PUSH-PULL) (00). (default 01, bit [23:22])
@@ -98,7 +93,7 @@ int main() {
     
     // (PC13) Set OCTL13 to HIGH using BOP.
     address = (uint32_t *) GPIOC_BOP;
-    value = 0b00000000000000000000000000000010;
+    value = 0b00000000000000000010000000000000;
     *address = value;
 
     // END MANUAL SWITCH OUTPUT HIGH

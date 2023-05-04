@@ -1,5 +1,5 @@
 /**
- * @file main.c GPIO peripheral device test
+ * @file gpio_test-apb2-enable.c GPIO peripheral device test
  * @author Stanislav Kafara
  * @version 2023-04-17
  */
@@ -7,6 +7,10 @@
 
 #include <stdint.h>
 
+
+#define APB2EN_REG_OFFSET 0x18
+#define PAEN_BIT_OFFSET 2
+#define PCEN_BIT_OFFSET 4
 
 #define GPIOA_CTL0  0x40010800
 #define GPIOA_ISTAT 0x40010808
@@ -36,6 +40,11 @@ int main() {
     uint32_t value;
 
     // BEGIN INITIALIZATION
+
+    // Enable GPIOA, GPIOC in RCU Peripheral Clock Enable register
+    address = (uint32_t *) APB2EN_REG_OFFSET;
+    value = 0b00000000000000000000000000010100;
+    *address = *address | value;
 
     // (PA0) Initialize PA0 as INPUT.
     address = (uint32_t *) GPIOA_CTL0;
