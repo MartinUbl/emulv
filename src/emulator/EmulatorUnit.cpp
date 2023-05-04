@@ -369,7 +369,7 @@ namespace emulator {
         }
 
         // Create a new 64-bit RISC-V machine
-        active_machine_ = new riscv::Machine<riscv::RISCV64>{binary_};
+        active_machine_ = new riscv::Machine<riscv::RISCV64>{binary_, {.memory_max = maxMemory_}};
         // Use string vector as arguments to the RISC-V program
         active_machine_->setup_linux(
                 machine_arguments,
@@ -416,4 +416,14 @@ namespace emulator {
         }
     }
 
+    //##################################################################################################################
+    //# Set + Get
+    //##################################################################################################################
+    void EmulatorUnit::SetMaxMemory(uint64_t maxMemoryValue) {
+        maxMemory_ = maxMemoryValue;
+    }
+
+    void EmulatorUnit::SetRamStartAddress(uint64_t ramStartAddress) {
+        ramStartAddress_ = ramStartAddress;
+    }
 }

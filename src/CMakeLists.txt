@@ -70,6 +70,7 @@ FetchContent_MakeAvailable(json-lib)
 #################################################################################
 
 add_library(emulator ./emulator/EmulatorUnit.cpp)
+add_library(config ./utils/config/ConfigLoader.cpp ./utils/config/ConfigLoader.h)
 add_library(modules modules/gpio.cpp modules/gpio.h ./modules/PeripheralDevice.h modules/ExampleDevice.cpp modules/ExampleDevice.h modules/uart.cpp modules/uart.h)
 add_library(events utils/events/EventEmitter.cpp utils/events/EventEmitter.h utils/events/AbstractEvent.h utils/events/SimpleEvent.cpp utils/events/SimpleEvent.h utils/events/PeripheralDeviceEvent.h utils/events/gpio_events.cpp utils/events/gpio_events.h utils/events/BreakpointAreaWidgetEvents.cpp utils/events/BreakpointAreaWidgetEvents.h utils/events/uart_event.cpp utils/events/uart_event.h)
 
@@ -98,18 +99,21 @@ endif ()
 #Add library dependencies
 #################################################################################
 
+#Config target depends on json-lib
+target_link_libraries(config nlohmann_json)
+
 #Emulator target depends on riscv, riscv-disassembler, events, modules
 target_link_libraries(emulator riscv)
 target_link_libraries(emulator ${riscv-disassembler_SOURCE_DIR}/src/riscv-disas.c)
 target_link_libraries(emulator events)
 target_link_libraries(emulator modules)
 
-#Project target depends on riscv, emulator, modules, events, json-lib
+#Project target depends on riscv, emulator, modules, events, config
 target_link_libraries(${PROJECT_NAME} PRIVATE riscv)
 target_link_libraries(${PROJECT_NAME} PRIVATE emulator)
 target_link_libraries(${PROJECT_NAME} PRIVATE modules)
-target_link_libraries(${PROJECT_NAME} PRIVATE nlohmann_json)
 target_link_libraries(${PROJECT_NAME} PRIVATE events)
+target_link_libraries(${PROJECT_NAME} PRIVATE config)
 
 #################################################################################
 #Setup QT GUI #2
@@ -124,3 +128,8 @@ set_target_properties(emulv PROPERTIES
 install(TARGETS emulv
         BUNDLE DESTINATION .
         LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR})
+#################################################################################
+#Config.json file
+#################################################################################
+#This will write config.json into the cMake build directory
+configure_file(config.json config.json COPYONLY)

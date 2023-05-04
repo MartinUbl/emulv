@@ -6,6 +6,7 @@
 #define EMULV_CONTROLLER_H
 
 #include <unordered_set>
+#include <limits>
 #include "../utils/events/EventEmitter.h"
 #include "../emulator/EmulatorUnit.h"
 #include "../modules/PeripheralDevice.h"
@@ -19,22 +20,36 @@ private:
     EventEmitter emitter_;
     emulator::EmulatorUnit *emulatorUnit_;
     std::string openedFile_;
-    void CreatePeripherals_();
+    std::vector<std::string> programArguments_;
+
     void RegisterPeripherals_();
-    std::map<std::string, modules::PeripheralDevice*> activePeripherals_;
+
+    std::map<std::string, modules::PeripheralDevice *> activePeripherals_;
+
+    void ConfigureEmulator_(const std::string& path);
 public:
     Controller(int argc, char **argv);
+
     ~Controller();
 
     int ShowWindow();
+
     void RunProgram();
+
     EventEmitter &GetEventEmitter();
+
     std::vector<std::tuple<uint64_t, std::string>> GetDisassembly();
-    std::map<std::string, modules::PeripheralDevice*> GetPeripherals();
+
+    std::map<std::string, modules::PeripheralDevice *> GetPeripherals();
+
     void SetPinStatus(std::string module, int pin, bool status);
+
     void LoadFile(std::string file_path);
+
     bool IsFileLoaded();
+
     std::vector<uint8_t> GetMemory(uint64_t from, uint64_t to);
+
     std::vector<std::tuple<std::string, uint32_t>> GetRegisters();
 
     emulator::EmulatorState GetProgramState();
