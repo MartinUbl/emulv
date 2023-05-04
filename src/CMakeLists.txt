@@ -128,3 +128,8 @@ set_target_properties(emulv PROPERTIES
 install(TARGETS emulv
         BUNDLE DESTINATION .
         LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR})
+#################################################################################
+#Config.json file
+#################################################################################
+#This will write config.json into the cMake build directory
+configure_file(config.json config.json COPYONLY)

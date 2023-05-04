@@ -25,7 +25,7 @@ Controller::Controller(int argc, char **argv) {
     emitter_ = EventEmitter();
     emulatorUnit_ = new emulator::EmulatorUnit(emitter_);
 
-    ConfigureEmulator_("C:\\Users\\xPC\\Documents\\GitHub\\emulv\\src\\config.json");
+    ConfigureEmulator_("config.json");
 }
 
 void Controller::RegisterPeripherals_() {
