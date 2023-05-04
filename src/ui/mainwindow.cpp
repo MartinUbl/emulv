@@ -369,6 +369,9 @@ void MainWindow::selectConfig(std::string path) {
 }
 
 void MainWindow::clearConfig() {
+    controller->Terminate();
+    joinThread();
+
     controller->ClearActivePeripherals();
     peripheralsTabWidget_->updateWidgets();
 }
