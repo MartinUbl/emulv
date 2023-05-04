@@ -7,6 +7,8 @@
 #include <QAction>
 #include <QStringListModel>
 #include <iostream>
+#include <iomanip>
+#include <sstream>
 #include <QMessageBox>
 
 MainWindow::MainWindow(QWidget *parent, Controller *controller)
