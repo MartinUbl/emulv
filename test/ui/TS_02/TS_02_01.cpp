@@ -10,6 +10,7 @@ class TS_02_01 : public QObject {
     Q_OBJECT
 private:
     const std::string kGPIOTestElf = "../ui/elf/gpio_test.elf";
+    const std::string kConfigFile = "../ui/config.json";
 
     Controller *controller_{};
     MainWindow *main_window_{};
@@ -33,6 +34,7 @@ private slots:
 
         QVERIFY(registers_widget->isEnabled() == false);
         QVERIFY(memory_widget->isEnabled() == false);
+        QVERIFY(peripherals_widget->isVisible() == false);
         QVERIFY(peripherals_widget->isEnabled() == false);
     }
 
@@ -64,8 +66,14 @@ private slots:
     }
 
     void TC_02_01_04() {
+        main_window_->selectConfig(kConfigFile);
+        QVERIFY(main_window_->peripheralsTabWidget_->isVisible() == true);
+        QVERIFY(main_window_->peripheralsTabWidget_->isEnabled() == false);
+    }
+
+    void TC_02_01_05() {
         main_window_->openFile(kGPIOTestElf);
-        QTest::mouseClick(main_window_->btnRun, Qt::LeftButton, {}, QPoint(), 1000);
+        QTest::mouseClick(main_window_->btnRun, Qt::LeftButton, {}, QPoint(), 500);
         QTest::qWait(300);
         QVERIFY(main_window_->btnRun->isVisible() == false);
         QVERIFY(main_window_->btnRun->isEnabled() == false);
@@ -82,10 +90,10 @@ private slots:
         QVERIFY(main_window_->peripheralsTabWidget_->isEnabled() == true);
     }
 
-    void TC_02_01_05() {
+    void TC_02_01_06() {
         main_window_->openFile(kGPIOTestElf);
         QTest::mouseClick(main_window_->disassemblyWidget_->breakpointAreaWidget, Qt::LeftButton, {}, QPoint(7, 10));
-        QTest::mouseClick(main_window_->btnDebug, Qt::LeftButton, {}, QPoint(), 1000);
+        QTest::mouseClick(main_window_->btnDebug, Qt::LeftButton);
         QTest::qWait(300);
         QVERIFY(main_window_->btnRun->isVisible() == false);
         QVERIFY(main_window_->btnRun->isEnabled() == false);
@@ -102,10 +110,10 @@ private slots:
         QVERIFY(main_window_->peripheralsTabWidget_->isEnabled() == true);
     }
 
-    void TC_02_01_06() {
+    void TC_02_01_07() {
         main_window_->openFile(kGPIOTestElf);
-        QTest::mouseClick(main_window_->btnRun, Qt::LeftButton, {}, QPoint(), 1000);
-        QTest::mouseClick(main_window_->btnTerminate, Qt::LeftButton, {}, QPoint(), 1000);
+        QTest::mouseClick(main_window_->btnRun, Qt::LeftButton, {}, QPoint(), 500);
+        QTest::mouseClick(main_window_->btnTerminate, Qt::LeftButton, {}, QPoint(), 500);
         QTest::qWait(300);
         QVERIFY(main_window_->btnRun->isVisible() == true);
         QVERIFY(main_window_->btnRun->isEnabled() == true);
@@ -117,6 +125,11 @@ private slots:
         QVERIFY(main_window_->registersWidget_->isEnabled() == true);
         QVERIFY(main_window_->memoryWidget_->isEnabled() == true);
         QVERIFY(main_window_->peripheralsTabWidget_->isEnabled() == true);
+    }
+
+    void TC_02_01_08() {
+        main_window_->clearConfig();
+        QVERIFY(main_window_->peripheralsTabWidget_->isVisible() == false);
     }
 };
 

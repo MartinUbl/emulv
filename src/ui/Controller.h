@@ -26,7 +26,6 @@ private:
 
     std::map<std::string, modules::PeripheralDevice *> activePeripherals_;
 
-    void ConfigureEmulator_(const std::string& path);
 public:
     Controller(int argc, char **argv);
 
@@ -46,6 +45,10 @@ public:
 
     void LoadFile(std::string file_path);
 
+    void ConfigureEmulator(const std::string& path);
+
+    void ClearActivePeripherals();
+    
     bool IsFileLoaded();
 
     std::vector<uint8_t> GetMemory(uint64_t from, uint64_t to);

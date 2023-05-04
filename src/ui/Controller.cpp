@@ -24,8 +24,6 @@ Controller::Controller(int argc, char **argv) {
     argv_ = argv;
     emitter_ = EventEmitter();
     emulatorUnit_ = new emulator::EmulatorUnit(emitter_);
-
-    ConfigureEmulator_("config.json");
 }
 
 void Controller::RegisterPeripherals_() {
@@ -36,16 +34,24 @@ std::map<std::string, modules::PeripheralDevice *> Controller::GetPeripherals() 
     return activePeripherals_;
 }
 
-Controller::~Controller() {
-    delete emulatorUnit_;
-    //Delete peripheral objects
+void Controller::ClearActivePeripherals() {
     for (auto const &x: activePeripherals_) {
         delete x.second;
     }
+    activePeripherals_.clear();
+
+    RegisterPeripherals_();
 }
 
-void Controller::ConfigureEmulator_(const std::string &path) {
+Controller::~Controller() {
+    delete emulatorUnit_;
+    ClearActivePeripherals();
+}
+
+void Controller::ConfigureEmulator(const std::string &path) {
     const nlohmann::json &config = loadConfig(path);
+
+    ClearActivePeripherals();
 
     for (const auto &item: config.items()) {
         if (item.key() == "device") {
