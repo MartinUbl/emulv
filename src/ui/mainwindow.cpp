@@ -151,7 +151,6 @@ void MainWindow::setupUI() {
     debugIndicator->setStyleSheet("border: 3px solid rgb(255, 128, 0);");
     debugIndicator->setFrameShape(QFrame::Box);
     debugIndicator->setFrameShadow(QFrame::Plain);
-    debugIndicator->setLineWidth(0);
     debugIndicator->setVisible(false);
     centralLayout->addWidget(debugIndicator);
     //   </DebugIndicator>
@@ -161,7 +160,6 @@ void MainWindow::setupUI() {
     runningIndicator->setStyleSheet("border: 3px solid green;");
     runningIndicator->setFrameShape(QFrame::Box);
     runningIndicator->setFrameShadow(QFrame::Plain);
-    runningIndicator->setLineWidth(0);
     runningIndicator->setVisible(false);
     centralLayout->addWidget(runningIndicator);
     //   </RunIndicator>
@@ -195,14 +193,14 @@ void MainWindow::setupUI() {
     botSplitter->addWidget(memoryWidget_);
     botSplitter->addWidget(peripheralsTabWidget_);
 
-    botSplitter->setStretchFactor(0, 1);
+    botSplitter->setStretchFactor(0, 2);
     botSplitter->setStretchFactor(1, 1);
     //     </BotSplitter>
 
     mainSplitter->addWidget(topSplitter);
     mainSplitter->addWidget(botSplitter);
 
-    mainSplitter->setStretchFactor(0, 1);
+    mainSplitter->setStretchFactor(0, 2);
     mainSplitter->setStretchFactor(1, 1);
     centralLayout->addWidget(mainSplitter);
     //   </MainSplitter>
@@ -363,10 +361,9 @@ void MainWindow::selectConfig(std::string path) {
         return;
     }
 
-    memoryWidget_->clear();
-    registersWidget_->setRegisters({});
-    controller->ResetPeripherals();
     peripheralsTabWidget_->updateWidgets();
+
+    updateUI();
 
     statusBar()->showMessage(QString::fromStdString(path));
 }
