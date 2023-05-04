@@ -22,8 +22,13 @@ add_executable(
   gpio/test_output.cpp
   gpio/test_input.cpp
 
+  uart/test_configuration.cpp
+  uart/test_transmitter.cpp
+  uart/test_receiver.cpp
+
   ../../src/utils/events/EventEmitter.cpp
   ../../src/modules/gpio.cpp
+  ../../src/modules/uart.cpp
 )
 target_link_libraries(
   unit_tests
