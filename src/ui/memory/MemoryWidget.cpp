@@ -137,8 +137,8 @@ void MemoryWidget::setAddressRangeLimit(const int min, const int max) {
 
 void MemoryWidget::updateMemory() {
     try {
-        memory_ = controller_->GetMemory(memory_from_, memory_to_);
         setAddressRangeLimit(controller_->GetRamStartAddress(), controller_->GetRamEndAddress());
+        memory_ = controller_->GetMemory(memory_from_, memory_to_);
     } catch (...) {
         te_memory_->setPlainText("Failed to read memory");
         return;

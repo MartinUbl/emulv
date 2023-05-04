@@ -359,8 +359,10 @@ void MainWindow::selectConfig(std::string path) {
     }
 
     peripheralsTabWidget_->updateWidgets();
-
     updateUI();
+    memoryWidget_->setAddressRangeLimit(controller->GetRamStartAddress(), controller->GetRamEndAddress());
+    memoryWidget_->sp_memory_from_->setValue(controller->GetRamStartAddress());
+    memoryWidget_->sp_memory_to_->setValue(controller->GetRamEndAddress());
 
     statusBar()->showMessage(QString::fromStdString(path));
 }
