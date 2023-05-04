@@ -191,12 +191,8 @@ void Controller::SendUartMessage(std::string uart_name, std::string message) {
     uart->TransmitToDevice(message);
 }
 
-<<<<<<< Updated upstream
 void Controller::ResetPeripherals() {
     for (auto peripheral : activePeripherals_) {
         peripheral.second->Reset();
     }
 }
-=======
-
->>>>>>> Stashed changes
