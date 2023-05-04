@@ -116,6 +116,9 @@ void DisassemblyWidget::highlightLine(uint64_t address) {
     }
 
     instructionArea->setExtraSelections(extraSelections);
+
+    int scroll = instructionArea->verticalScrollBar()->value();
+    updateScroll_(scroll);
 }
 
 void DisassemblyWidget::onAddressAreaScroll() {
