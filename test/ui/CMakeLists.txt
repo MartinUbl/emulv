@@ -72,6 +72,7 @@ FetchContent_MakeAvailable(json-lib)
 #################################################################################
 
 add_library(emulator ${BASE_DIR}emulator/EmulatorUnit.cpp)
+add_library(config ${BASE_DIR}utils/config/ConfigLoader.cpp ${BASE_DIR}utils/config/ConfigLoader.h)
 add_library(modules ${BASE_DIR}modules/gpio.cpp ${BASE_DIR}modules/gpio.h ${BASE_DIR}modules/PeripheralDevice.h ${BASE_DIR}modules/ExampleDevice.cpp ${BASE_DIR}modules/ExampleDevice.h ${BASE_DIR}modules/uart.cpp ${BASE_DIR}modules/uart.h)
 add_library(events ${BASE_DIR}utils/events/EventEmitter.cpp ${BASE_DIR}utils/events/EventEmitter.h ${BASE_DIR}utils/events/AbstractEvent.h ${BASE_DIR}utils/events/SimpleEvent.cpp ${BASE_DIR}utils/events/SimpleEvent.h ${BASE_DIR}utils/events/PeripheralDeviceEvent.h ${BASE_DIR}utils/events/gpio_events.cpp ${BASE_DIR}utils/events/gpio_events.h ${BASE_DIR}utils/events/BreakpointAreaWidgetEvents.cpp ${BASE_DIR}utils/events/BreakpointAreaWidgetEvents.h ${BASE_DIR}utils/events/uart_event.cpp ${BASE_DIR}utils/events/uart_event.h)
 
@@ -82,6 +83,10 @@ if (${QT_VERSION_MAJOR} GREATER_EQUAL 6)
 else ()
     add_executable(ui_tests ${PROJECT_SOURCES})
 endif ()
+
+#Config target depends on json-lib
+target_link_libraries(config nlohmann_json)
+
 #Emulator target depends on riscv, riscv-disassembler, events, modules
 target_link_libraries(emulator riscv)
 target_link_libraries(emulator ${riscv-disassembler_SOURCE_DIR}/src/riscv-disas.c)
@@ -94,6 +99,7 @@ target_link_libraries(${PROJECT_NAME} PRIVATE emulator)
 target_link_libraries(${PROJECT_NAME} PRIVATE modules)
 target_link_libraries(${PROJECT_NAME} PRIVATE nlohmann_json)
 target_link_libraries(${PROJECT_NAME} PRIVATE events)
+target_link_libraries(${PROJECT_NAME} PRIVATE config)
 
 target_link_libraries(ui_tests PRIVATE
         Qt${QT_VERSION_MAJOR}::Test
