@@ -148,6 +148,7 @@ void MainWindow::setupUI() {
     debugIndicator->setStyleSheet("border: 3px solid rgb(255, 128, 0);");
     debugIndicator->setFrameShape(QFrame::Box);
     debugIndicator->setFrameShadow(QFrame::Plain);
+    debugIndicator->setFixedHeight(2);
     debugIndicator->setVisible(false);
     centralLayout->addWidget(debugIndicator);
     //   </DebugIndicator>
@@ -157,6 +158,7 @@ void MainWindow::setupUI() {
     runningIndicator->setStyleSheet("border: 3px solid green;");
     runningIndicator->setFrameShape(QFrame::Box);
     runningIndicator->setFrameShadow(QFrame::Plain);
+    runningIndicator->setFixedHeight(2);
     runningIndicator->setVisible(false);
     centralLayout->addWidget(runningIndicator);
     //   </RunIndicator>
@@ -229,6 +231,9 @@ void MainWindow::updateUI() {
 void MainWindow::updateRunningIndicator() {
     switch (controller->GetProgramState()) {
         case emulator::kRunning:
+            runningIndicator->setVisible(true);
+            debugIndicator->setVisible(false);
+            break;
         case emulator::kRunningDebug:
         case emulator::kDebugPaused:
             runningIndicator->setVisible(false);
