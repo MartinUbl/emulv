@@ -9,6 +9,7 @@
 #include "../utils/events/SimpleEvent.h"
 #include "../modules/uart.h"
 #include <QApplication>
+#include "../utils/config/ConfigLoader.h"
 
 int Controller::ShowWindow() {
     QApplication a(argc_, argv_);
@@ -24,24 +25,14 @@ Controller::Controller(int argc, char **argv) {
     emitter_ = EventEmitter();
     emulatorUnit_ = new emulator::EmulatorUnit(emitter_);
 
-    //TODO: add peripheral creation from config file
-    CreatePeripherals_();
-    RegisterPeripherals_();
-}
-
-void Controller::CreatePeripherals_() {
-    activePeripherals_["PORT_A"] = new modules::GPIO_Port("PORT_A", emitter_, 0x40010800, 0x40010BFF);
-    activePeripherals_["PORT_B"] = new modules::GPIO_Port("PORT_B", emitter_, 0x40010C00, 0x40010FFF);
-    activePeripherals_["PORT_C"] = new modules::GPIO_Port("PORT_C", emitter_, 0x40011000, 0x40011BFF);
-
-    activePeripherals_["UART_A"] = new modules::UART_Device("UART_A", emitter_, 0x40013800, 0x40013BFF);
+    ConfigureEmulator_("C:\\Users\\xPC\\Documents\\GitHub\\emulv\\src\\config.json");
 }
 
 void Controller::RegisterPeripherals_() {
     emulatorUnit_->RegisterPeripherals(activePeripherals_);
 }
 
-std::map<std::string, modules::PeripheralDevice*> Controller::GetPeripherals() {
+std::map<std::string, modules::PeripheralDevice *> Controller::GetPeripherals() {
     return activePeripherals_;
 }
 
@@ -53,20 +44,70 @@ Controller::~Controller() {
     }
 }
 
+void Controller::ConfigureEmulator_(const std::string &path) {
+    const nlohmann::json &config = loadConfig(path);
+
+    for (const auto &item: config.items()) {
+        if (item.key() == "device") {
+            //The device element
+
+            for (const auto &val: item.value().items()) {
+                if (val.key() == "ram") {
+                    //Information about ram
+                    uint64_t maxMemory = val.value()["size"].get<uint64_t>();
+                    uint64_t ramStartAddress = std::strtoull(val.value()["start-address"].get<std::string>().c_str(),
+                                                             nullptr, 16);
+                    emulatorUnit_->SetMaxMemory(maxMemory);
+                    emulatorUnit_->SetRamStartAddress(ramStartAddress);
+                } else if (val.key() == "program-arguments") {
+                    //The program arguments list
+                    programArguments_ = val.value().get<std::vector<std::string>>();
+                }
+
+            }
+        } else if (item.key() == "peripherals") {
+            //The peripherals element
+
+            //Iterate over the peripherals list
+            for (const auto &val: item.value().items()) {
+                std::string type = val.value()["type"].get<std::string>();
+                std::string name = val.value()["name"].get<std::string>();
+                uint64_t startAddress = std::strtoull(
+                        val.value()["mapping"]["start-address"].get<std::string>().c_str(), nullptr, 16);
+                uint64_t endAddress = std::strtoull(val.value()["mapping"]["end-address"].get<std::string>().c_str(),
+                                                    nullptr, 16);
+
+                //A GPIO_Port element
+                if (type == "GPIO_Port") {
+                    activePeripherals_[name] = new modules::GPIO_Port(name, emitter_, startAddress, endAddress);
+                }
+
+                //An UART_Device element
+                if (type == "UART_Device") {
+                    activePeripherals_[name] = new modules::UART_Device(name, emitter_, startAddress, endAddress);
+                }
+
+            }
+
+        }
+
+    }
+
+    RegisterPeripherals_();
+}
+
 //######################################################################################################################
 //# UI interface methods
 //######################################################################################################################
 
 void Controller::RunProgram() {
-    std::vector<std::string> arguments{"Program", "30"}; //TODO: remove
     std::cout << std::endl << "Running program..." << std::endl;
-    emulatorUnit_->Execute(arguments);
+    emulatorUnit_->Execute(programArguments_);
 }
 
 void Controller::DebugProgram() {
-    std::vector<std::string> arguments{"Program", "30"}; //TODO: remove
     std::cout << std::endl << "Running program in debug mode..." << std::endl;
-    emulatorUnit_->Debug(arguments);
+    emulatorUnit_->Debug(programArguments_);
 }
 
 
@@ -121,7 +162,7 @@ void Controller::Terminate() {
 }
 
 void Controller::SetPinStatus(std::string module, int pin, bool status) {
-    auto port = dynamic_cast<modules::GPIO_Port*>(activePeripherals_[module]);
+    auto port = dynamic_cast<modules::GPIO_Port *>(activePeripherals_[module]);
     if (port == nullptr) {
         return;
     }
@@ -146,12 +187,16 @@ void Controller::RemoveBreakpoint(uint64_t address) {
 }
 
 void Controller::SendUartMessage(std::string uart_name, std::string message) {
-    auto uart = dynamic_cast<modules::UART_Device*>(activePeripherals_[uart_name]);
+    auto uart = dynamic_cast<modules::UART_Device *>(activePeripherals_[uart_name]);
     uart->TransmitToDevice(message);
 }
 
+<<<<<<< Updated upstream
 void Controller::ResetPeripherals() {
     for (auto peripheral : activePeripherals_) {
         peripheral.second->Reset();
     }
 }
+=======
+
+>>>>>>> Stashed changes
