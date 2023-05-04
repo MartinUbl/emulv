@@ -22,10 +22,7 @@ MainWindow::MainWindow(QWidget *parent, Controller *controller)
     registersWidget_->setEnabled(false);
     peripheralsTabWidget_->setEnabled(false);
 
-    // TODO: remove
-    uint64_t start_address = 0x20000000;
-    uint64_t end_address = 0x20017FFF;
-    memoryWidget_->setAddressRangeLimit(0x20000000, 0x20017FFF);
+    memoryWidget_->setAddressRangeLimit(controller->GetRamStartAddress(), controller->GetRamEndAddress());
 
     controller->GetEventEmitter().On(emulator::State_Changed_Event_Description, [this](AbstractEvent *res) {
         QMetaObject::invokeMethod(this, "updateUI");
