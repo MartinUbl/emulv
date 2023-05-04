@@ -77,6 +77,12 @@ public:
 
     uint64_t GetMemoryEndAddress();
 
+    uint64_t GetRamStartAddress();
+
+    uint64_t GetRamSize();
+
+    uint64_t GetRamEndAddress();
+
     void SendUartMessage(std::string uart_name, std::string message);
 
     void ResetPeripherals();

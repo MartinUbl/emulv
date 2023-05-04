@@ -60,10 +60,10 @@ void Controller::ConfigureEmulator(const std::string &path) {
             for (const auto &val: item.value().items()) {
                 if (val.key() == "ram") {
                     //Information about ram
-                    uint64_t maxMemory = val.value()["size"].get<uint64_t>();
+                    uint64_t ramSize = val.value()["size"].get<uint64_t>();
                     uint64_t ramStartAddress = std::strtoull(val.value()["start-address"].get<std::string>().c_str(),
                                                              nullptr, 16);
-                    emulatorUnit_->SetMaxMemory(maxMemory);
+                    emulatorUnit_->SetRamSize(ramSize);
                     emulatorUnit_->SetRamStartAddress(ramStartAddress);
                 } else if (val.key() == "program-arguments") {
                     //The program arguments list
@@ -157,6 +157,18 @@ uint64_t Controller::GetMemoryStartAddress() {
 
 uint64_t Controller::GetMemoryEndAddress() {
     return emulatorUnit_->GetMemoryEndAddress();
+}
+
+uint64_t Controller::GetRamStartAddress() {
+    return emulatorUnit_->GetRamStartAddress();
+}
+
+uint64_t Controller::GetRamSize() {
+    return emulatorUnit_->GetRamSize();
+}
+
+uint64_t Controller::GetRamEndAddress() {
+    return emulatorUnit_->GetRamEndAddress();
 }
 
 void Controller::DebugContinue() {

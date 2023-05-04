@@ -46,7 +46,10 @@ namespace emulator {
         uint64_t maxMemory_ = 128ull << 20; // 128MB
 
         //Starting address of the virtual machine's RAM (currently unimplemented)
-        uint64_t ramStartAddress_;
+        uint64_t ramStartAddress_ = 0x20000000;
+
+        //Size of for the virtual machine's RAM
+        uint64_t ramSize_ = 1 << 15; // 32kB
 
         //Emitter passed from controller
         EventEmitter &emitter_;
@@ -249,9 +252,15 @@ namespace emulator {
          */
         uint64_t GetMemoryEndAddress();
 
-        void SetMaxMemory(uint64_t maxMemoryValue);
-
         void SetRamStartAddress(uint64_t ramStartAddress);
+
+        void SetRamSize(uint64_t size);
+
+        uint64_t GetRamStartAddress();
+
+        uint64_t GetRamSize();
+
+        uint64_t GetRamEndAddress();
     };
 
 }
