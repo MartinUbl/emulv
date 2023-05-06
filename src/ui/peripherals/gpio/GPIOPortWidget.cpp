@@ -6,7 +6,7 @@
 #include <QLabel>
 #include <QGridLayout>
 
-GPIOPortWidget::GPIOPortWidget(QWidget *parent, Controller *controller, const std::string& label, std::vector<int> pin_ids)
+GPIOPortWidget::GPIOPortWidget(QWidget *parent, Controller *controller, std::string label, std::vector<int> pin_ids)
 : PeripheralWidget(parent, controller, label)
 , pins_() {
     setStyleSheet("GPIOPinButton, GPIOPinButton:pressed { border: 0px; background-color: transparent; }");

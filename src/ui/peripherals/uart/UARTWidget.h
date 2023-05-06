@@ -5,31 +5,32 @@
 #ifndef EMULV_UARTWIDGET_H
 #define EMULV_UARTWIDGET_H
 
-#include <QWidget>
-#include <QToolButton>
 #include <QPlainTextEdit>
 #include <QLineEdit>
 #include <QComboBox>
+#include <QToolButton>
+
 #include "../PeripheralWidget.h"
 #include "../../Controller.h"
 
 class UARTWidget : public PeripheralWidget {
     Q_OBJECT
 public:
-    QTextEdit *textEditMessages_;
-    QLineEdit *lineEditSendMessage_;
-    QComboBox *comboBoxLineSeparator_;
-    QToolButton *buttonSendMessage_;
+    QPlainTextEdit *text_edit_messages_;
+    QLineEdit *line_edit_send_message_;
+    QComboBox *combobox_line_separator_;
+    QToolButton *button_send_message_;
 
-    UARTWidget(QWidget *parent = nullptr, Controller *controller = nullptr, std::string label = "");
+    explicit UARTWidget(QWidget *parent = nullptr, Controller *controller = nullptr, std::string label = "");
+
     void SetReadonly(bool readonly) override;
-    void appendChar(char c);
-    void clear();
+    void AppendChar(char c) const;
+    void Clear() const;
 
 private slots:
-    void on_lineEditSendMessage_textChanged();
-    void on_lineEditSendMessage_returnPressed();
-    void on_buttonSendMessage_clicked();
+    void OnSendMessageTextChanged() const;
+    void OnSendMessageEnterPressed();
+    void OnSendMessageClicked();
 
 private:
     const QString kNoNewLine;

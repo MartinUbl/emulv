@@ -21,7 +21,7 @@ MainWindow::MainWindow(QWidget *parent, Controller *controller)
     SetupUI();
     UpdateUI();
 
-    peripherals_tab_widget_->updateWidgets();
+    peripherals_tab_widget_->UpdateWidgets();
 
     memory_widget_->SetAddressRangeLimit(controller->GetRamStartAddress(), controller->GetRamEndAddress());
 
@@ -262,25 +262,25 @@ void MainWindow::UpdateWidgetsEnabled() {
             memory_widget_->setEnabled(false);
             registers_widget_->setEnabled(false);
             peripherals_tab_widget_->setEnabled(true);
-            peripherals_tab_widget_->setReadonly(false);
+            peripherals_tab_widget_->SetReadonly(false);
             break;
         case emulator::kDebugPaused:
             memory_widget_->setEnabled(true);
             registers_widget_->setEnabled(true);
             peripherals_tab_widget_->setEnabled(true);
-            peripherals_tab_widget_->setReadonly(false);
+            peripherals_tab_widget_->SetReadonly(false);
             break;
         case emulator::kTerminated:
             memory_widget_->setEnabled(true);
             registers_widget_->setEnabled(true);
             peripherals_tab_widget_->setEnabled(true);
-            peripherals_tab_widget_->setReadonly(true);
+            peripherals_tab_widget_->SetReadonly(true);
             break;
         default:
             memory_widget_->setEnabled(false);
             registers_widget_->setEnabled(false);
             peripherals_tab_widget_->setEnabled(false);
-            peripherals_tab_widget_->setReadonly(true);
+            peripherals_tab_widget_->SetReadonly(true);
             break;
     }
 }
@@ -368,7 +368,7 @@ void MainWindow::OpenFile(const std::string& path) {
     memory_widget_->Clear();
     registers_widget_->SetRegisters({});
     controller_->ResetPeripherals();
-    peripherals_tab_widget_->updateWidgets();
+    peripherals_tab_widget_->UpdateWidgets();
 
     lbl_file_->setText(QString::fromStdString(path));
 }
@@ -389,7 +389,7 @@ void MainWindow::SelectConfig(const std::string& path) {
         return;
     }
 
-    peripherals_tab_widget_->updateWidgets();
+    peripherals_tab_widget_->UpdateWidgets();
     UpdateUI();
 
     memory_widget_->SetAddressRangeLimit(controller_->GetRamStartAddress(), controller_->GetRamEndAddress());
@@ -404,7 +404,7 @@ void MainWindow::ClearConfig() {
     JoinThread();
 
     controller_->ClearActivePeripherals();
-    peripherals_tab_widget_->updateWidgets();
+    peripherals_tab_widget_->UpdateWidgets();
 
     lbl_config_->setText(kDefaultConfigLabel);
 }
@@ -434,14 +434,14 @@ void MainWindow::OnAboutTriggered() {
 void MainWindow::OnRunClicked() {
     JoinThread();
     controller_->ResetPeripherals();
-    peripherals_tab_widget_->updateWidgets();
+    peripherals_tab_widget_->UpdateWidgets();
     thread_ = std::make_unique<std::thread>(&Controller::RunProgram, controller_);
 }
 
 void MainWindow::OnDebugClicked() {
     JoinThread();
     controller_->ResetPeripherals();
-    peripherals_tab_widget_->updateWidgets();
+    peripherals_tab_widget_->UpdateWidgets();
     thread_ = std::make_unique<std::thread>(&Controller::DebugProgram, controller_);
 }
 

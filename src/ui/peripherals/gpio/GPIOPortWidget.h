@@ -14,7 +14,7 @@ class GPIOPortWidget : public PeripheralWidget {
     Q_OBJECT
 public:
     explicit GPIOPortWidget(QWidget *parent = nullptr, Controller *controller = nullptr,
-                            const std::string& label = "", std::vector<int> pin_ids = {});
+                            std::string label = "", std::vector<int> pin_ids = {});
 
     void SetPinMode(int pin_id, modules::GPIO_Pin_Mode mode);
     void SetPinStatus(int pin_id, bool status);

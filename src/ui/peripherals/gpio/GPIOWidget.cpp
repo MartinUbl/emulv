@@ -12,7 +12,7 @@ GPIOWidget::GPIOWidget(QWidget *parent)
 }
 
 void GPIOWidget::AddPort(GPIOPortWidget *port_widget) {
-    ports_[port_widget->label()] = port_widget;
+    ports_[port_widget->GetLabel()] = port_widget;
 
     // Adds the port to a widget with a horizontal layout and a left alignment so that is does not stretch
     auto widget = new QWidget(this);

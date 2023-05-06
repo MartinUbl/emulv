@@ -96,7 +96,7 @@ private slots:
         QTest::qWait(500);
 
         auto uartWidget = dynamic_cast<UARTWidget *>(main_window_->peripherals_tab_widget_->widgets_["UART1"]);
-        QCOMPARE(uartWidget->textEditMessages_->toPlainText(),
+        QCOMPARE(uartWidget->text_edit_messages_->toPlainText(),
                  QString::fromStdString("aaaa"));
     }
 };
