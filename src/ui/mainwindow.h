@@ -10,7 +10,7 @@
 
 #include "Controller.h"
 #include "disassembly/DisassemblyWidget.h"
-#include "RegistersWidget.h"
+#include "registers/RegistersWidget.h"
 #include "memory/MemoryWidget.h"
 #include "peripherals/PeripheralsTabWidget.h"
 

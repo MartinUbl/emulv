@@ -33,7 +33,7 @@ set(PROJECT_SOURCES
     ${BASE_DIR}ui/peripherals/uart/UARTWidget.cpp ${BASE_DIR}ui/peripherals/uart/UARTWidget.h
     ${BASE_DIR}ui/peripherals/PeripheralsTabWidget.cpp ${BASE_DIR}ui/peripherals/PeripheralsTabWidget.h
     ${BASE_DIR}ui/disassembly/BreakpointAreaWidget.cpp ${BASE_DIR}ui/disassembly/BreakpointAreaWidget.h
-    ${BASE_DIR}ui/RegistersWidget.cpp ${BASE_DIR}ui/RegistersWidget.h
+    ${BASE_DIR}ui/registers/RegistersWidget.cpp ${BASE_DIR}ui/registers/RegistersWidget.h
     ${BASE_DIR}ui/memory/MemoryWidget.cpp ${BASE_DIR}ui/memory/MemoryWidget.h
     ${BASE_DIR}ui/memory/MemoryFormatter.cpp ${BASE_DIR}ui/memory/MemoryFormatter.h
     ${BASE_DIR}ui/peripherals/PeripheralWidget.h

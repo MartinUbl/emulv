@@ -341,7 +341,7 @@ void MainWindow::UpdateProgramStatusLabel() {
 }
 
 void MainWindow::UpdateRegisters() {
-    registers_widget_->setRegisters(controller_->GetRegisters());
+    registers_widget_->SetRegisters(controller_->GetRegisters());
 }
 
 void MainWindow::UpdateMemory() const {
@@ -366,7 +366,7 @@ void MainWindow::OpenFile(const std::string& path) {
     }
 
     memory_widget_->Clear();
-    registers_widget_->setRegisters({});
+    registers_widget_->SetRegisters({});
     controller_->ResetPeripherals();
     peripherals_tab_widget_->updateWidgets();
 

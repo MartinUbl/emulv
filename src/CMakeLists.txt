@@ -32,7 +32,7 @@ set(PROJECT_SOURCES
         ui/peripherals/uart/UARTWidget.cpp ui/peripherals/uart/UARTWidget.h
         ui/peripherals/PeripheralsTabWidget.cpp ui/peripherals/PeripheralsTabWidget.h
         ui/disassembly/BreakpointAreaWidget.cpp ui/disassembly/BreakpointAreaWidget.h
-        ui/RegistersWidget.cpp ui/RegistersWidget.h
+        ui/registers/RegistersWidget.cpp ui/registers/RegistersWidget.h
         ui/memory/MemoryWidget.cpp ui/memory/MemoryWidget.h
         ui/memory/MemoryFormatter.cpp ui/memory/MemoryFormatter.h
         ui/peripherals/PeripheralWidget.h)
