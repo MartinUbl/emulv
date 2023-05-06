@@ -27,9 +27,9 @@ public:
 private:
     Controller *controller_;
 
-    void AddWidget_(modules::PeripheralDevice *peripheral_device, const std::string &label);
-    void AddGPIOPortWidget_(modules::GPIO_Port *gpio_port, const std::string &label);
-    void AddUARTWidget_(const std::string &label);
+    void AddWidget(modules::PeripheralDevice *peripheral_device, const std::string &label);
+    void AddGPIOPortWidget(modules::GPIO_Port *gpio_port, const std::string &label);
+    void AddUARTWidget(const std::string &label);
 };
 
 #endif //EMULV_PERIPHERALSTABWIDGET_H

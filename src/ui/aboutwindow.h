@@ -9,7 +9,7 @@ public:
     explicit AboutWindow(QWidget *parent = nullptr);
 
 private:
-    void SetupUi();
+    void SetupUI();
 };
 
 #endif // ABOUTWINDOW_H

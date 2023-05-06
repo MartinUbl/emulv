@@ -33,11 +33,11 @@ std::string MemoryFormatter::FormatMemory(int start_address, const std::vector<u
     uint8_t start_byte = start_address & 0xF;
     uint8_t current_byte = 0; // Byte column, ranges from 0 to 15
 
-    ss << FormatAddress_(aligned_address) << " ";
+    ss << FormatAddress(aligned_address) << " ";
 
     // First empty bytes
     for (; current_byte < start_byte; ++current_byte) {
-        ss << FormatEmptyByte_(format) << " ";
+        ss << FormatEmptyByte(format) << " ";
         ss_ascii << " ";
     }
 
@@ -48,18 +48,18 @@ std::string MemoryFormatter::FormatMemory(int start_address, const std::vector<u
             aligned_address += 16;
 
             ss << "   " << ss_ascii.str() << '\n';
-            ss << FormatAddress_(aligned_address) << " ";
+            ss << FormatAddress(aligned_address) << " ";
             ss_ascii.str("");
         }
 
         uint8_t byte = memory.at(i);
-        ss << FormatByte_(byte, format) << " ";
-        ss_ascii << FormatChar_(byte);
+        ss << FormatByte(byte, format) << " ";
+        ss_ascii << FormatChar(byte);
     }
 
     // Last empty bytes
     for (; current_byte < 16; ++current_byte) {
-        ss << FormatEmptyByte_(format) << " ";
+        ss << FormatEmptyByte(format) << " ";
         ss_ascii << " ";
     }
 
@@ -68,11 +68,11 @@ std::string MemoryFormatter::FormatMemory(int start_address, const std::vector<u
     return ss.str();
 }
 
-char MemoryFormatter::FormatChar_(uint8_t byte) {
+char MemoryFormatter::FormatChar(uint8_t byte) {
     return byte >= 32 && byte < 127 ? (char)byte : '.';
 }
 
-std::string MemoryFormatter::FormatByte_(int byte, MemoryFormat format) {
+std::string MemoryFormatter::FormatByte(int byte, MemoryFormat format) {
     std::stringstream ss;
 
     switch (format) {
@@ -85,7 +85,7 @@ std::string MemoryFormatter::FormatByte_(int byte, MemoryFormat format) {
     return ss.str();
 }
 
-std::string MemoryFormatter::FormatEmptyByte_(MemoryFormat format) {
+std::string MemoryFormatter::FormatEmptyByte(MemoryFormat format) {
     switch (format) {
         case kHex: return "  ";
         case kDec: return "   ";
@@ -93,7 +93,7 @@ std::string MemoryFormatter::FormatEmptyByte_(MemoryFormat format) {
     return "";
 }
 
-std::string MemoryFormatter::FormatAddress_(int address) {
+std::string MemoryFormatter::FormatAddress(int address) {
     std::stringstream ss;
     ss << std::uppercase << std::hex << std::setw(kAddressWidth) << std::setfill('0') << address;
     return ss.str();

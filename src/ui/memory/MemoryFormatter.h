@@ -21,10 +21,10 @@ public:
 private:
     static const int kAddressWidth = 8;
 
-    static char FormatChar_(uint8_t byte);
-    static std::string FormatByte_(int byte, MemoryFormat format);
-    static std::string FormatAddress_(int address);
-    static std::string FormatEmptyByte_(MemoryFormat format);
+    static char FormatChar(uint8_t byte);
+    static std::string FormatByte(int byte, MemoryFormat format);
+    static std::string FormatAddress(int address);
+    static std::string FormatEmptyByte(MemoryFormat format);
 };
 
 #endif //EMULV_MEMORYFORMATTER_H

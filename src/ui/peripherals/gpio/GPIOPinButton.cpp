@@ -7,21 +7,21 @@ GPIOPinButton::GPIOPinButton(QWidget *parent, int id)
 : QToolButton(parent)
 , id_(id) {
     setFixedSize(25, 25);
-    UpdateButton_();
+    UpdateButton();
     setIconSize(QSize(height() - 2, height() - 2));
 }
 
 void GPIOPinButton::SetMode(modules::GPIO_Pin_Mode mode) {
     mode_ = mode;
-    UpdateButton_();
+    UpdateButton();
 }
 
 void GPIOPinButton::SetStatus(bool status) {
     status_ = status;
-    UpdateButton_();
+    UpdateButton();
 }
 
-void GPIOPinButton::UpdateButton_() {
+void GPIOPinButton::UpdateButton() {
     if (mode_ == modules::GPIO_Pin_Mode::INPUT) {
         setCursor(Qt::PointingHandCursor);
 

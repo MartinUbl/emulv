@@ -36,9 +36,9 @@ private:
 
     std::vector<std::tuple<std::string, uint32_t>> registers_;
 
-    void UpdateRegisters_();
-    std::string FormatByte_(int byte) const;
-    std::string FormatBytes_(uint32_t value) const;
+    void UpdateRegisters();
+    std::string FormatByte(int byte) const;
+    std::string FormatBytes(uint32_t value) const;
 };
 
 #endif //EMULV_REGISTERSWIDGET_H

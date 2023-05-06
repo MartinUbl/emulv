@@ -96,8 +96,8 @@ MemoryWidget::MemoryWidget(QWidget *parent, Controller *controller)
     layout()->addWidget(top_widget);
     layout()->addWidget(bot_widget);
 
-    UpdateMemorySpinBoxes_();
-    UpdateMemoryButtons_();
+    UpdateSpinBoxes();
+    UpdateButtons();
 
     rb_hex_->setChecked(true);
 
@@ -132,8 +132,8 @@ void MemoryWidget::SetAddressRangeLimit(const int min, const int max) {
         memory_to_ = max;
     }
 
-    UpdateMemorySpinBoxes_();
-    UpdateMemoryButtons_();
+    UpdateSpinBoxes();
+    UpdateButtons();
 }
 
 void MemoryWidget::UpdateMemory() {
@@ -145,7 +145,7 @@ void MemoryWidget::UpdateMemory() {
         return;
     }
 
-    UpdateMemory_();
+    RefreshMemory();
 }
 
 void MemoryWidget::Clear() {
@@ -154,50 +154,50 @@ void MemoryWidget::Clear() {
 }
 
 void MemoryWidget::OnRBHexClicked() {
-    UpdateMemory_();
+    RefreshMemory();
 }
 
 void MemoryWidget::OnRBDecClicked() {
-    UpdateMemory_();
+    RefreshMemory();
 }
 
 void MemoryWidget::OnSpinBoxMemoryFromChanged() {
     spinbox_memory_to_->setMinimum(spinbox_memory_from_->value());
-    UpdateMemoryButtons_();
+    UpdateButtons();
 }
 
 void MemoryWidget::OnSpinBoxMemoryToChanged() {
     spinbox_memory_from_->setMaximum(spinbox_memory_to_->value());
-    UpdateMemoryButtons_();
+    UpdateButtons();
 }
 
 void MemoryWidget::OnSearchClicked() {
     memory_from_ = spinbox_memory_from_->value();
     memory_to_ = spinbox_memory_to_->value();
 
-    UpdateMemorySpinBoxes_();
-    UpdateMemoryButtons_();
+    UpdateSpinBoxes();
+    UpdateButtons();
     UpdateMemory();
 }
 
 void MemoryWidget::OnRestoreClicked() {
-    UpdateMemorySpinBoxes_();
+    UpdateSpinBoxes();
 }
 
 void MemoryWidget::OnMemoryHScrollChanged() {
-    UpdateScroll_(text_edit_memory_->horizontalScrollBar()->value());
+    UpdateScroll(text_edit_memory_->horizontalScrollBar()->value());
 }
 
 void MemoryWidget::OnHeaderHScrollChanged() {
-    UpdateScroll_(text_edit_header_->horizontalScrollBar()->value());
+    UpdateScroll(text_edit_header_->horizontalScrollBar()->value());
 }
 
-void MemoryWidget::UpdateScroll_(int value) const {
+void MemoryWidget::UpdateScroll(int value) const {
     text_edit_header_->horizontalScrollBar()->setValue(value);
     text_edit_memory_->horizontalScrollBar()->setValue(value);
 }
 
-void MemoryWidget::UpdateMemory_() {
+void MemoryWidget::RefreshMemory() {
     MemoryFormat format = rb_hex_->isChecked() ? kHex : kDec;
 
     int v_scroll = text_edit_memory_->verticalScrollBar()->value();
@@ -210,12 +210,12 @@ void MemoryWidget::UpdateMemory_() {
     text_edit_memory_->horizontalScrollBar()->setValue(h_scroll);
 }
 
-void MemoryWidget::UpdateMemorySpinBoxes_() const {
+void MemoryWidget::UpdateSpinBoxes() const {
     spinbox_memory_from_->setValue(memory_from_);
     spinbox_memory_to_->setValue(memory_to_);
 }
 
-void MemoryWidget::UpdateMemoryButtons_() const {
+void MemoryWidget::UpdateButtons() const {
     bool enabled = spinbox_memory_from_->value() != memory_from_ ||
                    spinbox_memory_to_->value() != memory_to_;
     btn_restore_->setEnabled(enabled);

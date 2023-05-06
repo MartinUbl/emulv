@@ -26,7 +26,7 @@ private:
     modules::GPIO_Pin_Mode mode_ = modules::GPIO_Pin_Mode::INPUT;
     bool status_ = false;
 
-    void UpdateButton_();
+    void UpdateButton();
 };
 
 #endif //EMULV_GPIOPINBUTTON_H

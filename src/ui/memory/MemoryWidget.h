@@ -47,10 +47,11 @@ private:
     int memory_from_, memory_to_;
     std::vector<uint8_t> memory_;
 
-    void UpdateMemory_();
-    void UpdateMemorySpinBoxes_() const;
-    void UpdateMemoryButtons_() const;
-    void UpdateScroll_(int value) const;
+    // Refreshes the memory using the internally saved memory
+    void RefreshMemory();
+    void UpdateSpinBoxes() const;
+    void UpdateButtons() const;
+    void UpdateScroll(int value) const;
 };
 
 #endif //EMULV_MEMORYWIDGET_H

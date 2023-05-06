@@ -68,7 +68,7 @@ void PeripheralsTabWidget::UpdateWidgets() {
     for (const auto& peripheral : peripherals) {
         auto label = peripheral.first;
         auto device = peripheral.second;
-        AddWidget_(device, label);
+        AddWidget(device, label);
     }
 }
 
@@ -85,23 +85,23 @@ void PeripheralsTabWidget::Clear() {
     layout()->addWidget(tab_widget_);
 }
 
-void PeripheralsTabWidget::AddWidget_(modules::PeripheralDevice *peripheral_device, const std::string &label) {
+void PeripheralsTabWidget::AddWidget(modules::PeripheralDevice *peripheral_device, const std::string &label) {
     // Cast device to GPIO_Port pointer, if successful add a new GPIOPortWidget
     auto gpio_port = dynamic_cast<modules::GPIO_Port *>(peripheral_device);
     if (gpio_port != nullptr) {
-        AddGPIOPortWidget_(gpio_port, label);
+        AddGPIOPortWidget(gpio_port, label);
         return;
     }
 
     // Cast device to UART_Device pointer, if successful add a new UARTWidget
     auto uart = dynamic_cast<modules::UART_Device *>(peripheral_device);
     if (uart != nullptr) {
-        AddUARTWidget_(uart->GetName());
+        AddUARTWidget(uart->GetName());
         return;
     }
 }
 
-void PeripheralsTabWidget::AddGPIOPortWidget_(modules::GPIO_Port *gpio_port, const std::string &label) {
+void PeripheralsTabWidget::AddGPIOPortWidget(modules::GPIO_Port *gpio_port, const std::string &label) {
     // If no GPIO port has been added yet, create the widget for all ports
     if (gpio_widget_ == nullptr) {
         gpio_widget_ = new GPIOWidget(tab_widget_);
@@ -121,7 +121,7 @@ void PeripheralsTabWidget::AddGPIOPortWidget_(modules::GPIO_Port *gpio_port, con
     }
 }
 
-void PeripheralsTabWidget::AddUARTWidget_(const std::string &label) {
+void PeripheralsTabWidget::AddUARTWidget(const std::string &label) {
     auto uart_widget = new UARTWidget(tab_widget_, controller_, label);
 
     widgets_[label] = uart_widget;

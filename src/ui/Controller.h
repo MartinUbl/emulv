@@ -63,7 +63,7 @@ private:
     std::vector<std::string> program_arguments_;
     std::map<std::string, modules::PeripheralDevice *> active_peripherals_;
 
-    void RegisterPeripherals_();
+    void RegisterPeripherals();
 };
 
 

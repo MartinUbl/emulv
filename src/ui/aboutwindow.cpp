@@ -6,10 +6,10 @@
 
 AboutWindow::AboutWindow(QWidget *parent)
 : QDialog(parent) {
-    SetupUi();
+    SetupUI();
 }
 
-void AboutWindow::SetupUi() {
+void AboutWindow::SetupUI() {
     setLayout(new QVBoxLayout(this));
     setWindowIcon(QIcon(":img/logo.ico"));
     setWindowTitle("About RISC-V Emulator");

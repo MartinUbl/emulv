@@ -51,18 +51,18 @@ void RegistersWidget::SetRegisters(const std::vector<std::tuple<std::string, uin
         registers_.push_back(reg);
     }
 
-    UpdateRegisters_();
+    UpdateRegisters();
 }
 
 void RegistersWidget::OnRBHexClicked() {
-    UpdateRegisters_();
+    UpdateRegisters();
 }
 
 void RegistersWidget::OnRBDecClicked() {
-    UpdateRegisters_();
+    UpdateRegisters();
 }
 
-void RegistersWidget::UpdateRegisters_() {
+void RegistersWidget::UpdateRegisters() {
     std::stringstream ss;
 
     for (size_t i = 0; i < registers_.size(); i++) {
@@ -80,7 +80,7 @@ void RegistersWidget::UpdateRegisters_() {
         }
 
         ss << ' ' << std::setw(kRegisterLabelWidth + 2) << std::setfill(' ') << reg_abi; // +2 for parentheses
-        ss << "   " << FormatBytes_(value);
+        ss << "   " << FormatBytes(value);
 
         // Add full unsigned register value if in decimal format
         if (rb_dec_->isChecked()) {
@@ -97,7 +97,7 @@ void RegistersWidget::UpdateRegisters_() {
     main_text_edit_->verticalScrollBar()->setValue(scroll);
 }
 
-std::string RegistersWidget::FormatByte_(int byte) const {
+std::string RegistersWidget::FormatByte(int byte) const {
     std::stringstream ss;
 
     if (rb_hex_->isChecked()) {
@@ -111,12 +111,12 @@ std::string RegistersWidget::FormatByte_(int byte) const {
     return ss.str();
 }
 
-std::string RegistersWidget::FormatBytes_(uint32_t value) const {
+std::string RegistersWidget::FormatBytes(uint32_t value) const {
     std::stringstream ss;
 
     for (int i = sizeof(value) - 1; i >= 0; --i) {
         uint8_t byte = (value >> (i * 8)) & 0xff;
-        ss << FormatByte_(byte) << ' ';
+        ss << FormatByte(byte) << ' ';
     }
 
     return ss.str();

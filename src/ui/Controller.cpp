@@ -36,7 +36,7 @@ void Controller::ClearActivePeripherals() {
     }
     active_peripherals_.clear();
 
-    RegisterPeripherals_();
+    RegisterPeripherals();
 }
 
 void Controller::ConfigureEmulator(const std::string &path) {
@@ -86,7 +86,7 @@ void Controller::ConfigureEmulator(const std::string &path) {
         }
     }
 
-    RegisterPeripherals_();
+    RegisterPeripherals();
 }
 
 //######################################################################################################################
@@ -147,6 +147,6 @@ void Controller::ResetPeripherals() {
     }
 }
 
-void Controller::RegisterPeripherals_() {
+void Controller::RegisterPeripherals() {
     emulator_unit_->RegisterPeripherals(active_peripherals_);
 }
