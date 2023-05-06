@@ -15,16 +15,16 @@ enum MemoryFormat {
 
 class MemoryFormatter {
 public:
-    static std::string formatHeader(MemoryFormat format);
-    static std::string formatMemory(int start_address, const std::vector<uint8_t>& memory, MemoryFormat format);
+    static std::string FormatHeader(MemoryFormat format);
+    static std::string FormatMemory(int start_address, const std::vector<uint8_t>& memory, MemoryFormat format);
 
 private:
-    static constexpr size_t kAddressWidth = 8;
+    static const int kAddressWidth = 8;
 
-    static char formatChar_(uint8_t byte);
-    static std::string formatByte_(int byte, MemoryFormat format);
-    static std::string formatAddress_(int address);
-    static std::string formatEmptyByte_(MemoryFormat format);
+    static char FormatChar_(uint8_t byte);
+    static std::string FormatByte_(int byte, MemoryFormat format);
+    static std::string FormatAddress_(int address);
+    static std::string FormatEmptyByte_(MemoryFormat format);
 };
 
 #endif //EMULV_MEMORYFORMATTER_H

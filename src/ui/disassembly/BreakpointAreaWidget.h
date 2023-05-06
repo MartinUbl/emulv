@@ -13,7 +13,7 @@
 class BreakpointAreaWidget : public QFrame {
     Q_OBJECT
 public:
-    BreakpointAreaWidget(QWidget *parent = nullptr, Controller *controller = nullptr);
+    explicit BreakpointAreaWidget(QWidget *parent = nullptr, Controller *controller = nullptr);
     void SetMaximumBreakpoints(int max);
     void RemoveBreakpoint(int line);
     void Clear();

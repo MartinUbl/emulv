@@ -11,45 +11,46 @@
 #include <QTextEdit>
 #include <QPlainTextEdit>
 #include <QToolButton>
-#include <QScrollArea>
+
 #include "../Controller.h"
 
 class MemoryWidget : public QFrame {
     Q_OBJECT
 public:
     QRadioButton *rb_hex_, *rb_dec_;
-    QSpinBox *sp_memory_from_, *sp_memory_to_;
+    QSpinBox *spinbox_memory_from_, *spinbox_memory_to_;
     QToolButton *btn_search_, *btn_restore_;
-    QTextEdit *te_header_;
-    QPlainTextEdit *te_memory_;
+    QTextEdit *text_edit_header_;
+    QPlainTextEdit *text_edit_memory_;
 
-    MemoryWidget(QWidget *parent = nullptr, Controller *controller = nullptr);
+    explicit MemoryWidget(QWidget *parent = nullptr, Controller *controller = nullptr);
 
-    void setAddressRangeLimit(int min, int max);
-    void updateMemory();
-    void clear();
+    void SetAddressRangeLimit(int min, int max);
+    void UpdateMemory();
+    void Clear();
 
 private slots:
-    void rb_hex_clicked_();
-    void rb_dec_clicked_();
-    void sp_memory_from_changed_();
-    void sp_memory_to_changed_();
-    void btn_search_clicked_();
-    void btn_restore_clicked_();
-    void memory_scroll_changed();
-    void header_scroll_changed();
+    void OnRBHexClicked();
+    void OnRBDecClicked();
+    void OnSpinBoxMemoryFromChanged();
+    void OnSpinBoxMemoryToChanged();
+    void OnSearchClicked();
+    void OnRestoreClicked();
+    void OnHeaderHScrollChanged();
+    void OnMemoryHScrollChanged();
 
 private:
-    static constexpr int kMaxAddress = 0x7FFFFFFF;
+    static const int kMaxAddress = 0x7FFFFFFF;
+
     Controller *controller_;
 
     int memory_from_, memory_to_;
     std::vector<uint8_t> memory_;
 
-    void updateMemory_();
-    void updateMemorySpinBoxes_();
-    void updateMemoryButtons_();
-    void updateScroll_(int value);
+    void UpdateMemory_();
+    void UpdateMemorySpinBoxes_() const;
+    void UpdateMemoryButtons_() const;
+    void UpdateScroll_(int value) const;
 };
 
 #endif //EMULV_MEMORYWIDGET_H

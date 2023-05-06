@@ -18,11 +18,15 @@ private:
 
     Controller *controller_{};
     MainWindow *main_window_{};
+    RegistersWidget *registers_widget_{};
+    MemoryWidget *memory_widget_{};
 
 private slots:
     void initTestCase() {
         controller_ = new Controller(0, nullptr);
         main_window_ = new MainWindow(nullptr, controller_);
+        registers_widget_ = main_window_->registers_widget_;
+        memory_widget_ = main_window_->memory_widget_;
         main_window_->show();
     }
 
@@ -71,13 +75,14 @@ private slots:
                         " x31   (t6)   00 01 00 00 \n"
                         "  pc          00 02 0A 86 \n"));
 
-        QVERIFY(main_window_->memory_widget_->te_memory_->document()->isEmpty() == false);
+        bool memory_empty = memory_widget_->text_edit_memory_->document()->isEmpty();
+        QVERIFY(!memory_empty);
 
-        main_window_->memory_widget_->sp_memory_to_->setValue(0x2000002F);
+        main_window_->memory_widget_->spinbox_memory_to_->setValue(0x2000002F);
         QTest::mouseClick(main_window_->memory_widget_->btn_search_, Qt::LeftButton);
         QTest::mouseClick(main_window_->memory_widget_->rb_dec_, Qt::LeftButton);
 
-        QCOMPARE(main_window_->memory_widget_->te_memory_->toPlainText(),
+        QCOMPARE(memory_widget_->text_edit_memory_->toPlainText(),
                  QString::fromStdString("20000000 000 000 000 000 000 000 000 000 000 000 000 000 000 000 000 000    ................\n"
                                         "20000010 111 000 000 000 000 000 000 000 000 000 000 000 000 000 000 000    o...............\n"
                                         "20000020 000 000 000 000 000 000 000 000 000 000 000 000 000 000 000 000    ................"));

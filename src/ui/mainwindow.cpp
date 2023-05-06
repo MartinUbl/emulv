@@ -23,7 +23,7 @@ MainWindow::MainWindow(QWidget *parent, Controller *controller)
 
     peripherals_tab_widget_->updateWidgets();
 
-    memory_widget_->setAddressRangeLimit(controller->GetRamStartAddress(), controller->GetRamEndAddress());
+    memory_widget_->SetAddressRangeLimit(controller->GetRamStartAddress(), controller->GetRamEndAddress());
 
     controller->GetEventEmitter().On(emulator::State_Changed_Event_Description, [this](AbstractEvent *res) {
         QMetaObject::invokeMethod(this, "UpdateUI");
@@ -345,7 +345,7 @@ void MainWindow::UpdateRegisters() {
 }
 
 void MainWindow::UpdateMemory() const {
-    memory_widget_->updateMemory();
+    memory_widget_->UpdateMemory();
 }
 
 void MainWindow::OpenFile(const std::string& path) {
@@ -365,7 +365,7 @@ void MainWindow::OpenFile(const std::string& path) {
         return;
     }
 
-    memory_widget_->clear();
+    memory_widget_->Clear();
     registers_widget_->setRegisters({});
     controller_->ResetPeripherals();
     peripherals_tab_widget_->updateWidgets();
@@ -392,9 +392,9 @@ void MainWindow::SelectConfig(const std::string& path) {
     peripherals_tab_widget_->updateWidgets();
     UpdateUI();
 
-    memory_widget_->setAddressRangeLimit(controller_->GetRamStartAddress(), controller_->GetRamEndAddress());
-    memory_widget_->sp_memory_from_->setValue(controller_->GetRamStartAddress());
-    memory_widget_->sp_memory_to_->setValue(controller_->GetRamEndAddress());
+    memory_widget_->SetAddressRangeLimit(controller_->GetRamStartAddress(), controller_->GetRamEndAddress());
+    memory_widget_->spinbox_memory_from_->setValue(controller_->GetRamStartAddress());
+    memory_widget_->spinbox_memory_to_->setValue(controller_->GetRamEndAddress());
 
     lbl_config_->setText(QString::fromStdString(path));
 }
