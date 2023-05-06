@@ -4,32 +4,32 @@
 #include <QTextBrowser>
 #include "aboutwindow.h"
 
-AboutWindow::AboutWindow(QWidget *parent) :
-QDialog(parent) {
-    setupUi();
+AboutWindow::AboutWindow(QWidget *parent)
+: QDialog(parent) {
+    SetupUi();
 }
 
-void AboutWindow::setupUi() {
+void AboutWindow::SetupUi() {
     setLayout(new QVBoxLayout(this));
     setWindowIcon(QIcon(":img/logo.ico"));
     setWindowTitle("About RISC-V Emulator");
 
-    auto lblTitle = new QLabel("RISC-V Emulator", this);
-    lblTitle->setAlignment(Qt::AlignHCenter);
-    auto font = lblTitle->font();
+    auto lbl_title = new QLabel("RISC-V Emulator", this);
+    lbl_title->setAlignment(Qt::AlignHCenter);
+    auto font = lbl_title->font();
     font.setPointSize(12);
     font.setBold(true);
-    lblTitle->setFont(font);
+    lbl_title->setFont(font);
 
-    auto lblVersion = new QLabel("1.0.0", this);
-    lblVersion->setAlignment(Qt::AlignHCenter);
+    auto lbl_version = new QLabel("1.0.0", this);
+    lbl_version->setAlignment(Qt::AlignHCenter);
 
-    auto textBrowser = new QTextBrowser(this);
-    textBrowser->setStyleSheet("background-color: rgba(0, 0, 0, 0);");
-    textBrowser->setFrameShape(QFrame::NoFrame);
-    textBrowser->setFrameShadow(QFrame::Plain);
-    textBrowser->setOpenExternalLinks(true);
-    textBrowser->setHtml("<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" \"http://www.w3.org/TR/REC-html40/strict.dtd\">\n"
+    auto text_browser = new QTextBrowser(this);
+    text_browser->setStyleSheet("background-color: rgba(0, 0, 0, 0);");
+    text_browser->setFrameShape(QFrame::NoFrame);
+    text_browser->setFrameShadow(QFrame::Plain);
+    text_browser->setOpenExternalLinks(true);
+    text_browser->setHtml("<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" \"http://www.w3.org/TR/REC-html40/strict.dtd\">\n"
                          "<html><head><meta name=\"qrichtext\" content=\"1\" /><meta charset=\"utf-8\" /><style type=\"text/css\">\n"
                          "p, li { white-space: pre-wrap; }\n"
                          "hr { height: 1px; border-width: 0; }\n"
@@ -50,7 +50,7 @@ void AboutWindow::setupUi() {
                          "<li style=\" font-family:'Sans Serif';\" style=\" margin-top:0px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\">Doc. Ing. Roman Mouček Ph.D. </li></ul>\n"
                          "<p style=\"-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; font-family:'Sans Serif';\"><br /></p></body></html>");
 
-    layout()->addWidget(lblTitle);
-    layout()->addWidget(lblVersion);
-    layout()->addWidget(textBrowser);
+    layout()->addWidget(lbl_title);
+    layout()->addWidget(lbl_version);
+    layout()->addWidget(text_browser);
 }
