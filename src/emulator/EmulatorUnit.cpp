@@ -27,7 +27,6 @@ namespace emulator {
 
         //This will save the last register values
         GetRegisters();
-        std::cout << "Program return value: " << active_machine_->return_value<long>() << std::endl; //TODO: remove
 
         SetState_(kTerminated);
     }
@@ -153,7 +152,6 @@ namespace emulator {
         page_peripherals_.clear();
 
         for (const auto &p: *peripheral_devices_) {
-            //TODO: Remove print
             std::cout << "Setting up memory trap for device with name: " << p.first << std::endl;
 
             modules::PeripheralDevice *pDevice = p.second;
@@ -195,20 +193,12 @@ namespace emulator {
 
                 switch (riscv::Page::trap_mode(mode)) {
                     case riscv::TRAP_WRITE:
-//                        std::cout << "TRAPPED WRITE" << std::endl << "Page size: " << size << std::endl
-//                                  << "Offset: " << offset << std::endl << "Mode: " << mode << std::endl
-//                                  << "Value: " << value << std::endl << std::endl;
-
                         if (size == 8)
                             real_device->WriteDoubleword(real_offset, value);
                         else if (size == 4)
                             real_device->WriteWord(real_offset, value);
                         break;
                     case riscv::TRAP_READ:
-//                        std::cout << "TRAPPED READ" << std::endl << "Page size: " << size << std::endl
-//                                  << "Offset: " << offset << std::endl << "Mode: " << mode << std::endl
-//                                  << "Value: " << value << std::endl << std::endl;
-
                         //Will always read DoubleWord
                         uint64_t mmio_value = real_device->ReadDoubleword(real_offset);
 
@@ -252,7 +242,6 @@ namespace emulator {
         if (active_machine_ == nullptr) {
             throw std::runtime_error("EmulatorUnit::GetMemoryStartAddress: active_machine_ is equal to null!");
         }
-        //TODO what is "start_address"?
         return active_machine_->memory.start_address();
     }
 

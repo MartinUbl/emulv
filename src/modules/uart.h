@@ -10,11 +10,6 @@
 
 namespace modules {
 
-    enum Flag_Status : bool {
-        DISABLED = 0,
-        ENABLED = 1
-    };
-
     enum UART_Register_Offset {
         uSTAT = 0x0, //Status register
         uDATA = 0x4, //Data register

@@ -128,6 +128,7 @@ set_target_properties(emulv PROPERTIES
 install(TARGETS emulv
         BUNDLE DESTINATION .
         LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR})
+
 #################################################################################
 #Config.json file
 #################################################################################

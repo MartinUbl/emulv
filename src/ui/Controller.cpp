@@ -40,9 +40,9 @@ void Controller::ClearActivePeripherals() {
 }
 
 void Controller::ConfigureEmulator(const std::string &path) {
-    const nlohmann::json &config = loadConfig(path);
-
     ClearActivePeripherals();
+
+    const nlohmann::json &config = loadConfig(path);
 
     for (const auto &item: config.items()) {
         if (item.key() == "device") {

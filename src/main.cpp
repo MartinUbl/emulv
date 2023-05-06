@@ -2,7 +2,6 @@
 #include <iostream>
 
 #include <libriscv/machine.hpp>
-//#include <QMessageBox>
 #include <sstream>
 
 #include "emulator/EmulatorUnit.h"
@@ -24,7 +23,7 @@ int main(int argc, char **argv) {
 
         std::cout << error_message.str() << std::endl;
 
-//        QMessageBox::critical(nullptr, "Error", QString::fromStdString(error_message.str()));
+        //QMessageBox::critical(nullptr, "Error", QString::fromStdString(error_message.str()));
         return EXIT_FAILURE;
     }
     catch (...) {
@@ -36,7 +35,7 @@ int main(int argc, char **argv) {
 
         std::cout << error_message.str() << std::endl;
 
-//        QMessageBox::critical(nullptr, "Error", QString::fromStdString(error_message.str()));
+        //QMessageBox::critical(nullptr, "Error", QString::fromStdString(error_message.str()));
         return EXIT_FAILURE;
     }
 }

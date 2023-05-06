@@ -25,7 +25,7 @@
 
 namespace emulator {
     //Number of CPU's "X-registers"
-#define X_REGISTER_COUNT 32
+    constexpr int X_REGISTER_COUNT = 32;
 
     /**
      * States of the emulator. These are set internally using the SetState_() method.
