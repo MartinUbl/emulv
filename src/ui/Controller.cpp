@@ -175,7 +175,7 @@ void Controller::DebugContinue() {
     emulatorUnit_->DebugContinue();
 }
 
-void Controller::Terminate() {
+void Controller::TerminateProgram() {
     emulatorUnit_->Terminate();
 }
 

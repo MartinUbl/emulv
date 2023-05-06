@@ -13,25 +13,27 @@ private:
 
     Controller *controller_{};
     MainWindow *main_window_{};
+    RegistersWidget *registers_widget_{};
 
 private slots:
-    void init() {
+    void initTestCase() {
         controller_ = new Controller(0, nullptr);
         main_window_ = new MainWindow(nullptr, controller_);
+        registers_widget_ = main_window_->registers_widget_;
         main_window_->show();
 
-        main_window_->openFile(kMemoryTestElf);
-        QTest::mouseClick(main_window_->btnRun, Qt::LeftButton, Qt::KeyboardModifiers(), QPoint(), 1000);
+        main_window_->OpenFile(kMemoryTestElf);
+        QTest::mouseClick(main_window_->btn_run_, Qt::LeftButton);
         QTest::qWait(300);
     }
 
-    void cleanup() {
+    void cleanupTestCase() {
         delete main_window_;
         delete controller_;
     }
 
     void TC_02_03_01() {
-        QCOMPARE(main_window_->registersWidget_->main_text_edit_->toPlainText(),
+        QCOMPARE(registers_widget_->main_text_edit_->toPlainText(),
                  QString("  x0 (zero)   00 00 00 00 \n"
                          "  x1   (ra)   00 01 43 46 \n"
                          "  x2   (sp)   01 17 AA B0 \n"
@@ -68,9 +70,9 @@ private slots:
     }
 
     void TC_02_03_02() {
-        QTest::mouseClick(main_window_->registersWidget_->rb_dec_, Qt::LeftButton);
+        QTest::mouseClick(main_window_->registers_widget_->rb_dec_, Qt::LeftButton);
 
-        QCOMPARE(main_window_->registersWidget_->main_text_edit_->toPlainText(),
+        QCOMPARE(registers_widget_->main_text_edit_->toPlainText(),
                  QString(
                         "  x0 (zero)   000 000 000 000 (0)\n"
                         "  x1   (ra)   000 001 067 070 (82758)\n"

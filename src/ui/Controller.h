@@ -65,7 +65,7 @@ public:
 
     void DebugContinue();
 
-    void Terminate();
+    void TerminateProgram();
 
     int GetProgramReturnValue();
 
