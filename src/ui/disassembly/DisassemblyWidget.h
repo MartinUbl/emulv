@@ -1,44 +1,48 @@
 #ifndef DISASSEMBLYWIDGET_H
 #define DISASSEMBLYWIDGET_H
 
-#include <QGroupBox>
-#include <QTextEdit>
-#include <QPlainTextEdit>
-#include <QGridLayout>
-#include <QObject>
-#include <QFrame>
-#include <QScrollArea>
 #include <unordered_set>
+#include <QGroupBox>
+#include <QPlainTextEdit>
+#include <QScrollArea>
+
 #include "BreakpointAreaWidget.h"
 
 class DisassemblyWidget : public QWidget {
     Q_OBJECT
 public:
-    QPlainTextEdit *addressArea;
-    QPlainTextEdit *instructionArea;
-    QScrollArea *breakpointScrollArea;
-    BreakpointAreaWidget *breakpointAreaWidget;
+    QPlainTextEdit *text_edit_addresses_;
+    QPlainTextEdit *text_edit_instructions_;
+    QScrollArea *scroll_area_breakpoints_;
+    BreakpointAreaWidget *breakpoint_area_widget_;
 
     explicit DisassemblyWidget(QWidget *parent = nullptr, Controller *controller = nullptr);
-    void setInstructions(const std::vector<std::tuple<uint64_t, std::string>> &instructions);
-    void highlightLine(uint64_t address);
-    void updateBreakpointWidget();
+    void SetInstructions(const std::vector<std::tuple<uint64_t, std::string>> &instructions);
+    void HighlightLine(uint64_t address);
+    void Clear();
 
 private slots:
-    void onAddressAreaScroll();
-    void onInstructionAreaScroll();
+    void OnTextEditAddressesScroll();
+    void OnTextEditInstructionsScroll();
 
 private:
+    // Address template used for setting the address text edit width
+    const QString kAddressTemplate = "00000000 ";
+    const int kAddressWidth = 8;
+
     Controller *controller_;
 
     std::vector<uint64_t> addresses_;
+    // Map for quickly finding the corresponding line of an address
     std::unordered_map<uint64_t, int> address_lines_;
 
-    static std::string instructionSubstring_(const std::string &fullString);
-    void updateScroll_(int value);
-    int findLine_(uint64_t address);
-    void addBreakpoint_(int line);
-    void removeBreakpoint_(int line);
+    static std::string InstructionSubstring(const std::string &full_instruction);
+
+    void UpdateBreakpointWidget() const;
+    void UpdateScroll(int value) const;
+    void AddBreakpoint(int line);
+    void RemoveBreakpoint(int line);
+    int FindLine(uint64_t address);
 };
 
 #endif // DISASSEMBLYWIDGET_H

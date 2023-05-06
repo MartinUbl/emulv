@@ -1,13 +1,15 @@
 #include "mainwindow.h"
 
+#include <iostream>
+#include <iomanip>
+#include <sstream>
 #include <QFileDialog>
 #include <QMenuBar>
 #include <QStatusBar>
 #include <QAction>
 #include <QStringListModel>
-#include <iostream>
-#include <iomanip>
-#include <sstream>
+#include <QLayout>
+#include <QSpacerItem>
 #include <QMessageBox>
 
 #include "aboutwindow.h"
@@ -220,7 +222,7 @@ void MainWindow::UpdateUI() {
     UpdateToolbarButtons();
     UpdateProgramStatusLabel();
 
-    disassembly_widget_->highlightLine(-1);
+    disassembly_widget_->HighlightLine(-1);
 
     auto state = controller_->GetProgramState();
 
@@ -231,7 +233,7 @@ void MainWindow::UpdateUI() {
     else if (state == emulator::kDebugPaused) {
         UpdateRegisters();
         UpdateMemory();
-        disassembly_widget_->highlightLine(controller_->GetPc());
+        disassembly_widget_->HighlightLine(controller_->GetPc());
     }
 }
 
@@ -356,7 +358,7 @@ void MainWindow::OpenFile(const std::string& path) {
 
     try {
         controller_->LoadFile(path);
-        disassembly_widget_->setInstructions(controller_->GetDisassembly());
+        disassembly_widget_->SetInstructions(controller_->GetDisassembly());
     }
     catch (const std::exception &e) {
         ShowMessageBox("File error", QString::fromStdString("Could not load file " + path + '\n' + e.what()));
@@ -458,7 +460,7 @@ void MainWindow::OnStepClicked() {
     UpdateMemory();
 
     uint64_t pc = controller_->GetPc();
-    disassembly_widget_->highlightLine(pc);
+    disassembly_widget_->HighlightLine(pc);
 
     std::string pc_str = FormatAddress(pc);
     lbl_program_status_->setText(QString::fromStdString("Program stepped to " + pc_str));
