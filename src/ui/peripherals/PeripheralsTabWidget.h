@@ -5,32 +5,31 @@
 #ifndef EMULV_PERIPHERALSTABWIDGET_H
 #define EMULV_PERIPHERALSTABWIDGET_H
 
-#include <QWidget>
 #include <QTabWidget>
 
 #include "PeripheralWidget.h"
 #include "../Controller.h"
 #include "gpio/GPIOWidget.h"
-#include "../../modules/uart.h"
 
 class PeripheralsTabWidget : public QWidget {
     Q_OBJECT
 public:
-    QTabWidget *tabWidget_;
-    GPIOWidget *gpioWidget_ = nullptr;
+    QTabWidget *tab_widget_;
+    GPIOWidget *gpio_widget_ = nullptr;
     std::unordered_map<std::string, PeripheralWidget *> widgets_;
 
-    PeripheralsTabWidget(QWidget *parent = nullptr, Controller *controller = nullptr);
-    void setReadonly(bool readonly);
-    void updateWidgets();
-    void clear();
+    explicit PeripheralsTabWidget(QWidget *parent = nullptr, Controller *controller = nullptr);
+
+    void SetReadonly(bool readonly);
+    void UpdateWidgets();
+    void Clear();
 
 private:
     Controller *controller_;
 
-    void addWidget_(modules::PeripheralDevice *peripheralDevice, const std::string &label);
-    void addGPIOPortWidget_(modules::GPIO_Port *gpioPort, const std::string &label);
-    void addUARTWidget_(const std::string &label);
+    void AddWidget(modules::PeripheralDevice *peripheral_device, const std::string &label);
+    void AddGPIOPortWidget(modules::GPIO_Port *gpio_port, const std::string &label);
+    void AddUARTWidget(const std::string &label);
 };
 
 #endif //EMULV_PERIPHERALSTABWIDGET_H

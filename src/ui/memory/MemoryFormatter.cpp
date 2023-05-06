@@ -1,12 +1,12 @@
 //
 // Created by Hynek on 30.04.2023.
 //
+#include "MemoryFormatter.h"
 
 #include <sstream>
 #include <iomanip>
-#include "MemoryFormatter.h"
 
-std::string MemoryFormatter::formatHeader(MemoryFormat format) {
+std::string MemoryFormatter::FormatHeader(MemoryFormat format) {
     std::stringstream ss;
     ss << std::setw(kAddressWidth) << std::setfill(' ') << "";
 
@@ -21,61 +21,62 @@ std::string MemoryFormatter::formatHeader(MemoryFormat format) {
     return ss.str();
 }
 
-std::string MemoryFormatter::formatMemory(int start_address, const std::vector<uint8_t> &memory, MemoryFormat format) {
+std::string MemoryFormatter::FormatMemory(int start_address, const std::vector<uint8_t> &memory, MemoryFormat format) {
     if (memory.empty()) {
         return "";
     }
 
     std::stringstream ss;
-    std::stringstream ssAscii;
+    std::stringstream ss_ascii;
 
     int aligned_address = (start_address >> 4) << 4;
     uint8_t start_byte = start_address & 0xF;
     uint8_t current_byte = 0; // Byte column, ranges from 0 to 15
 
-    ss << formatAddress_(aligned_address) << " ";
+    ss << FormatAddress(aligned_address) << " ";
 
     // First empty bytes
     for (; current_byte < start_byte; ++current_byte) {
-        ss << formatEmptyByte_(format) << " ";
-        ssAscii << " ";
+        ss << FormatEmptyByte(format) << " ";
+        ss_ascii << " ";
     }
 
     for (size_t i = 0; i < memory.size(); ++i, ++current_byte) {
+        // If current byte needs to be on a new line, add a new line
         if (current_byte == 16) {
             current_byte = 0;
             aligned_address += 16;
 
-            ss << "   " << ssAscii.str() << '\n';
-            ss << formatAddress_(aligned_address) << " ";
-            ssAscii.str("");
+            ss << "   " << ss_ascii.str() << '\n';
+            ss << FormatAddress(aligned_address) << " ";
+            ss_ascii.str("");
         }
 
         uint8_t byte = memory.at(i);
-        ss << formatByte_(byte, format) << " ";
-        ssAscii << formatChar_(byte);
+        ss << FormatByte(byte, format) << " ";
+        ss_ascii << FormatChar(byte);
     }
 
     // Last empty bytes
     for (; current_byte < 16; ++current_byte) {
-        ss << formatEmptyByte_(format) << " ";
-        ssAscii << " ";
+        ss << FormatEmptyByte(format) << " ";
+        ss_ascii << " ";
     }
 
-    ss << "   " << ssAscii.str();
+    ss << "   " << ss_ascii.str();
 
     return ss.str();
 }
 
-char MemoryFormatter::formatChar_(uint8_t byte) {
+char MemoryFormatter::FormatChar(uint8_t byte) {
     return byte >= 32 && byte < 127 ? (char)byte : '.';
 }
 
-std::string MemoryFormatter::formatByte_(int byte, MemoryFormat format) {
+std::string MemoryFormatter::FormatByte(int byte, MemoryFormat format) {
     std::stringstream ss;
 
     switch (format) {
-        case kHex: ss << std::uppercase << std::hex << std::setw(2); break;
+        case kHex: ss << std::setw(2) << std::uppercase << std::hex; break;
         case kDec: ss << std::setw(3); break;
     }
 
@@ -84,7 +85,7 @@ std::string MemoryFormatter::formatByte_(int byte, MemoryFormat format) {
     return ss.str();
 }
 
-std::string MemoryFormatter::formatEmptyByte_(MemoryFormat format) {
+std::string MemoryFormatter::FormatEmptyByte(MemoryFormat format) {
     switch (format) {
         case kHex: return "  ";
         case kDec: return "   ";
@@ -92,9 +93,8 @@ std::string MemoryFormatter::formatEmptyByte_(MemoryFormat format) {
     return "";
 }
 
-std::string MemoryFormatter::formatAddress_(int address) {
+std::string MemoryFormatter::FormatAddress(int address) {
     std::stringstream ss;
     ss << std::uppercase << std::hex << std::setw(kAddressWidth) << std::setfill('0') << address;
-
     return ss.str();
 }

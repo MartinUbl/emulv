@@ -1,54 +1,45 @@
 //
 // Created by Hynek on 04.04.2023.
 //
-
 #include "GPIOPinButton.h"
 
 GPIOPinButton::GPIOPinButton(QWidget *parent, int id)
-    : QToolButton(parent)
-    , id_(id) {
-    this->setFixedSize(25, 25);
-    this->update_button();
-    this->setIconSize(QSize(height() - 2, height() - 2));
+: QToolButton(parent)
+, id_(id) {
+    setFixedSize(25, 25);
+    UpdateButton();
+    setIconSize(QSize(height() - 2, height() - 2));
 }
 
-void GPIOPinButton::setMode(modules::GPIO_Pin_Mode mode) {
+void GPIOPinButton::SetMode(modules::GPIO_Pin_Mode mode) {
     mode_ = mode;
-    update_button();
+    UpdateButton();
 }
 
-void GPIOPinButton::setStatus(bool status) {
+void GPIOPinButton::SetStatus(bool status) {
     status_ = status;
-    update_button();
+    UpdateButton();
 }
 
-modules::GPIO_Pin_Mode GPIOPinButton::mode() {
-    return mode_;
-}
-
-bool GPIOPinButton::status() {
-    return status_;
-}
-
-void GPIOPinButton::update_button() {
+void GPIOPinButton::UpdateButton() {
     if (mode_ == modules::GPIO_Pin_Mode::INPUT) {
-        this->setCursor(Qt::PointingHandCursor);
+        setCursor(Qt::PointingHandCursor);
 
         if (status_ == false) {
-            this->setIcon(QIcon(":img/gpio_input_low.svg"));
+            setIcon(QIcon(":img/gpio_input_low.svg"));
         }
         else  {
-            this->setIcon(QIcon(":img/gpio_input_high.svg"));
+            setIcon(QIcon(":img/gpio_input_high.svg"));
         }
     }
     else if (mode_ == modules::GPIO_Pin_Mode::OUTPUT) {
         this->unsetCursor();
 
         if (status_ == false) {
-            this->setIcon(QIcon(":img/gpio_output_low.svg"));
+            setIcon(QIcon(":img/gpio_output_low.svg"));
         }
         else  {
-            this->setIcon(QIcon(":img/gpio_output_high.svg"));
+            setIcon(QIcon(":img/gpio_output_high.svg"));
         }
     }
 }

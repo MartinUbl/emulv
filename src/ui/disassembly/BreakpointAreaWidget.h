@@ -5,18 +5,19 @@
 #ifndef EMULV_BREAKPOINTAREAWIDGET_H
 #define EMULV_BREAKPOINTAREAWIDGET_H
 
-#include <QObject>
 #include <QFrame>
 #include <QMouseEvent>
+
 #include "../Controller.h"
 
 class BreakpointAreaWidget : public QFrame {
     Q_OBJECT
 public:
-    BreakpointAreaWidget(QWidget *parent = nullptr, Controller *controller = nullptr);
-    void setMaximumBreakpoints(int max);
-    void removeBreakpoint(int line);
-    void clear();
+    explicit BreakpointAreaWidget(QWidget *parent = nullptr, Controller *controller = nullptr);
+
+    void SetMaximumBreakpoints(int max);
+    void RemoveBreakpoint(int line);
+    void Clear();
 
 private:
     Controller *controller_;

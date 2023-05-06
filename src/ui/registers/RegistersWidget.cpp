@@ -1,14 +1,13 @@
 //
 // Created by Hynek on 19.04.2023.
 //
+#include "RegistersWidget.h"
 
 #include <sstream>
 #include <iomanip>
 #include <QHBoxLayout>
 #include <QScrollBar>
 #include <QLabel>
-
-#include "RegistersWidget.h"
 
 RegistersWidget::RegistersWidget(QWidget *parent)
 : QFrame(parent)
@@ -17,7 +16,6 @@ RegistersWidget::RegistersWidget(QWidget *parent)
     QFont font("Monospace");
     font.setStyleHint(QFont::TypeWriter);
     main_text_edit_->setFont(font);
-
     main_text_edit_->setReadOnly(true);
     main_text_edit_->setWordWrapMode(QTextOption::NoWrap);
 
@@ -42,48 +40,53 @@ RegistersWidget::RegistersWidget(QWidget *parent)
 
     rb_hex_->setChecked(true);
 
-    connect(rb_hex_, SIGNAL(clicked(bool)), this, SLOT(rb_hex_clicked_()));
-    connect(rb_dec_, SIGNAL(clicked(bool)), this, SLOT(rb_dec_clicked_()));
+    connect(rb_hex_, SIGNAL(clicked(bool)), this, SLOT(OnRBHexClicked()));
+    connect(rb_dec_, SIGNAL(clicked(bool)), this, SLOT(OnRBDecClicked()));
 }
 
-void RegistersWidget::setRegisters(const std::vector<std::tuple<std::string, uint32_t>> &registers) {
+void RegistersWidget::SetRegisters(const std::vector<std::tuple<std::string, uint32_t>> &registers) {
     registers_.clear();
 
     for (const auto &reg: registers) {
         registers_.push_back(reg);
     }
 
-    updateRegisters_();
+    UpdateRegisters();
 }
 
-void RegistersWidget::rb_hex_clicked_() {
-    updateRegisters_();
+void RegistersWidget::OnRBHexClicked() {
+    UpdateRegisters();
 }
 
-void RegistersWidget::rb_dec_clicked_() {
-    updateRegisters_();
+void RegistersWidget::OnRBDecClicked() {
+    UpdateRegisters();
 }
 
-void RegistersWidget::updateRegisters_() {
+void RegistersWidget::UpdateRegisters() {
     std::stringstream ss;
 
     for (size_t i = 0; i < registers_.size(); i++) {
-        const auto &reg = registers_.at(i);
+        auto reg = registers_.at(i);
 
-        std::string label = std::get<0>(reg);
-        uint32_t value = std::get<1>(reg);
+        auto label = std::get<0>(reg);
+        auto value = std::get<1>(reg);
 
         ss << std::setw(kRegisterLabelWidth) << std::setfill(' ') << label;
-        std::string regAbi = "";
-        if (i < kRegisters_Count) {
-            regAbi = "(" + kRegisters_ABI_Names.at(i) + ")";
-        }
-        ss << " " << std::setw(kRegisterLabelWidth + 2) << std::setfill(' ') << regAbi;
-        ss << "   " << formatValueBytes_(value);
 
-        if (rb_dec_->isChecked()) {
-            ss << "(" << value << ')';
+        // Add alternative name if it exists
+        std::string reg_abi;
+        if (i < kRegistersCount) {
+            reg_abi = '(' + kRegistersABI_Names.at(i) + ')';
         }
+
+        ss << ' ' << std::setw(kRegisterLabelWidth + 2) << std::setfill(' ') << reg_abi; // +2 for parentheses
+        ss << "   " << FormatBytes(value);
+
+        // Add full unsigned register value if in decimal format
+        if (rb_dec_->isChecked()) {
+            ss << '(' << value << ')';
+        }
+
         ss << '\n';
     }
 
@@ -94,26 +97,26 @@ void RegistersWidget::updateRegisters_() {
     main_text_edit_->verticalScrollBar()->setValue(scroll);
 }
 
-std::string RegistersWidget::formatByte_(int byte) {
-    std::stringstream ssByte;
+std::string RegistersWidget::FormatByte(int byte) const {
+    std::stringstream ss;
 
     if (rb_hex_->isChecked()) {
-        ssByte << std::uppercase << std::hex << std::setw(2);
+        ss << std::setw(2) << std::uppercase << std::hex;
     }
     else {
-        ssByte << std::setw(3);
+        ss << std::setw(3);
     }
 
-    ssByte << std::setfill('0') << byte;
-    return ssByte.str();
+    ss << std::setfill('0') << byte;
+    return ss.str();
 }
 
-std::string RegistersWidget::formatValueBytes_(uint32_t value) {
+std::string RegistersWidget::FormatBytes(uint32_t value) const {
     std::stringstream ss;
 
     for (int i = sizeof(value) - 1; i >= 0; --i) {
         uint8_t byte = (value >> (i * 8)) & 0xff;
-        ss << formatByte_(byte) << ' ';
+        ss << FormatByte(byte) << ' ';
     }
 
     return ss.str();

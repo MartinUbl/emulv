@@ -7,85 +7,63 @@
 
 #include <unordered_set>
 #include <limits>
-#include "../utils/events/EventEmitter.h"
+
 #include "../emulator/EmulatorUnit.h"
+#include "../utils/events/EventEmitter.h"
 #include "../modules/PeripheralDevice.h"
-#include "../modules/ExampleDevice.h"
-#include "../modules/gpio.h"
 
 class Controller {
-private:
-    int argc_;
-    char **argv_;
-    EventEmitter emitter_;
-    emulator::EmulatorUnit *emulatorUnit_;
-    std::string openedFile_;
-    std::vector<std::string> programArguments_;
-
-    void RegisterPeripherals_();
-
-    std::map<std::string, modules::PeripheralDevice *> activePeripherals_;
-
 public:
     Controller(int argc, char **argv);
-
     ~Controller();
 
     int ShowWindow();
 
-    void RunProgram();
-
-    EventEmitter &GetEventEmitter();
-
-    std::vector<std::tuple<uint64_t, std::string>> GetDisassembly();
-
-    std::map<std::string, modules::PeripheralDevice *> GetPeripherals();
-
-    void SetPinStatus(std::string module, int pin, bool status);
-
+    void ConfigureEmulator(const std::string& path);
     void LoadFile(std::string file_path);
 
-    void ConfigureEmulator(const std::string& path);
-
-    void ClearActivePeripherals();
-    
-    bool IsFileLoaded();
-
-    std::vector<uint8_t> GetMemory(uint64_t from, uint64_t to);
-
-    std::vector<std::tuple<std::string, uint32_t>> GetRegisters();
-
-    emulator::EmulatorState GetProgramState();
-
+    void RunProgram();
     void DebugProgram();
-
     void DebugStep();
-
-    uint64_t GetPc();
-
     void DebugContinue();
-
-    void Terminate();
-
-    int GetProgramReturnValue();
+    void TerminateProgram();
 
     void AddBreakpoint(uint64_t address);
-
     void RemoveBreakpoint(uint64_t address);
 
-    uint64_t GetMemoryStartAddress();
+    uint64_t GetPc() { return emulator_unit_->GetPc(); }
+    int GetProgramReturnValue() { return emulator_unit_->GetReturnValue(); }
+    EventEmitter &GetEventEmitter() { return emitter_; }
+    emulator::EmulatorState GetProgramState() { return emulator_unit_->GetState(); }
 
-    uint64_t GetMemoryEndAddress();
+    std::vector<uint8_t> GetMemory(uint64_t from, uint64_t to) { return emulator_unit_->GetMemory(from, to); }
+    std::vector<std::tuple<uint64_t, std::string>> GetDisassembly() { return this->emulator_unit_->Disassemble(); }
+    std::vector<std::tuple<std::string, uint32_t>> GetRegisters() { return emulator_unit_->GetRegisters(); }
+    std::map<std::string, modules::PeripheralDevice *> GetPeripherals() { return active_peripherals_; }
 
-    uint64_t GetRamStartAddress();
+    uint64_t GetMemoryStartAddress() { return emulator_unit_->GetMemoryStartAddress(); }
+    uint64_t GetMemoryEndAddress() { return emulator_unit_->GetMemoryEndAddress(); }
+    uint64_t GetRamStartAddress() { return emulator_unit_->GetRamStartAddress(); }
+    uint64_t GetRamEndAddress() { return emulator_unit_->GetRamEndAddress(); }
+    uint64_t GetRamSize() { return emulator_unit_->GetRamSize();}
 
-    uint64_t GetRamSize();
+    void SetPinStatus(std::string module, int pin, bool status);
+    void SendUARTMessage(std::string uart_name, std::string message);
 
-    uint64_t GetRamEndAddress();
-
-    void SendUartMessage(std::string uart_name, std::string message);
-
+    void ClearActivePeripherals();
     void ResetPeripherals();
+
+private:
+    emulator::EmulatorUnit *emulator_unit_;
+    EventEmitter emitter_;
+
+    int argc_;
+    char **argv_;
+
+    std::vector<std::string> program_arguments_;
+    std::map<std::string, modules::PeripheralDevice *> active_peripherals_;
+
+    void RegisterPeripherals();
 };
 
 

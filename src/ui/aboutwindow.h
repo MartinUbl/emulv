@@ -3,19 +3,13 @@
 
 #include <QDialog>
 
-namespace Ui {
-class AboutWindow;
-}
-
-class AboutWindow : public QDialog
-{
+class AboutWindow : public QDialog {
     Q_OBJECT
-
 public:
     explicit AboutWindow(QWidget *parent = nullptr);
 
 private:
-    void setupUi();
+    void SetupUI();
 };
 
 #endif // ABOUTWINDOW_H

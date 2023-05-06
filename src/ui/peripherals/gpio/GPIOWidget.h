@@ -6,16 +6,17 @@
 #define EMULV_GPIOWIDGET_H
 
 #include <QWidget>
-#include "GPIOPortWidget.h"
-#include "GPIOPinButton.h"
+
 #include "../PeripheralWidget.h"
+#include "GPIOPortWidget.h"
 
 class GPIOWidget : public PeripheralWidget {
     Q_OBJECT
 public:
-    GPIOWidget(QWidget *parent = nullptr);
-    void addPort(GPIOPortWidget *port_widget);
-    void setReadonly(bool readonly) override;
+    explicit GPIOWidget(QWidget *parent = nullptr);
+
+    void AddPort(GPIOPortWidget *port_widget);
+    void SetReadonly(bool readonly) override;
 
 private:
     std::unordered_map<std::string, GPIOPortWidget *> ports_;

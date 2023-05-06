@@ -1,14 +1,12 @@
 #include "DisassemblyWidget.h"
 
 #include <sstream>
-#include <QLayout>
-#include <QTextBlock>
-#include <QScrollBar>
-#include <QAbstractItemModel>
-#include <QLabel>
 #include <iostream>
-#include <unordered_set>
 #include <iomanip>
+#include <QLayout>
+#include <QScrollBar>
+#include <QLabel>
+#include <QTextBlock>
 
 #include "../../utils/events/BreakpointAreaWidgetEvents.h"
 
@@ -31,73 +29,77 @@ DisassemblyWidget::DisassemblyWidget(QWidget *parent, Controller *controller)
     bot_widget->layout()->setSpacing(0);
     bot_widget->layout()->setContentsMargins(0, 0, 0, 0);
 
-    addressArea = new QPlainTextEdit(bot_widget);
-    instructionArea = new QPlainTextEdit(bot_widget);
-    breakpointScrollArea = new QScrollArea(bot_widget);
+    text_edit_addresses_ = new QPlainTextEdit(bot_widget);
+    text_edit_instructions_ = new QPlainTextEdit(bot_widget);
+    scroll_area_breakpoints_ = new QScrollArea(bot_widget);
 
-    bot_widget->layout()->addWidget(breakpointScrollArea);
-    bot_widget->layout()->addWidget(addressArea);
-    bot_widget->layout()->addWidget(instructionArea);
+    bot_widget->layout()->addWidget(scroll_area_breakpoints_);
+    bot_widget->layout()->addWidget(text_edit_addresses_);
+    bot_widget->layout()->addWidget(text_edit_instructions_);
 
     layout()->addWidget(top_widget);
     layout()->addWidget(bot_widget);
 
     QFont font("Monospace");
     font.setStyleHint(QFont::TypeWriter);
-    addressArea->setFont(font);
-    instructionArea->setFont(font);
+    text_edit_addresses_->setFont(font);
+    text_edit_instructions_->setFont(font);
 
-    addressArea->document()->setDocumentMargin(0);
-    instructionArea->document()->setDocumentMargin(0);
+    text_edit_addresses_->document()->setDocumentMargin(0);
+    text_edit_instructions_->document()->setDocumentMargin(0);
 
-    breakpointAreaWidget = new BreakpointAreaWidget(breakpointScrollArea, controller);
+    breakpoint_area_widget_ = new BreakpointAreaWidget(scroll_area_breakpoints_, controller);
 
-    breakpointAreaWidget->setFixedWidth(addressArea->fontMetrics().height());
-    breakpointAreaWidget->setObjectName("breakpointAreaWidget");
-    breakpointAreaWidget->setStyleSheet("#breakpointAreaWidget { background-color: rgba(100, 100, 100, 100); }");
+    breakpoint_area_widget_->setFixedWidth(text_edit_addresses_->fontMetrics().height());
+    // Background color has to be set using the widget name,
+    // otherwise the child breakpoints would have the same (partially transparent) background
+    breakpoint_area_widget_->setObjectName("breakpoint_area_widget_");
+    breakpoint_area_widget_->setStyleSheet("#breakpoint_area_widget_ { background-color: rgba(100, 100, 100, 100); }");
 
-    breakpointScrollArea->setFixedWidth(addressArea->fontMetrics().height());
-    breakpointScrollArea->setFrameShape(QFrame::Box);
-    breakpointScrollArea->setLineWidth(0);
-    breakpointScrollArea->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
-    breakpointScrollArea->verticalScrollBar()->setEnabled(false);
+    scroll_area_breakpoints_->setFixedWidth(text_edit_addresses_->fontMetrics().height());
+    scroll_area_breakpoints_->setFrameShape(QFrame::Box);
+    scroll_area_breakpoints_->setLineWidth(0);
+    scroll_area_breakpoints_->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+    scroll_area_breakpoints_->verticalScrollBar()->setEnabled(false);
 
-    breakpointScrollArea->setWidget(breakpointAreaWidget);
+    scroll_area_breakpoints_->setWidget(breakpoint_area_widget_);
 
-    addressArea->setStyleSheet("background-color: rgba(100, 100, 100, 100);");
-    addressArea->setMaximumWidth(addressArea->fontMetrics().horizontalAdvance("00000000 "));
-    addressArea->setReadOnly(true);
-    addressArea->setFrameShape(QFrame::Box);
-    addressArea->setLineWidth(0);
-    addressArea->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
-    addressArea->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
-    addressArea->setWordWrapMode(QTextOption::NoWrap);
+    text_edit_addresses_->setStyleSheet("background-color: rgba(100, 100, 100, 100);");
+    text_edit_addresses_->setMaximumWidth(text_edit_addresses_->fontMetrics().horizontalAdvance(kAddressTemplate));
+    text_edit_addresses_->setReadOnly(true);
+    text_edit_addresses_->setFrameShape(QFrame::Box);
+    text_edit_addresses_->setLineWidth(0);
+    text_edit_addresses_->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+    text_edit_addresses_->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+    text_edit_addresses_->setWordWrapMode(QTextOption::NoWrap);
 
-    instructionArea->setReadOnly(true);
-    instructionArea->setFrameShape(QFrame::Box);
-    instructionArea->setLineWidth(0);
-    instructionArea->setWordWrapMode(QTextOption::NoWrap);
+    text_edit_instructions_->setReadOnly(true);
+    text_edit_instructions_->setFrameShape(QFrame::Box);
+    text_edit_instructions_->setLineWidth(0);
+    text_edit_instructions_->setWordWrapMode(QTextOption::NoWrap);
 
-    connect(addressArea->verticalScrollBar(), SIGNAL(valueChanged(int)), this, SLOT(onAddressAreaScroll()));
-    connect(instructionArea->verticalScrollBar(), SIGNAL(valueChanged(int)), this, SLOT(onInstructionAreaScroll()));
+    connect(text_edit_addresses_->verticalScrollBar(), SIGNAL(valueChanged(int)),
+            this, SLOT(OnTextEditAddressesScroll()));
+    connect(text_edit_instructions_->verticalScrollBar(), SIGNAL(valueChanged(int)),
+            this, SLOT(OnTextEditInstructionsScroll()));
 
     controller_->GetEventEmitter().On(Breakpoint_Added_Event_Description, [this](AbstractEvent *res) {
         auto event = dynamic_cast<BreakpointAreaWidgetEvent *>(res);
-        addBreakpoint_(event->Line);
+        AddBreakpoint(event->Line);
         delete res;
     });
 
     controller_->GetEventEmitter().On(Breakpoint_Removed_Event_Description, [this](AbstractEvent *res) {
         auto event = dynamic_cast<BreakpointAreaWidgetEvent *>(res);
-        removeBreakpoint_(event->Line);
+        RemoveBreakpoint(event->Line);
         delete res;
     });
 }
 
-void DisassemblyWidget::highlightLine(uint64_t address) {
+void DisassemblyWidget::HighlightLine(uint64_t address) {
     QList<QTextEdit::ExtraSelection> extraSelections;
 
-    int line = findLine_(address);
+    int line = FindLine(address);
 
     if (line >= 0) {
         QTextEdit::ExtraSelection selection;
@@ -105,8 +107,8 @@ void DisassemblyWidget::highlightLine(uint64_t address) {
         selection.format.setBackground(lineBgColor);
         selection.format.setProperty(QTextFormat::FullWidthSelection, true);
 
-        QTextCursor cursor(instructionArea->document()->findBlockByLineNumber(line));
-        instructionArea->setTextCursor(cursor);
+        QTextCursor cursor(text_edit_instructions_->document()->findBlockByLineNumber(line));
+        text_edit_instructions_->setTextCursor(cursor);
 
         selection.cursor = cursor;
         cursor.select(QTextCursor::LineUnderCursor);
@@ -115,90 +117,97 @@ void DisassemblyWidget::highlightLine(uint64_t address) {
         extraSelections.append(selection);
     }
 
-    instructionArea->setExtraSelections(extraSelections);
+    text_edit_instructions_->setExtraSelections(extraSelections);
 
-    int scroll = instructionArea->verticalScrollBar()->value();
-    updateScroll_(scroll);
+    int scroll = text_edit_instructions_->verticalScrollBar()->value();
+    UpdateScroll(scroll);
 }
 
-void DisassemblyWidget::onAddressAreaScroll() {
-    QScrollBar *sb = addressArea->verticalScrollBar();
-    updateScroll_(sb->value());
+void DisassemblyWidget::Clear() {
+    addresses_.clear();
+    address_lines_.clear();
+    text_edit_addresses_->clear();
+    text_edit_instructions_->clear();
+    breakpoint_area_widget_->Clear();
 }
 
-void DisassemblyWidget::onInstructionAreaScroll() {
-    QScrollBar *sb = instructionArea->verticalScrollBar();
-    updateScroll_(sb->value());
+void DisassemblyWidget::OnTextEditAddressesScroll() {
+    QScrollBar *sb = text_edit_addresses_->verticalScrollBar();
+    UpdateScroll(sb->value());
 }
 
-void DisassemblyWidget::updateScroll_(int value) {
-    QScrollBar *sbBrk = breakpointScrollArea->verticalScrollBar();
-    QScrollBar *sbAddr = addressArea->verticalScrollBar();
-    QScrollBar *sbInstr = instructionArea->verticalScrollBar();
+void DisassemblyWidget::OnTextEditInstructionsScroll() {
+    QScrollBar *sb = text_edit_instructions_->verticalScrollBar();
+    UpdateScroll(sb->value());
+}
 
-    sbBrk->setValue(value * addressArea->fontMetrics().height());
+void DisassemblyWidget::UpdateScroll(int value) const {
+    QScrollBar *sbBrk = scroll_area_breakpoints_->verticalScrollBar();
+    QScrollBar *sbAddr = text_edit_addresses_->verticalScrollBar();
+    QScrollBar *sbInstr = text_edit_instructions_->verticalScrollBar();
+
+    sbBrk->setValue(value * text_edit_addresses_->fontMetrics().height());
     sbAddr->setValue(value);
     sbInstr->setValue(value);
 }
 
-void DisassemblyWidget::setInstructions(const std::vector<std::tuple<uint64_t, std::string>> &instructions) {
-    addresses_.clear();
-    address_lines_.clear();
-    addressArea->clear();
-    instructionArea->clear();
-    breakpointAreaWidget->clear();
+void DisassemblyWidget::SetInstructions(const std::vector<std::tuple<uint64_t, std::string>> &instructions) {
+    Clear();
 
-    std::stringstream ssAddresses;
-    std::stringstream ssInstructions;;
+    std::stringstream ss_addresses;
+    std::stringstream ss_instructions;
 
     int line = 0;
-    for (const auto &instructionString: instructions) {
-        uint64_t address = std::get<0>(instructionString);
-        std::string instruction = std::get<1>(instructionString);
+    for (const auto &instruction: instructions) {
+        auto address = std::get<0>(instruction);
+        auto full_instruction = std::get<1>(instruction);
 
-        std::stringstream ssAddress;
-        ssAddress << std::uppercase << std::hex << std::setw(8) << std::setfill('0') << address;
+        std::stringstream ss_address;
+        ss_address << std::uppercase << std::hex << std::setw(kAddressWidth) << std::setfill('0') << address;
 
-        ssAddresses << ssAddress.str() << '\n';
-        ssInstructions << " " << instructionSubstring_(instruction) << '\n';
+        ss_addresses << ss_address.str() << '\n';
+        ss_instructions << " " << InstructionSubstring(full_instruction) << '\n';
 
         addresses_.push_back(address);
         address_lines_[address] = line++;
     }
 
-    std::string addressAreaText = ssAddresses.str();
-    std::string instructionAreaText = ssInstructions.str();
+    std::string addressAreaText = ss_addresses.str();
+    std::string instructionAreaText = ss_instructions.str();
 
     //Remove last line separator
     addressAreaText = addressAreaText.erase(addressAreaText.length() - 1);
     instructionAreaText = instructionAreaText.erase(instructionAreaText.length() - 1);
 
-    addressArea->setPlainText(QString::fromStdString(addressAreaText));
-    instructionArea->setPlainText(QString::fromStdString(instructionAreaText));
-    updateBreakpointWidget();
+    text_edit_addresses_->setPlainText(QString::fromStdString(addressAreaText));
+    text_edit_instructions_->setPlainText(QString::fromStdString(instructionAreaText));
+
+    UpdateBreakpointWidget();
 }
 
-void DisassemblyWidget::updateBreakpointWidget() {
-    int lineHeight = addressArea->fontMetrics().height();
-    int lines = addressArea->document()->blockCount();
+void DisassemblyWidget::UpdateBreakpointWidget() const {
+    int line_height = text_edit_addresses_->fontMetrics().height();
+    int lines = text_edit_addresses_->document()->blockCount();
 
-    breakpointAreaWidget->setMaximumBreakpoints(lines);
-    breakpointAreaWidget->setFixedHeight((lines + 1) * lineHeight);
+    breakpoint_area_widget_->SetMaximumBreakpoints(lines);
+    breakpoint_area_widget_->setFixedHeight((lines + 1) * line_height);
+    // The additional line is for the scroll area to behave correctly,
+    // as the QPlainTextEdit has an empty space at the bottom
 }
 
-std::string DisassemblyWidget::instructionSubstring_(const std::string &fullString) {
-    std::string::size_type i = 0;
+std::string DisassemblyWidget::InstructionSubstring(const std::string &full_instruction) {
+    size_t i = 0;
 
     // Skip binary representation
-    for (; i < fullString.size() && fullString[i] != ' '; ++i) {}
+    for (; i < full_instruction.size() && full_instruction[i] != ' '; ++i) {}
 
     // Skip space after binary representation
-    for (; i < fullString.size() && fullString[i] == ' '; ++i) {}
+    for (; i < full_instruction.size() && full_instruction[i] == ' '; ++i) {}
 
-    return fullString.substr(i);
+    return full_instruction.substr(i);
 }
 
-int DisassemblyWidget::findLine_(uint64_t address) {
+int DisassemblyWidget::FindLine(uint64_t address) {
     auto it = address_lines_.find(address);
     if (it == address_lines_.end()) {
         return -1;
@@ -207,10 +216,10 @@ int DisassemblyWidget::findLine_(uint64_t address) {
     return it->second;
 }
 
-void DisassemblyWidget::addBreakpoint_(int line) {
+void DisassemblyWidget::AddBreakpoint(int line) {
     controller_->AddBreakpoint(addresses_.at(line));
 }
 
-void DisassemblyWidget::removeBreakpoint_(int line) {
+void DisassemblyWidget::RemoveBreakpoint(int line) {
     controller_->RemoveBreakpoint(addresses_.at(line));
 }

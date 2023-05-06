@@ -1,18 +1,17 @@
 //
 // Created by Hynek on 11.04.2023.
 //
+#include "BreakpointAreaWidget.h"
 
 #include <QLabel>
-#include "BreakpointAreaWidget.h"
+
 #include "../../utils/events/BreakpointAreaWidgetEvents.h"
 
 BreakpointAreaWidget::BreakpointAreaWidget(QWidget *parent, Controller *controller)
-    : QFrame(parent)
-    , controller_(controller) {
+: QFrame(parent)
+, controller_(controller) {}
 
-}
-
-void BreakpointAreaWidget::clear() {
+void BreakpointAreaWidget::Clear() {
     for (auto breakpoint : breakpoints_) {
         delete breakpoint.second;
     }
@@ -20,28 +19,48 @@ void BreakpointAreaWidget::clear() {
     breakpoints_.clear();
 }
 
+void BreakpointAreaWidget::RemoveBreakpoint(int line) {
+    auto breakpoint = breakpoints_[line];
+    breakpoints_.erase(line);
+    delete breakpoint;
+
+    controller_->GetEventEmitter().Emit(Breakpoint_Removed_Event_Description, new BreakpointAreaWidgetEvent(line));
+}
+
+void BreakpointAreaWidget::SetMaximumBreakpoints(int max) {
+    if (max < 1) {
+        throw std::invalid_argument("Value of maximum breakpoints must be a positive number.");
+    }
+
+    max_breakpoints_ = max;
+}
+
 void BreakpointAreaWidget::mousePressEvent(QMouseEvent *event) {
     int clicked_y = event->pos().y();
 
+    // The width of this widget needs to be equal to the line height of the disassembly widget's TextEdits
+    // so that the breakpoint widget can be square
     int breakpoint_height = this->width();
     int line = clicked_y / breakpoint_height;
     int y = line * breakpoint_height;
 
+    // Return, if user clicked below the last possible breakpoint position
     if (line > max_breakpoints_ - 1) {
         return;
     }
 
     // If breakpoint exists, remove it
     if (breakpoints_.find(line) != breakpoints_.end()) {
-        removeBreakpoint(line);
+        RemoveBreakpoint(line);
         return;
     }
 
-    // Add a new breakpoint
-    QLabel *breakpoint = new QLabel(this);
+    // Otherwise, add a new breakpoint
+    auto breakpoint = new QLabel(this);
 
-    breakpoint->setFixedSize(breakpoint_height, breakpoint_height);
+    // Move up by one so the breakpoint is better centered on the line
     breakpoint->move(0, y - 1);
+    breakpoint->setFixedSize(breakpoint_height, breakpoint_height);
     breakpoint->setStyleSheet("padding: 2px;");
     breakpoint->setPixmap(QPixmap(":img/breakpoint.png"));
     breakpoint->setScaledContents(true);
@@ -50,20 +69,4 @@ void BreakpointAreaWidget::mousePressEvent(QMouseEvent *event) {
     breakpoints_[line] = breakpoint;
 
     controller_->GetEventEmitter().Emit(Breakpoint_Added_Event_Description, new BreakpointAreaWidgetEvent(line));
-}
-
-void BreakpointAreaWidget::removeBreakpoint(int line) {
-    QWidget *breakpoint = breakpoints_[line];
-    breakpoints_.erase(line);
-    delete breakpoint;
-
-    controller_->GetEventEmitter().Emit(Breakpoint_Removed_Event_Description, new BreakpointAreaWidgetEvent(line));
-}
-
-void BreakpointAreaWidget::setMaximumBreakpoints(int max) {
-    if (max < 1) {
-        throw std::invalid_argument("Value of maximum breakpoints must be a positive number.");
-    }
-
-    max_breakpoints_ = max;
 }

@@ -5,6 +5,7 @@
 #include <QTest>
 
 #include "../../../src/ui/mainwindow.h"
+#include "../../../src/ui/peripherals/uart/UARTWidget.h"
 
 class TS_01_01 : public QObject {
     Q_OBJECT
@@ -17,11 +18,15 @@ private:
 
     Controller *controller_{};
     MainWindow *main_window_{};
+    RegistersWidget *registers_widget_{};
+    MemoryWidget *memory_widget_{};
 
 private slots:
     void initTestCase() {
         controller_ = new Controller(0, nullptr);
         main_window_ = new MainWindow(nullptr, controller_);
+        registers_widget_ = main_window_->registers_widget_;
+        memory_widget_ = main_window_->memory_widget_;
         main_window_->show();
     }
 
@@ -31,11 +36,11 @@ private slots:
     }
 
     void TC_01_01_01() {
-        main_window_->openFile(kMemoryTestElf);
-        QTest::mouseClick(main_window_->btnRun, Qt::LeftButton);
+        main_window_->OpenFile(kMemoryTestElf);
+        QTest::mouseClick(main_window_->btn_run_, Qt::LeftButton);
         QTest::qWait(300);
 
-        QCOMPARE(main_window_->registersWidget_->main_text_edit_->toPlainText(),
+        QCOMPARE(main_window_->registers_widget_->main_text_edit_->toPlainText(),
                  QString("  x0 (zero)   00 00 00 00 \n"
                         "  x1   (ra)   00 01 43 46 \n"
                         "  x2   (sp)   01 17 AA B0 \n"
@@ -70,27 +75,28 @@ private slots:
                         " x31   (t6)   00 01 00 00 \n"
                         "  pc          00 02 0A 86 \n"));
 
-        QVERIFY(main_window_->memoryWidget_->te_memory_->document()->isEmpty() == false);
+        bool memory_empty = memory_widget_->text_edit_memory_->document()->isEmpty();
+        QVERIFY(!memory_empty);
 
-        main_window_->memoryWidget_->sp_memory_to_->setValue(0x2000002F);
-        QTest::mouseClick(main_window_->memoryWidget_->btn_search_, Qt::LeftButton);
-        QTest::mouseClick(main_window_->memoryWidget_->rb_dec_, Qt::LeftButton);
+        main_window_->memory_widget_->spinbox_memory_to_->setValue(0x2000002F);
+        QTest::mouseClick(main_window_->memory_widget_->btn_search_, Qt::LeftButton);
+        QTest::mouseClick(main_window_->memory_widget_->rb_dec_, Qt::LeftButton);
 
-        QCOMPARE(main_window_->memoryWidget_->te_memory_->toPlainText(),
+        QCOMPARE(memory_widget_->text_edit_memory_->toPlainText(),
                  QString::fromStdString("20000000 000 000 000 000 000 000 000 000 000 000 000 000 000 000 000 000    ................\n"
                                         "20000010 111 000 000 000 000 000 000 000 000 000 000 000 000 000 000 000    o...............\n"
                                         "20000020 000 000 000 000 000 000 000 000 000 000 000 000 000 000 000 000    ................"));
     }
 
     void TC_01_01_02() {
-        main_window_->selectConfig(kConfigFile);
-        main_window_->openFile(kUARTTransmitTestElf);
+        main_window_->SelectConfig(kConfigFile);
+        main_window_->OpenFile(kUARTTransmitTestElf);
 
-        QTest::mouseClick(main_window_->btnRun, Qt::LeftButton);
+        QTest::mouseClick(main_window_->btn_run_, Qt::LeftButton);
         QTest::qWait(500);
 
-        auto uartWidget = dynamic_cast<UARTWidget *>(main_window_->peripheralsTabWidget_->widgets_["UART1"]);
-        QCOMPARE(uartWidget->textEditMessages_->toPlainText(),
+        auto uartWidget = dynamic_cast<UARTWidget *>(main_window_->peripherals_tab_widget_->widgets_["UART1"]);
+        QCOMPARE(uartWidget->text_edit_messages_->toPlainText(),
                  QString::fromStdString("aaaa"));
     }
 };

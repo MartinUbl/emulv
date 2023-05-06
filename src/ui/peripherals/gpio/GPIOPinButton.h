@@ -2,28 +2,31 @@
 // Created by Hynek on 04.04.2023.
 //
 
-#ifndef EMULV_GPIOPIN_H
-#define EMULV_GPIOPIN_H
+#ifndef EMULV_GPIOPINBUTTON_H
+#define EMULV_GPIOPINBUTTON_H
 
-#include <QObject>
 #include <QToolButton>
+
 #include "../../../utils/events/gpio_events.h"
 
 class GPIOPinButton : public QToolButton {
     Q_OBJECT
 public:
-    GPIOPinButton(QWidget *parent = nullptr, int id = 0);
-    void setMode(modules::GPIO_Pin_Mode mode);
-    void setStatus(bool status);
-    int id() { return id_; }
-    modules::GPIO_Pin_Mode mode();
-    bool status();
+    explicit GPIOPinButton(QWidget *parent = nullptr, int id = 0);
+
+    void SetMode(modules::GPIO_Pin_Mode mode);
+    void SetStatus(bool status);
+
+    int PinID() const { return id_; }
+    bool GetStatus() const { return status_; }
+    modules::GPIO_Pin_Mode GetMode() const { return mode_; }
 
 private:
     int id_;
     modules::GPIO_Pin_Mode mode_ = modules::GPIO_Pin_Mode::INPUT;
     bool status_ = false;
-    void update_button();
+
+    void UpdateButton();
 };
 
-#endif //EMULV_GPIOPIN_H
+#endif //EMULV_GPIOPINBUTTON_H

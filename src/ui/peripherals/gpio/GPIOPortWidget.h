@@ -13,18 +13,23 @@
 class GPIOPortWidget : public PeripheralWidget {
     Q_OBJECT
 public:
-    GPIOPortWidget(QWidget *parent = nullptr, Controller *controller = nullptr, std::string label = "", std::vector<int> pin_ids = {});
-    void setPinMode(int pin_id, modules::GPIO_Pin_Mode mode);
-    void setPinStatus(int pin_id, bool status);
-    modules::GPIO_Pin_Mode pinMode(int pin_id);
-    bool pinStatus(int pin_id);
-    void setReadonly(bool readonly) override;
+    explicit GPIOPortWidget(QWidget *parent = nullptr, Controller *controller = nullptr,
+                            std::string label = "", std::vector<int> pin_ids = {});
+
+    void SetPinMode(int pin_id, modules::GPIO_Pin_Mode mode);
+    void SetPinStatus(int pin_id, bool status);
+
+    modules::GPIO_Pin_Mode GetPinMode(int pin_id) { return pins_[pin_id]->GetMode(); }
+    bool GetPinStatus(int pin_id) { return pins_[pin_id]->GetStatus(); }
+
+    void SetReadonly(bool readonly) override;
+
+private slots:
+    void OnPinButtonClicked();
 
 private:
     std::unordered_map<int, GPIOPinButton *> pins_;
 
-private slots:
-    void onPinButtonClicked();
 };
 
 #endif //EMULV_GPIOPORTWIDGET_H

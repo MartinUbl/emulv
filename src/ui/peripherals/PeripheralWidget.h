@@ -6,18 +6,25 @@
 #define EMULV_PERIPHERALWIDGET_H
 
 #include <QWidget>
+
 #include "../Controller.h"
 
 class PeripheralWidget : public QWidget {
 public:
-    PeripheralWidget(QWidget *parent = nullptr, Controller *controller = nullptr, std::string label = "") :
-        QWidget(parent), controller_(controller), label_(label) {}
-    virtual void setReadonly(bool readonly) = 0;
-    std::string label() { return label_; }
+    explicit PeripheralWidget(QWidget *parent = nullptr, Controller *controller = nullptr, std::string label = "") :
+        QWidget(parent),
+        controller_(controller),
+        label_(label)
+        {}
+
+    virtual void SetReadonly(bool readonly) = 0;
+
+    std::string GetLabel() { return label_; }
 
 protected:
-    std::string label_;
     Controller *controller_;
+
+    std::string label_;
 };
 
 #endif //EMULV_PERIPHERALWIDGET_H

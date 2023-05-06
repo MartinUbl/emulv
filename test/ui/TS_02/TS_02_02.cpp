@@ -13,34 +13,36 @@ private:
 
     Controller *controller_{};
     MainWindow *main_window_{};
+    MemoryWidget *memory_widget_{};
 
 private slots:
-    void init() {
+    void initTestCase() {
         controller_ = new Controller(0, nullptr);
         main_window_ = new MainWindow(nullptr, controller_);
+        memory_widget_ = main_window_->memory_widget_;
         main_window_->show();
 
-        main_window_->openFile(kMemoryTestElf);
-        QTest::mouseClick(main_window_->btnRun, Qt::LeftButton, Qt::KeyboardModifiers(), QPoint(), 1000);
+        main_window_->OpenFile(kMemoryTestElf);
+        QTest::mouseClick(main_window_->btn_run_, Qt::LeftButton);
         QTest::qWait(300);
 
-        main_window_->memoryWidget_->setAddressRangeLimit(0x20000010, 0x2000001F);
+        main_window_->memory_widget_->SetAddressRangeLimit(0x20000010, 0x2000001F);
 
-        QTest::mouseClick(main_window_->memoryWidget_->btn_search_, Qt::LeftButton);
+        QTest::mouseClick(memory_widget_->btn_search_, Qt::LeftButton);
     }
 
-    void cleanup() {
+    void cleanupTestCase() {
         delete main_window_;
         delete controller_;
     }
 
     void TC_02_02_01() {
-        QCOMPARE(main_window_->memoryWidget_->te_memory_->toPlainText(), QString("20000010 6F 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00    o..............."));
+        QCOMPARE(memory_widget_->text_edit_memory_->toPlainText(), QString("20000010 6F 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00    o..............."));
     }
 
     void TC_02_02_02() {
-        QTest::mouseClick(main_window_->memoryWidget_->rb_dec_, Qt::LeftButton, Qt::KeyboardModifiers(), QPoint(), 1000);
-        QCOMPARE(main_window_->memoryWidget_->te_memory_->toPlainText(), QString("20000010 111 000 000 000 000 000 000 000 000 000 000 000 000 000 000 000    o..............."));
+        QTest::mouseClick(memory_widget_->rb_dec_, Qt::LeftButton);
+        QCOMPARE(memory_widget_->text_edit_memory_->toPlainText(), QString("20000010 111 000 000 000 000 000 000 000 000 000 000 000 000 000 000 000    o..............."));
     }
 };
 

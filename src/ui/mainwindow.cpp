@@ -1,42 +1,41 @@
 #include "mainwindow.h"
-#include "aboutwindow.h"
-#include "../utils/events/uart_event.h"
 
+#include <iostream>
+#include <iomanip>
+#include <sstream>
+#include <QFileDialog>
 #include <QMenuBar>
 #include <QStatusBar>
 #include <QAction>
 #include <QStringListModel>
-#include <iostream>
-#include <iomanip>
-#include <sstream>
+#include <QLayout>
+#include <QSpacerItem>
 #include <QMessageBox>
+
+#include "aboutwindow.h"
+#include "../utils/events/uart_event.h"
 
 MainWindow::MainWindow(QWidget *parent, Controller *controller)
 : QMainWindow(parent)
-, controller(controller) {
-    setupUI();
+, controller_(controller) {
+    SetupUI();
+    UpdateUI();
 
-    updateUI();
+    peripherals_tab_widget_->UpdateWidgets();
 
-    peripheralsTabWidget_->updateWidgets();
-
-    memoryWidget_->setEnabled(false);
-    registersWidget_->setEnabled(false);
-    peripheralsTabWidget_->setEnabled(false);
-
-    memoryWidget_->setAddressRangeLimit(controller->GetRamStartAddress(), controller->GetRamEndAddress());
+    memory_widget_->SetAddressRangeLimit(controller->GetRamStartAddress(), controller->GetRamEndAddress());
 
     controller->GetEventEmitter().On(emulator::State_Changed_Event_Description, [this](AbstractEvent *res) {
-        QMetaObject::invokeMethod(this, "updateUI");
+        QMetaObject::invokeMethod(this, "UpdateUI");
     });
 }
 
 MainWindow::~MainWindow() {
-    controller->Terminate();
-    joinThread();
+    controller_->TerminateProgram();
+    JoinThread();
 }
 
-void MainWindow::setupUI() {
+void MainWindow::SetupUI() {
     setWindowTitle("RISC-V Emulator");
     setWindowIcon(QIcon(":img/logo.ico"));
     setWindowState(Qt::WindowMaximized);
@@ -47,20 +46,20 @@ void MainWindow::setupUI() {
     auto fileMenu = new QMenu("&File", menuBar());
     auto openAction = new QAction("&Open", fileMenu);
     openAction->setShortcut(QKeySequence::fromString("Ctrl+o"));
-    connect(openAction, SIGNAL(triggered(bool)), this, SLOT(on_action_Open_triggered()));
+    connect(openAction, SIGNAL(triggered(bool)), this, SLOT(OnFileOpenTriggered()));
     fileMenu->addAction(openAction);
 
     auto toolsMenu = new QMenu("&Tools", menuBar());
     auto selectConfigAction = new QAction("&Select configuration", toolsMenu);
-    connect(selectConfigAction, SIGNAL(triggered(bool)), this, SLOT(on_action_SelectConfiguration_triggered()));
+    connect(selectConfigAction, SIGNAL(triggered(bool)), this, SLOT(OnSelectConfigurationTriggered()));
     auto clearConfigAction = new QAction("&Clear configuration", toolsMenu);
-    connect(clearConfigAction, SIGNAL(triggered(bool)), this, SLOT(on_action_ClearConfiguration_triggered()));
+    connect(clearConfigAction, SIGNAL(triggered(bool)), this, SLOT(OnClearConfigurationTriggered()));
     toolsMenu->addAction(selectConfigAction);
     toolsMenu->addAction(clearConfigAction);
 
     auto helpMenu = new QMenu("&Help", menuBar());
     auto aboutAction = new QAction("&About", helpMenu);
-    connect(aboutAction, SIGNAL(triggered(bool)), this, SLOT(on_action_About_RISCVEmulator_triggered()));
+    connect(aboutAction, SIGNAL(triggered(bool)), this, SLOT(OnAboutTriggered()));
     helpMenu->addAction(aboutAction);
 
     menuBar()->addMenu(fileMenu);
@@ -86,390 +85,407 @@ void MainWindow::setupUI() {
 
     QSize btnSize(24, 24);
 
-    btnRun = new QToolButton(toolBar);
-    btnRun->setText("Run");
-    btnRun->setToolTip("Run (F5)");
-    btnRun->setShortcut(QKeySequence::fromString("F5"));
-    btnRun->setIcon(QIcon(":img/run.png"));
-    btnRun->setFixedSize(btnSize);
-    btnRun->setIconSize(QSize(13, 13));
+    btn_run_ = new QToolButton(toolBar);
+    btn_run_->setText("Run");
+    btn_run_->setToolTip("Run (F5)");
+    btn_run_->setShortcut(QKeySequence::fromString("F5"));
+    btn_run_->setIcon(QIcon(":img/run.png"));
+    btn_run_->setFixedSize(btnSize);
+    btn_run_->setIconSize(QSize(13, 13));
 
-    btnDebug = new QToolButton(toolBar);
-    btnDebug->setText("Debug");
-    btnDebug->setToolTip("Debug (F6)");
-    btnDebug->setShortcut(QKeySequence::fromString("F6"));
-    btnDebug->setIcon(QIcon(":img/debug.png"));
-    btnDebug->setFixedSize(btnSize);
-    btnDebug->setIconSize(QSize(16, 16));
+    btn_debug_ = new QToolButton(toolBar);
+    btn_debug_->setText("Debug");
+    btn_debug_->setToolTip("Debug (F6)");
+    btn_debug_->setShortcut(QKeySequence::fromString("F6"));
+    btn_debug_->setIcon(QIcon(":img/debug.png"));
+    btn_debug_->setFixedSize(btnSize);
+    btn_debug_->setIconSize(QSize(16, 16));
 
-    btnTerminate = new QToolButton(toolBar);
-    btnTerminate->setText("Terminate");
-    btnTerminate->setToolTip("Terminate (Shift + F5)");
-    btnTerminate->setShortcut(QKeySequence::fromString("Shift+F5"));
-    btnTerminate->setIcon(QIcon(":img/terminate.png"));
-    btnTerminate->setFixedSize(btnSize);
-    btnTerminate->setIconSize(QSize(11, 11));
+    btn_terminate_ = new QToolButton(toolBar);
+    btn_terminate_->setText("TerminateProgram");
+    btn_terminate_->setToolTip("TerminateProgram (Shift + F5)");
+    btn_terminate_->setShortcut(QKeySequence::fromString("Shift+F5"));
+    btn_terminate_->setIcon(QIcon(":img/terminate.png"));
+    btn_terminate_->setFixedSize(btnSize);
+    btn_terminate_->setIconSize(QSize(11, 11));
 
-    btnStep = new QToolButton(toolBar);
-    btnStep->setText("Step");
-    btnStep->setToolTip("Step (F7)");
-    btnStep->setShortcut(QKeySequence::fromString("F7"));
-    btnStep->setIcon(QIcon(":img/step.png"));
-    btnStep->setFixedSize(btnSize);
-    btnStep->setIconSize(QSize(16, 16));
+    btn_step_ = new QToolButton(toolBar);
+    btn_step_->setText("Step");
+    btn_step_->setToolTip("Step (F7)");
+    btn_step_->setShortcut(QKeySequence::fromString("F7"));
+    btn_step_->setIcon(QIcon(":img/step.png"));
+    btn_step_->setFixedSize(btnSize);
+    btn_step_->setIconSize(QSize(16, 16));
 
-    btnContinue = new QToolButton(toolBar);
-    btnContinue->setText("Continue");
-    btnContinue->setToolTip("Continue (F8)");
-    btnContinue->setShortcut(QKeySequence::fromString("F8"));
-    btnContinue->setIcon(QIcon(":img/continue.png"));
-    btnContinue->setFixedSize(btnSize);
-    btnContinue->setIconSize(QSize(13, 13));
+    btn_continue_ = new QToolButton(toolBar);
+    btn_continue_->setText("Continue");
+    btn_continue_->setToolTip("Continue (F8)");
+    btn_continue_->setShortcut(QKeySequence::fromString("F8"));
+    btn_continue_->setIcon(QIcon(":img/continue.png"));
+    btn_continue_->setFixedSize(btnSize);
+    btn_continue_->setIconSize(QSize(13, 13));
 
-    connect(btnRun, SIGNAL(clicked(bool)), this, SLOT(on_btnRun_clicked()));
-    connect(btnDebug, SIGNAL(clicked(bool)), this, SLOT(on_btnDebug_clicked()));
-    connect(btnTerminate, SIGNAL(clicked(bool)), this, SLOT(on_btnTerminate_clicked()));
-    connect(btnStep, SIGNAL(clicked(bool)), this, SLOT(on_btnStep_clicked()));
-    connect(btnContinue, SIGNAL(clicked(bool)), this, SLOT(on_btnContinue_clicked()));
+    connect(btn_run_, SIGNAL(clicked(bool)), this, SLOT(OnRunClicked()));
+    connect(btn_debug_, SIGNAL(clicked(bool)), this, SLOT(OnDebugClicked()));
+    connect(btn_terminate_, SIGNAL(clicked(bool)), this, SLOT(OnTerminateClicked()));
+    connect(btn_step_, SIGNAL(clicked(bool)), this, SLOT(OnStepClicked()));
+    connect(btn_continue_, SIGNAL(clicked(bool)), this, SLOT(OnContinueClicked()));
 
-    toolBar->layout()->addWidget(btnRun);
-    toolBar->layout()->addWidget(btnDebug);
-    toolBar->layout()->addWidget(btnTerminate);
-    toolBar->layout()->addWidget(btnStep);
-    toolBar->layout()->addWidget(btnContinue);
+    toolBar->layout()->addWidget(btn_run_);
+    toolBar->layout()->addWidget(btn_debug_);
+    toolBar->layout()->addWidget(btn_terminate_);
+    toolBar->layout()->addWidget(btn_step_);
+    toolBar->layout()->addWidget(btn_continue_);
     toolBar->layout()->addItem(new QSpacerItem(0, 0, QSizePolicy::Expanding));
     centralLayout->addWidget(toolBar);
     //   </ToolBar>
 
     //   <DebugIndicator>
-    debugIndicator = new QFrame(centralWidget);
-    debugIndicator->setStyleSheet("border: 3px solid rgb(255, 128, 0);");
-    debugIndicator->setFrameShape(QFrame::Box);
-    debugIndicator->setFrameShadow(QFrame::Plain);
-    debugIndicator->setFixedHeight(2);
-    debugIndicator->setVisible(false);
-    centralLayout->addWidget(debugIndicator);
+    debug_indicator_ = new QFrame(centralWidget);
+    debug_indicator_->setStyleSheet("border: 3px solid rgb(255, 128, 0);");
+    debug_indicator_->setFrameShape(QFrame::Box);
+    debug_indicator_->setFrameShadow(QFrame::Plain);
+    debug_indicator_->setFixedHeight(2);
+    debug_indicator_->setVisible(false);
+    centralLayout->addWidget(debug_indicator_);
     //   </DebugIndicator>
 
     //   <RunIndicator>
-    runningIndicator = new QFrame(centralWidget);
-    runningIndicator->setStyleSheet("border: 3px solid green;");
-    runningIndicator->setFrameShape(QFrame::Box);
-    runningIndicator->setFrameShadow(QFrame::Plain);
-    runningIndicator->setFixedHeight(2);
-    runningIndicator->setVisible(false);
-    centralLayout->addWidget(runningIndicator);
+    running_indicator_ = new QFrame(centralWidget);
+    running_indicator_->setStyleSheet("border: 3px solid green;");
+    running_indicator_->setFrameShape(QFrame::Box);
+    running_indicator_->setFrameShadow(QFrame::Plain);
+    running_indicator_->setFixedHeight(2);
+    running_indicator_->setVisible(false);
+    centralLayout->addWidget(running_indicator_);
     //   </RunIndicator>
 
     //   <MainSplitter>
-    mainSplitter = new QSplitter(centralWidget);
-    mainSplitter->setOrientation(Qt::Vertical);
-    mainSplitter->setChildrenCollapsible(false);
+    main_splitter_ = new QSplitter(centralWidget);
+    main_splitter_->setOrientation(Qt::Vertical);
+    main_splitter_->setChildrenCollapsible(false);
 
     //     <TopSplitter>
-    topSplitter = new QSplitter(mainSplitter);
-    topSplitter->setChildrenCollapsible(false);
+    top_splitter_ = new QSplitter(main_splitter_);
+    top_splitter_->setChildrenCollapsible(false);
 
-    disassemblyWidget_ = new DisassemblyWidget(this, controller);
-    registersWidget_ = new RegistersWidget(this);
+    disassembly_widget_ = new DisassemblyWidget(this, controller_);
+    registers_widget_ = new RegistersWidget(this);
 
-    topSplitter->addWidget(disassemblyWidget_);
-    topSplitter->addWidget(registersWidget_);
+    top_splitter_->addWidget(disassembly_widget_);
+    top_splitter_->addWidget(registers_widget_);
 
-    topSplitter->setStretchFactor(0, 1);
-    topSplitter->setStretchFactor(1, 0);
+    top_splitter_->setStretchFactor(0, 1);
+    top_splitter_->setStretchFactor(1, 0);
     //     </TopSplitter>
 
     //     <BotSplitter>
-    botSplitter = new QSplitter(mainSplitter);
-    botSplitter->setChildrenCollapsible(false);
+    bot_splitter_ = new QSplitter(main_splitter_);
+    bot_splitter_->setChildrenCollapsible(false);
 
-    memoryWidget_ = new MemoryWidget(this, controller);
-    peripheralsTabWidget_ = new PeripheralsTabWidget(this, controller);
+    memory_widget_ = new MemoryWidget(this, controller_);
+    peripherals_tab_widget_ = new PeripheralsTabWidget(this, controller_);
 
-    botSplitter->addWidget(memoryWidget_);
-    botSplitter->addWidget(peripheralsTabWidget_);
+    bot_splitter_->addWidget(memory_widget_);
+    bot_splitter_->addWidget(peripherals_tab_widget_);
 
-    botSplitter->setStretchFactor(0, 2);
-    botSplitter->setStretchFactor(1, 1);
+    bot_splitter_->setStretchFactor(0, 2);
+    bot_splitter_->setStretchFactor(1, 1);
     //     </BotSplitter>
 
-    mainSplitter->addWidget(topSplitter);
-    mainSplitter->addWidget(botSplitter);
+    main_splitter_->addWidget(top_splitter_);
+    main_splitter_->addWidget(bot_splitter_);
 
-    mainSplitter->setStretchFactor(0, 2);
-    mainSplitter->setStretchFactor(1, 1);
-    centralLayout->addWidget(mainSplitter);
+    main_splitter_->setStretchFactor(0, 2);
+    main_splitter_->setStretchFactor(1, 1);
+    centralLayout->addWidget(main_splitter_);
     //   </MainSplitter>
 
     // <StatusBar>
     setStatusBar(new QStatusBar(this));
     statusBar()->setStyleSheet("QLabel { margin-left: 4px; margin-right: 4px; }");
-    lblFile = new QLabel(kDefaultFileLabel, statusBar());
-    lblConfig = new QLabel(kDefaultConfigLabel, statusBar());
-    lblProgramStatus = new QLabel(statusBar());
-    statusBar()->addWidget(lblFile);
-    statusBar()->addWidget(lblConfig);
-    statusBar()->addWidget(lblProgramStatus);
+    lbl_file_ = new QLabel(kDefaultFileLabel, statusBar());
+    lbl_config_ = new QLabel(kDefaultConfigLabel, statusBar());
+    lbl_program_status_ = new QLabel(statusBar());
+    statusBar()->addWidget(lbl_file_);
+    statusBar()->addWidget(lbl_config_);
+    statusBar()->addWidget(lbl_program_status_);
     // </StatusBar>
 
     // </CentralWidget>
     setCentralWidget(centralWidget);
 }
 
-void MainWindow::updateUI() {
-    std::string pc_str;
+void MainWindow::UpdateUI() {
+    UpdateRunningIndicator();
+    UpdateWidgetsEnabled();
+    UpdateToolbarButtons();
+    UpdateProgramStatusLabel();
 
-    updateRunningIndicator();
-    updateWidgetsEnabled();
-    updateToolBarButtons();
+    disassembly_widget_->HighlightLine(-1);
 
-    disassemblyWidget_->highlightLine(-1);
+    auto state = controller_->GetProgramState();
 
-    switch (controller->GetProgramState()) {
+    if (state == emulator::kTerminated) {
+        UpdateRegisters();
+        UpdateMemory();
+    }
+    else if (state == emulator::kDebugPaused) {
+        UpdateRegisters();
+        UpdateMemory();
+        disassembly_widget_->HighlightLine(controller_->GetPc());
+    }
+}
+
+void MainWindow::UpdateRunningIndicator() {
+    switch (controller_->GetProgramState()) {
         case emulator::kRunning:
-            lblProgramStatus->setText("Running ...");
+            running_indicator_->setVisible(true);
+            debug_indicator_->setVisible(false);
             break;
         case emulator::kRunningDebug:
-            lblProgramStatus->setText("Running in debug mode ...");
+        case emulator::kDebugPaused:
+            running_indicator_->setVisible(false);
+            debug_indicator_->setVisible(true);
+            break;
+        default:
+            running_indicator_->setVisible(false);
+            debug_indicator_->setVisible(false);
+            break;
+    }
+}
+
+void MainWindow::UpdateWidgetsEnabled() {
+    switch (controller_->GetProgramState()) {
+        case emulator::kRunning:
+        case emulator::kRunningDebug:
+            memory_widget_->setEnabled(false);
+            registers_widget_->setEnabled(false);
+            peripherals_tab_widget_->setEnabled(true);
+            peripherals_tab_widget_->SetReadonly(false);
+            break;
+        case emulator::kDebugPaused:
+            memory_widget_->setEnabled(true);
+            registers_widget_->setEnabled(true);
+            peripherals_tab_widget_->setEnabled(true);
+            peripherals_tab_widget_->SetReadonly(false);
             break;
         case emulator::kTerminated:
-            lblProgramStatus->setText(QString::fromStdString("Program finished with value " + std::to_string(controller->GetProgramReturnValue())));
-            updateRegisters();
-            updateMemory();
-            break;
-        case emulator::kDebugPaused:
-            pc_str = formatAddress_(controller->GetPc());
-            lblProgramStatus->setText(QString::fromStdString("Program hit breakpoint " + pc_str));
-            disassemblyWidget_->highlightLine(controller->GetPc());
-            updateRegisters();
-            updateMemory();
+            memory_widget_->setEnabled(true);
+            registers_widget_->setEnabled(true);
+            peripherals_tab_widget_->setEnabled(true);
+            peripherals_tab_widget_->SetReadonly(true);
             break;
         default:
+            memory_widget_->setEnabled(false);
+            registers_widget_->setEnabled(false);
+            peripherals_tab_widget_->setEnabled(false);
+            peripherals_tab_widget_->SetReadonly(true);
             break;
     }
 }
 
-void MainWindow::updateRunningIndicator() {
-    switch (controller->GetProgramState()) {
-        case emulator::kRunning:
-            runningIndicator->setVisible(true);
-            debugIndicator->setVisible(false);
-            break;
-        case emulator::kRunningDebug:
-        case emulator::kDebugPaused:
-            runningIndicator->setVisible(false);
-            debugIndicator->setVisible(true);
-            break;
-        default:
-            runningIndicator->setVisible(false);
-            debugIndicator->setVisible(false);
-            break;
+void MainWindow::UpdateToolbarButtons() {
+    std::vector<QToolButton *> toolbar_buttons = {btn_run_, btn_debug_, btn_terminate_, btn_step_, btn_continue_};
+
+    // Buttons enabled (in order of toolbar_buttons)
+    std::unordered_map<emulator::EmulatorState, std::vector<bool>> buttons_enabled = {
+            {emulator::kDefault,      {false, false, false, false, false}},
+            {emulator::kReady,        { true,  true, false, false, false}},
+            {emulator::kRunning,      {false, false,  true, false, false}},
+            {emulator::kRunningDebug, {false, false,  true, false, false}},
+            {emulator::kDebugPaused,  {false, false,  true,  true,  true}},
+            {emulator::kTerminated,   { true,  true, false, false, false}},
+    };
+
+    // Buttons visible (in order of toolbar_buttons)
+    std::unordered_map<emulator::EmulatorState, std::vector<bool>> buttons_visible = {
+            {emulator::kDefault,      { true,  true, false, false, false}},
+            {emulator::kReady,        { true,  true, false, false, false}},
+            {emulator::kRunning,      {false, false,  true,  true,  true}},
+            {emulator::kRunningDebug, {false, false,  true,  true,  true}},
+            {emulator::kDebugPaused,  {false, false,  true,  true,  true}},
+            {emulator::kTerminated,   { true,  true, false, false, false}},
+    };
+
+    auto state = controller_->GetProgramState();
+
+    for (size_t i = 0; i < toolbar_buttons.size(); ++i) {
+        toolbar_buttons[i]->setEnabled(buttons_enabled[state][i]);
+        toolbar_buttons[i]->setVisible(buttons_visible[state][i]);
     }
 }
 
-void MainWindow::updateWidgetsEnabled() {
-    switch (controller->GetProgramState()) {
+void MainWindow::UpdateProgramStatusLabel() {
+    std::string string_pc;
+
+    switch (controller_->GetProgramState()) {
         case emulator::kRunning:
-        case emulator::kRunningDebug:
-            memoryWidget_->setEnabled(false);
-            registersWidget_->setEnabled(false);
-            peripheralsTabWidget_->setEnabled(true);
-            peripheralsTabWidget_->setReadonly(false);
+            lbl_program_status_->setText("Running ...");
             break;
-        case emulator::kDebugPaused:
-            memoryWidget_->setEnabled(true);
-            registersWidget_->setEnabled(true);
-            peripheralsTabWidget_->setEnabled(true);
-            peripheralsTabWidget_->setReadonly(false);
+        case emulator::kRunningDebug:
+            lbl_program_status_->setText("Running in debug mode ...");
             break;
         case emulator::kTerminated:
-            memoryWidget_->setEnabled(true);
-            registersWidget_->setEnabled(true);
-            peripheralsTabWidget_->setEnabled(true);
-            peripheralsTabWidget_->setReadonly(true);
+            lbl_program_status_->setText(
+                    QString::fromStdString("Program finished with value " + std::to_string(controller_->GetProgramReturnValue())));
+            break;
+        case emulator::kDebugPaused:
+            string_pc = FormatAddress(controller_->GetPc());
+            lbl_program_status_->setText(
+                    QString::fromStdString("Program hit breakpoint " + string_pc));
             break;
         default:
-            memoryWidget_->setEnabled(false);
-            registersWidget_->setEnabled(false);
-            peripheralsTabWidget_->setEnabled(false);
-            peripheralsTabWidget_->setReadonly(true);
             break;
     }
 }
 
-void MainWindow::updateToolBarButtons() {
-    auto state = controller->GetProgramState();
-
-    bool notRunningButtonsVisible = state == emulator::kDefault ||
-                                    state == emulator::kReady ||
-                                    state == emulator::kTerminated;
-
-    bool runningButtonsVisible = !notRunningButtonsVisible;
-
-    btnRun->setEnabled(state == emulator::kReady || state == emulator::kTerminated);
-    btnRun->setVisible(notRunningButtonsVisible);
-
-    btnDebug->setEnabled(state == emulator::kReady || state == emulator::kTerminated);
-    btnDebug->setVisible(notRunningButtonsVisible);
-
-    btnTerminate->setEnabled(runningButtonsVisible);
-    btnTerminate->setVisible(runningButtonsVisible);
-
-    btnStep->setEnabled(state == emulator::kDebugPaused);
-    btnStep->setVisible(runningButtonsVisible);
-
-    btnContinue->setEnabled(state == emulator::kDebugPaused);
-    btnContinue->setVisible(runningButtonsVisible);
+void MainWindow::UpdateRegisters() {
+    registers_widget_->SetRegisters(controller_->GetRegisters());
 }
 
-void MainWindow::updateRegisters() {
-    registersWidget_->setRegisters(controller->GetRegisters());
+void MainWindow::UpdateMemory() const {
+    memory_widget_->UpdateMemory();
 }
 
-void MainWindow::updateMemory() {
-    memoryWidget_->updateMemory();
-}
-
-void MainWindow::showMessageBox(const QString &title, const QString &message) {
-    QMessageBox messageBox;
-    messageBox.setWindowTitle(title);
-    messageBox.setText(message);
-    messageBox.exec();
-}
-
-void MainWindow::joinThread() {
-    if (mRun_Thread && mRun_Thread->joinable()) {
-        mRun_Thread->join();
-    }
-}
-
-void MainWindow::openFile(std::string path) {
+void MainWindow::OpenFile(const std::string& path) {
     if (path.empty()) {
         return;
     }
 
-    controller->Terminate();
-    joinThread();
+    controller_->TerminateProgram();
+    JoinThread();
 
     try {
-        controller->LoadFile(path);
-        disassemblyWidget_->setInstructions(controller->GetDisassembly());
+        controller_->LoadFile(path);
+        disassembly_widget_->SetInstructions(controller_->GetDisassembly());
     }
     catch (const std::exception &e) {
-        showMessageBox("File error", QString::fromStdString("Could not load file " + path + '\n' + e.what()));
+        ShowMessageBox("File error", QString::fromStdString("Could not load file " + path + '\n' + e.what()));
         return;
     }
 
-    memoryWidget_->clear();
-    registersWidget_->setRegisters({});
-    controller->ResetPeripherals();
-    peripheralsTabWidget_->updateWidgets();
+    memory_widget_->Clear();
+    registers_widget_->SetRegisters({});
+    controller_->ResetPeripherals();
+    peripherals_tab_widget_->UpdateWidgets();
 
-    lblFile->setText(QString::fromStdString(path));
+    lbl_file_->setText(QString::fromStdString(path));
 }
 
-void MainWindow::selectConfig(std::string path) {
+void MainWindow::SelectConfig(const std::string& path) {
     if (path.empty()) {
         return;
     }
 
-    controller->Terminate();
-    joinThread();
+    controller_->TerminateProgram();
+    JoinThread();
 
     try {
-        controller->ConfigureEmulator(path);
+        controller_->ConfigureEmulator(path);
     }
     catch (const std::exception &e) {
-        showMessageBox("File error", QString::fromStdString("Could not load file " + path + '\n' + e.what()));
+        ShowMessageBox("File error", QString::fromStdString("Could not load file " + path + '\n' + e.what()));
         return;
     }
 
-    peripheralsTabWidget_->updateWidgets();
-    updateUI();
+    peripherals_tab_widget_->UpdateWidgets();
+    UpdateUI();
 
-    memoryWidget_->setAddressRangeLimit(controller->GetRamStartAddress(), controller->GetRamEndAddress());
-    memoryWidget_->sp_memory_from_->setValue(controller->GetRamStartAddress());
-    memoryWidget_->sp_memory_to_->setValue(controller->GetRamEndAddress());
+    memory_widget_->SetAddressRangeLimit(controller_->GetRamStartAddress(), controller_->GetRamEndAddress());
+    memory_widget_->spinbox_memory_from_->setValue(controller_->GetRamStartAddress());
+    memory_widget_->spinbox_memory_to_->setValue(controller_->GetRamEndAddress());
 
-    lblConfig->setText(QString::fromStdString(path));
+    lbl_config_->setText(QString::fromStdString(path));
 }
 
-void MainWindow::clearConfig() {
-    controller->Terminate();
-    joinThread();
+void MainWindow::ClearConfig() {
+    controller_->TerminateProgram();
+    JoinThread();
 
-    controller->ClearActivePeripherals();
-    peripheralsTabWidget_->updateWidgets();
+    controller_->ClearActivePeripherals();
+    peripherals_tab_widget_->UpdateWidgets();
 
-    lblConfig->setText(kDefaultConfigLabel);
+    lbl_config_->setText(kDefaultConfigLabel);
 }
 
-void MainWindow::on_action_Open_triggered() {
+void MainWindow::OnFileOpenTriggered() {
     QString fileName = QFileDialog::getOpenFileName(this, "Select binary file", ".");
 
-    openFile(fileName.toStdString());
+    OpenFile(fileName.toStdString());
 }
 
-void MainWindow::on_action_SelectConfiguration_triggered() {
+void MainWindow::OnSelectConfigurationTriggered() {
     QString fileName = QFileDialog::getOpenFileName(this, "Select config file", ".", "*.json");
 
-    selectConfig(fileName.toStdString());
+    SelectConfig(fileName.toStdString());
 }
 
-void MainWindow::on_action_ClearConfiguration_triggered() {
-    clearConfig();
+void MainWindow::OnClearConfigurationTriggered() {
+    ClearConfig();
 }
 
-void MainWindow::on_action_About_RISCVEmulator_triggered() {
+void MainWindow::OnAboutTriggered() {
     AboutWindow aboutWindow;
     aboutWindow.setModal(true);
     aboutWindow.exec();
 }
 
-void MainWindow::on_btnRun_clicked() {
-    joinThread();
-    controller->ResetPeripherals();
-    peripheralsTabWidget_->updateWidgets();
-    mRun_Thread = std::make_unique<std::thread>(&Controller::RunProgram, controller);
+void MainWindow::OnRunClicked() {
+    JoinThread();
+    controller_->ResetPeripherals();
+    peripherals_tab_widget_->UpdateWidgets();
+    thread_ = std::make_unique<std::thread>(&Controller::RunProgram, controller_);
 }
 
-void MainWindow::on_btnDebug_clicked() {
-    joinThread();
-    controller->ResetPeripherals();
-    peripheralsTabWidget_->updateWidgets();
-    mRun_Thread = std::make_unique<std::thread>(&Controller::DebugProgram, controller);
+void MainWindow::OnDebugClicked() {
+    JoinThread();
+    controller_->ResetPeripherals();
+    peripherals_tab_widget_->UpdateWidgets();
+    thread_ = std::make_unique<std::thread>(&Controller::DebugProgram, controller_);
 }
 
-void MainWindow::on_btnStep_clicked() {
-    controller->DebugStep();
+void MainWindow::OnTerminateClicked() {
+    controller_->TerminateProgram();
+    JoinThread();
 
-    updateRegisters();
-    updateMemory();
-
-    uint64_t pc = controller->GetPc();
-    disassemblyWidget_->highlightLine(pc);
-
-    std::string pc_str = formatAddress_(pc);
-    lblProgramStatus->setText(QString::fromStdString("Program stepped to " + pc_str));
+    UpdateRegisters();
+    UpdateMemory();
 }
 
-void MainWindow::on_btnTerminate_clicked() {
-    controller->Terminate();
-    joinThread();
+void MainWindow::OnStepClicked() {
+    controller_->DebugStep();
 
-    updateRegisters();
-    updateMemory();
+    UpdateRegisters();
+    UpdateMemory();
+
+    uint64_t pc = controller_->GetPc();
+    disassembly_widget_->HighlightLine(pc);
+
+    std::string pc_str = FormatAddress(pc);
+    lbl_program_status_->setText(QString::fromStdString("Program stepped to " + pc_str));
 }
 
-void MainWindow::on_btnContinue_clicked() {
-    joinThread();
-    mRun_Thread = std::make_unique<std::thread>(&Controller::DebugContinue, controller);
+void MainWindow::OnContinueClicked() {
+    JoinThread();
+    thread_ = std::make_unique<std::thread>(&Controller::DebugContinue, controller_);
 }
 
-std::string MainWindow::formatAddress_(uint64_t address) {
+std::string MainWindow::FormatAddress(uint64_t address) {
     std::stringstream ss;
-    ss << std::uppercase << std::hex << std::setw(8) << std::setfill('0') << address;
-
+    ss << std::uppercase << std::hex << std::setw(kAddressWidth) << std::setfill('0') << address;
     return ss.str();
+}
+
+void MainWindow::ShowMessageBox(const QString &title, const QString &message) {
+    QMessageBox message_box;
+    message_box.setWindowTitle(title);
+    message_box.setText(message);
+    message_box.exec();
+}
+
+void MainWindow::JoinThread() {
+    if (thread_ && thread_->joinable()) {
+        thread_->join();
+    }
 }

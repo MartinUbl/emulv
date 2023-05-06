@@ -1,83 +1,82 @@
 //
 // Created by Hynek on 06.04.2023.
 //
+#include "UARTWidget.h"
 
 #include <QVBoxLayout>
-#include "UARTWidget.h"
 
 UARTWidget::UARTWidget(QWidget *parent, Controller *controller, std::string label)
 : PeripheralWidget(parent, controller, label)
-, textEditMessages_(new QTextEdit(this))
-, lineEditSendMessage_(new QLineEdit(this))
-, comboBoxLineSeparator_(new QComboBox(this))
-, buttonSendMessage_(new QToolButton(this)) {
-    auto *main_layout = new QVBoxLayout(this);
-    auto *bot_widget = new QWidget(this);
-    auto *send_layout = new QHBoxLayout(bot_widget);
-
-    main_layout->setSpacing(0);
+, text_edit_messages_(new QPlainTextEdit(this))
+, line_edit_send_message_(new QLineEdit(this))
+, combobox_line_separator_(new QComboBox(this))
+, button_send_message_(new QToolButton(this)) {
+    auto main_layout = new QVBoxLayout(this);
+    main_layout->setSpacing(1);
     main_layout->setContentsMargins(0, 0, 0, 0);
 
+    auto bot_widget = new QWidget(this);
+    auto send_layout = new QHBoxLayout(bot_widget);
     send_layout->setSpacing(3);
     send_layout->setContentsMargins(0, 0, 0, 0);
 
-    textEditMessages_->setReadOnly(true);
-    textEditMessages_->setWordWrapMode(QTextOption::NoWrap);
+    text_edit_messages_->setReadOnly(true);
+    text_edit_messages_->setWordWrapMode(QTextOption::NoWrap);
 
-    lineEditSendMessage_->setClearButtonEnabled(true);
-    lineEditSendMessage_->setPlaceholderText("Send message...");
+    line_edit_send_message_->setClearButtonEnabled(true);
+    line_edit_send_message_->setPlaceholderText("Send message...");
 
-    comboBoxLineSeparator_->addItem(kNoNewLine);
-    comboBoxLineSeparator_->addItem(kLF);
-    comboBoxLineSeparator_->addItem(kCRLF);
+    combobox_line_separator_->addItem(kNoNewLine);
+    combobox_line_separator_->addItem(kLF);
+    combobox_line_separator_->addItem(kCRLF);
 
-    buttonSendMessage_->setEnabled(false);
-    buttonSendMessage_->setIcon(QIcon(":img/send.svg"));
-    buttonSendMessage_->setToolTip("Send");
+    button_send_message_->setEnabled(false);
+    button_send_message_->setIcon(QIcon(":img/send.svg"));
+    button_send_message_->setToolTip("Send");
 
-    connect(lineEditSendMessage_, SIGNAL(textChanged(QString)), this, SLOT(on_lineEditSendMessage_textChanged()));
-    connect(lineEditSendMessage_, SIGNAL(returnPressed()), this, SLOT(on_lineEditSendMessage_returnPressed()));
-    connect(buttonSendMessage_, SIGNAL(clicked(bool)), this, SLOT(on_buttonSendMessage_clicked()));
+    connect(line_edit_send_message_, SIGNAL(textChanged(QString)), this, SLOT(OnSendMessageTextChanged()));
+    connect(line_edit_send_message_, SIGNAL(returnPressed()), this, SLOT(OnSendMessageEnterPressed()));
+    connect(button_send_message_, SIGNAL(clicked(bool)), this, SLOT(OnSendMessageClicked()));
 
     this->setLayout(main_layout);
 
-    main_layout->addWidget(textEditMessages_);
+    main_layout->addWidget(text_edit_messages_);
     main_layout->addWidget(bot_widget);
 
-    send_layout->addWidget(lineEditSendMessage_);
-    send_layout->addWidget(comboBoxLineSeparator_);
-    send_layout->addWidget(buttonSendMessage_);
+    send_layout->addWidget(line_edit_send_message_);
+    send_layout->addWidget(combobox_line_separator_);
+    send_layout->addWidget(button_send_message_);
 }
 
-void UARTWidget::setReadonly(bool readonly) {
-    lineEditSendMessage_->setReadOnly(readonly);
-    comboBoxLineSeparator_->setEnabled(!readonly);
-    buttonSendMessage_->setEnabled(!readonly && !lineEditSendMessage_->text().isEmpty());
+void UARTWidget::SetReadonly(bool readonly) {
+    line_edit_send_message_->setReadOnly(readonly);
+    combobox_line_separator_->setEnabled(!readonly);
+    button_send_message_->setEnabled(!readonly && !line_edit_send_message_->text().isEmpty());
 }
 
-void UARTWidget::appendChar(char c) {
-    textEditMessages_->moveCursor(QTextCursor::End);
-    textEditMessages_->insertPlainText(QChar(c));
-    textEditMessages_->moveCursor(QTextCursor::End);
+void UARTWidget::AppendChar(char c) const {
+    text_edit_messages_->moveCursor(QTextCursor::End);
+    text_edit_messages_->insertPlainText(QChar(c));
+    text_edit_messages_->moveCursor(QTextCursor::End);
 }
 
-void UARTWidget::clear() {
-    textEditMessages_->clear();
+void UARTWidget::Clear() const {
+    text_edit_messages_->clear();
 }
 
-void UARTWidget::on_lineEditSendMessage_textChanged() {
-    buttonSendMessage_->setEnabled(!lineEditSendMessage_->text().isEmpty());
+void UARTWidget::OnSendMessageTextChanged() const {
+    button_send_message_->setEnabled(!line_edit_send_message_->text().isEmpty());
 }
 
-void UARTWidget::on_lineEditSendMessage_returnPressed() {
-    if (buttonSendMessage_->isEnabled()) {
-        on_buttonSendMessage_clicked();
+void UARTWidget::OnSendMessageEnterPressed() {
+    if (button_send_message_->isEnabled()) {
+        OnSendMessageClicked();
     }
 }
 
-void UARTWidget::on_buttonSendMessage_clicked() {
-    std::string message = lineEditSendMessage_->text().toStdString();
-    QString new_line = comboBoxLineSeparator_->currentText();
+void UARTWidget::OnSendMessageClicked() {
+    auto message = line_edit_send_message_->text().toStdString();
+    auto new_line = combobox_line_separator_->currentText();
 
     if (QString::compare(new_line, kLF) == 0) {
         message.append("\n");
@@ -86,7 +85,7 @@ void UARTWidget::on_buttonSendMessage_clicked() {
         message.append("\r\n");
     }
 
-    controller_->SendUartMessage(label_, message);
+    controller_->SendUARTMessage(label_, message);
 
-    lineEditSendMessage_->clear();
+    line_edit_send_message_->clear();
 }

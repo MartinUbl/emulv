@@ -14,15 +14,21 @@ private:
 
     Controller *controller_{};
     MainWindow *main_window_{};
+    DisassemblyWidget *disassembly_widget_{};
+    QPlainTextEdit *text_edit_addresses_{}, *text_edit_instructions_{};
+    QFrame *breakpoint_area_widget_{};
 
 private slots:
     void initTestCase() {
         controller_ = new Controller(0, nullptr);
         main_window_ = new MainWindow(nullptr, controller_);
+        disassembly_widget_ = main_window_->disassembly_widget_;
+        text_edit_addresses_ = disassembly_widget_->text_edit_addresses_;
+        text_edit_instructions_ = disassembly_widget_->text_edit_instructions_;
+        breakpoint_area_widget_ = disassembly_widget_->breakpoint_area_widget_;
         main_window_->show();
 
-        main_window_->openFile(kTestElf);
-        QTest::qWait(300);
+        main_window_->OpenFile(kTestElf);
     }
 
     void cleanupTestCase() {
@@ -31,47 +37,46 @@ private slots:
     }
 
     void TC_02_04_01() {
-        QCOMPARE(main_window_->disassemblyWidget_->addressArea->document()->blockCount(),
+        QCOMPARE(text_edit_addresses_->document()->blockCount(),
                  kLines);
-        QCOMPARE(main_window_->disassemblyWidget_->instructionArea->document()->blockCount(),
+        QCOMPARE(text_edit_instructions_->document()->blockCount(),
                  kLines);
     }
 
     void TC_02_04_02() {
-        QCOMPARE(main_window_->disassemblyWidget_->addressArea->document()->findBlockByLineNumber(0).text(),
+        QCOMPARE(text_edit_addresses_->document()->findBlockByLineNumber(0).text(),
                  QString("000101B8"));
-        QCOMPARE(main_window_->disassemblyWidget_->addressArea->document()->findBlockByLineNumber(kLines - 1).text(),
+        QCOMPARE(text_edit_addresses_->document()->findBlockByLineNumber(kLines - 1).text(),
                  QString("00021C4C"));
     }
 
     void TC_02_04_03() {
-        QCOMPARE(main_window_->disassemblyWidget_->instructionArea->document()->findBlockByLineNumber(0).text(),
+        QCOMPARE(text_edit_instructions_->document()->findBlockByLineNumber(0).text(),
                  QString(" auipc         gp,16384                        # 0x141b8"));
-        QCOMPARE(main_window_->disassemblyWidget_->instructionArea->document()->findBlockByLineNumber(kLines - 1).text(),
+        QCOMPARE(text_edit_instructions_->document()->findBlockByLineNumber(kLines - 1).text(),
                  QString(" j             61440                           # 0x30c4c"));
     }
 
     void TC_02_04_04() {
-        QTest::mouseClick(main_window_->disassemblyWidget_->breakpointAreaWidget, Qt::LeftButton, {}, QPoint(7, 10));
-        QCOMPARE(main_window_->disassemblyWidget_->breakpointAreaWidget->children().size(), 1);
-        QTest::mouseClick(main_window_->disassemblyWidget_->breakpointAreaWidget, Qt::LeftButton, {}, QPoint(7, 24));
-        QCOMPARE(main_window_->disassemblyWidget_->breakpointAreaWidget->children().size(), 2);
+        QTest::mouseClick(breakpoint_area_widget_, Qt::LeftButton, {}, QPoint(7, 10));
+        QCOMPARE(breakpoint_area_widget_->children().size(), 1);
+        QTest::mouseClick(breakpoint_area_widget_, Qt::LeftButton, {}, QPoint(7, 24));
+        QCOMPARE(breakpoint_area_widget_->children().size(), 2);
     }
 
     void TC_02_04_05() {
-        QTest::mouseClick(main_window_->disassemblyWidget_->breakpointAreaWidget, Qt::LeftButton, {}, QPoint(7, 10));
-        QCOMPARE(main_window_->disassemblyWidget_->breakpointAreaWidget->children().size(), 1);
-        QTest::mouseClick(main_window_->disassemblyWidget_->breakpointAreaWidget, Qt::LeftButton, {}, QPoint(7, 24));
-        QCOMPARE(main_window_->disassemblyWidget_->breakpointAreaWidget->children().size(), 0);
+        QTest::mouseClick(breakpoint_area_widget_, Qt::LeftButton, {}, QPoint(7, 10));
+        QCOMPARE(breakpoint_area_widget_->children().size(), 1);
+        QTest::mouseClick(breakpoint_area_widget_, Qt::LeftButton, {}, QPoint(7, 24));
+        QCOMPARE(breakpoint_area_widget_->children().size(), 0);
     }
 
     void TC_02_04_06() {
-        QTest::mouseClick(main_window_->disassemblyWidget_->breakpointAreaWidget, Qt::LeftButton, {}, QPoint(7, 10));
-        QTest::mouseClick(main_window_->disassemblyWidget_->breakpointAreaWidget, Qt::LeftButton, {}, QPoint(7, 24));
+        QTest::mouseClick(breakpoint_area_widget_, Qt::LeftButton, {}, QPoint(7, 10));
+        QTest::mouseClick(breakpoint_area_widget_, Qt::LeftButton, {}, QPoint(7, 24));
 
-        main_window_->openFile(kTestElf);
-        QTest::qWait(300);
-        QCOMPARE(main_window_->disassemblyWidget_->breakpointAreaWidget->children().size(), 0);
+        main_window_->OpenFile(kTestElf);
+        QCOMPARE(breakpoint_area_widget_->children().size(), 0);
     }
 };
 QTEST_MAIN(TS_02_04)
