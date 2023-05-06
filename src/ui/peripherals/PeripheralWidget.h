@@ -12,7 +12,7 @@ class PeripheralWidget : public QWidget {
 public:
     PeripheralWidget(QWidget *parent = nullptr, Controller *controller = nullptr, std::string label = "") :
         QWidget(parent), controller_(controller), label_(label) {}
-    virtual void setReadonly(bool readonly) = 0;
+    virtual void SetReadonly(bool readonly) = 0;
     std::string label() { return label_; }
 
 protected:

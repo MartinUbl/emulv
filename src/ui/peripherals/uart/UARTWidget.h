@@ -22,7 +22,7 @@ public:
     QToolButton *buttonSendMessage_;
 
     UARTWidget(QWidget *parent = nullptr, Controller *controller = nullptr, std::string label = "");
-    void setReadonly(bool readonly) override;
+    void SetReadonly(bool readonly) override;
     void appendChar(char c);
     void clear();
 

@@ -17,6 +17,7 @@ public:
     BreakpointAreaWidget *breakpoint_area_widget_;
 
     explicit DisassemblyWidget(QWidget *parent = nullptr, Controller *controller = nullptr);
+
     void SetInstructions(const std::vector<std::tuple<uint64_t, std::string>> &instructions);
     void HighlightLine(uint64_t address);
     void Clear();

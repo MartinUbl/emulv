@@ -23,7 +23,7 @@ PeripheralsTabWidget::PeripheralsTabWidget(QWidget *parent, Controller *controll
         auto widget = widgets_[event->getPeripheralDevice().GetName()];
         auto gpioPortWidget = dynamic_cast<GPIOPortWidget *>(widget);
 
-        gpioPortWidget->setPinMode(event->Pin_No, event->Current_Mode);
+        gpioPortWidget->SetPinMode(event->Pin_No, event->Current_Mode);
 
         delete res;
     });
@@ -33,7 +33,7 @@ PeripheralsTabWidget::PeripheralsTabWidget(QWidget *parent, Controller *controll
         auto widget = widgets_[event->getPeripheralDevice().GetName()];
         auto gpioPortWidget = dynamic_cast<GPIOPortWidget *>(widget);
 
-        gpioPortWidget->setPinStatus(event->Pin_No, event->Current_Level);
+        gpioPortWidget->SetPinStatus(event->Pin_No, event->Current_Level);
 
         delete res;
     });
@@ -55,7 +55,7 @@ PeripheralsTabWidget::PeripheralsTabWidget(QWidget *parent, Controller *controll
 
 void PeripheralsTabWidget::setReadonly(bool readonly) {
     for (auto widget : widgets_) {
-        widget.second->setReadonly(readonly);
+        widget.second->SetReadonly(readonly);
     }
 }
 
@@ -106,12 +106,12 @@ void PeripheralsTabWidget::addGPIOPortWidget_(modules::GPIO_Port *gpioPort, cons
     auto pins = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15};
     auto portWidget = new GPIOPortWidget(gpioWidget_, controller_, label, pins);
     widgets_[label] = portWidget;
-    gpioWidget_->addPort(portWidget);
+    gpioWidget_->AddPort(portWidget);
 
     // Initialize default port modes and levels
     for (auto pin : pins) {
-        portWidget->setPinMode(pin, gpioPort->Get_Pin_Mode(pin));
-        portWidget->setPinStatus(pin, gpioPort->Get_Pin_Level(pin));
+        portWidget->SetPinMode(pin, gpioPort->Get_Pin_Mode(pin));
+        portWidget->SetPinStatus(pin, gpioPort->Get_Pin_Level(pin));
     }
 }
 

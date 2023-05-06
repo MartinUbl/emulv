@@ -49,7 +49,7 @@ UARTWidget::UARTWidget(QWidget *parent, Controller *controller, std::string labe
     send_layout->addWidget(buttonSendMessage_);
 }
 
-void UARTWidget::setReadonly(bool readonly) {
+void UARTWidget::SetReadonly(bool readonly) {
     lineEditSendMessage_->setReadOnly(readonly);
     comboBoxLineSeparator_->setEnabled(!readonly);
     buttonSendMessage_->setEnabled(!readonly && !lineEditSendMessage_->text().isEmpty());
