@@ -85,7 +85,7 @@ void UARTWidget::OnSendMessageClicked() {
         message.append("\r\n");
     }
 
-    controller_->SendUartMessage(label_, message);
+    controller_->SendUARTMessage(label_, message);
 
     line_edit_send_message_->clear();
 }

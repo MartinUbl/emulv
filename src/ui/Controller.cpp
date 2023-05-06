@@ -1,51 +1,42 @@
 //
 // Created by xPC on 04.04.2023.
 //
-
-#include <iostream>
 #include "Controller.h"
+
+#include <QApplication>
+
 #include "mainwindow.h"
 #include "../utils/events/EventEmitter.h"
 #include "../utils/events/SimpleEvent.h"
-#include "../modules/uart.h"
-#include <QApplication>
 #include "../utils/config/ConfigLoader.h"
-
-int Controller::ShowWindow() {
-    QApplication a(argc_, argv_);
-    MainWindow w(nullptr, this);
-
-    w.show();
-    return a.exec();
-}
+#include "../modules/uart.h"
 
 Controller::Controller(int argc, char **argv) {
     argc_ = argc;
     argv_ = argv;
     emitter_ = EventEmitter();
-    emulatorUnit_ = new emulator::EmulatorUnit(emitter_);
-}
-
-void Controller::RegisterPeripherals_() {
-    emulatorUnit_->RegisterPeripherals(activePeripherals_);
-}
-
-std::map<std::string, modules::PeripheralDevice *> Controller::GetPeripherals() {
-    return activePeripherals_;
-}
-
-void Controller::ClearActivePeripherals() {
-    for (auto const &x: activePeripherals_) {
-        delete x.second;
-    }
-    activePeripherals_.clear();
-
-    RegisterPeripherals_();
+    emulator_unit_ = new emulator::EmulatorUnit(emitter_);
 }
 
 Controller::~Controller() {
-    delete emulatorUnit_;
+    delete emulator_unit_;
     ClearActivePeripherals();
+}
+
+int Controller::ShowWindow() {
+    QApplication a(argc_, argv_);
+    MainWindow w(nullptr, this);
+    w.show();
+    return a.exec();
+}
+
+void Controller::ClearActivePeripherals() {
+    for (auto const &peripheral: active_peripherals_) {
+        delete peripheral.second;
+    }
+    active_peripherals_.clear();
+
+    RegisterPeripherals_();
 }
 
 void Controller::ConfigureEmulator(const std::string &path) {
@@ -63,13 +54,12 @@ void Controller::ConfigureEmulator(const std::string &path) {
                     uint64_t ramSize = val.value()["size"].get<uint64_t>();
                     uint64_t ramStartAddress = std::strtoull(val.value()["start-address"].get<std::string>().c_str(),
                                                              nullptr, 16);
-                    emulatorUnit_->SetRamSize(ramSize);
-                    emulatorUnit_->SetRamStartAddress(ramStartAddress);
+                    emulator_unit_->SetRamSize(ramSize);
+                    emulator_unit_->SetRamStartAddress(ramStartAddress);
                 } else if (val.key() == "program-arguments") {
                     //The program arguments list
-                    programArguments_ = val.value().get<std::vector<std::string>>();
+                    program_arguments_ = val.value().get<std::vector<std::string>>();
                 }
-
             }
         } else if (item.key() == "peripherals") {
             //The peripherals element
@@ -85,18 +75,15 @@ void Controller::ConfigureEmulator(const std::string &path) {
 
                 //A GPIO_Port element
                 if (type == "GPIO_Port") {
-                    activePeripherals_[name] = new modules::GPIO_Port(name, emitter_, startAddress, endAddress);
+                    active_peripherals_[name] = new modules::GPIO_Port(name, emitter_, startAddress, endAddress);
                 }
 
                 //An UART_Device element
                 if (type == "UART_Device") {
-                    activePeripherals_[name] = new modules::UART_Device(name, emitter_, startAddress, endAddress);
+                    active_peripherals_[name] = new modules::UART_Device(name, emitter_, startAddress, endAddress);
                 }
-
             }
-
         }
-
     }
 
     RegisterPeripherals_();
@@ -106,81 +93,42 @@ void Controller::ConfigureEmulator(const std::string &path) {
 //# UI interface methods
 //######################################################################################################################
 
+void Controller::LoadFile(std::string file_path) {
+    emulator_unit_->LoadElfFile(file_path);
+    emulator_unit_->ClearBreakpoints();
+}
+
 void Controller::RunProgram() {
-    std::cout << std::endl << "Running program..." << std::endl;
-    emulatorUnit_->Execute(programArguments_);
+    emulator_unit_->Execute(program_arguments_);
 }
 
 void Controller::DebugProgram() {
-    std::cout << std::endl << "Running program in debug mode..." << std::endl;
-    emulatorUnit_->Debug(programArguments_);
-}
-
-
-std::vector<std::tuple<uint64_t, std::string>> Controller::GetDisassembly() {
-    return this->emulatorUnit_->Disassemble();
-}
-
-void Controller::LoadFile(std::string file_path) {
-    this->openedFile_ = file_path;
-    this->emulatorUnit_->LoadElfFile(file_path);
-    this->emulatorUnit_->ClearBreakpoints();
-}
-
-bool Controller::IsFileLoaded() {
-    return !this->openedFile_.empty();
-}
-
-std::vector<uint8_t> Controller::GetMemory(const uint64_t from, const uint64_t to) {
-    return emulatorUnit_->GetMemory(from, to);
-}
-
-std::vector<std::tuple<std::string, uint32_t>> Controller::GetRegisters() {
-    return emulatorUnit_->GetRegisters();
-}
-
-emulator::EmulatorState Controller::GetProgramState() {
-    return emulatorUnit_->GetState();
+    emulator_unit_->Debug(program_arguments_);
 }
 
 void Controller::DebugStep() {
-    emulatorUnit_->DebugStep();
-}
-
-uint64_t Controller::GetPc() {
-    return emulatorUnit_->GetPc();
-}
-
-uint64_t Controller::GetMemoryStartAddress() {
-    return emulatorUnit_->GetMemoryStartAddress();
-}
-
-uint64_t Controller::GetMemoryEndAddress() {
-    return emulatorUnit_->GetMemoryEndAddress();
-}
-
-uint64_t Controller::GetRamStartAddress() {
-    return emulatorUnit_->GetRamStartAddress();
-}
-
-uint64_t Controller::GetRamSize() {
-    return emulatorUnit_->GetRamSize();
-}
-
-uint64_t Controller::GetRamEndAddress() {
-    return emulatorUnit_->GetRamEndAddress();
+    emulator_unit_->DebugStep();
 }
 
 void Controller::DebugContinue() {
-    emulatorUnit_->DebugContinue();
+    emulator_unit_->DebugContinue();
 }
 
 void Controller::TerminateProgram() {
-    emulatorUnit_->Terminate();
+    emulator_unit_->Terminate();
+}
+
+void Controller::AddBreakpoint(uint64_t address) {
+    emulator_unit_->AddBreakpoint(address);
+}
+
+void Controller::RemoveBreakpoint(uint64_t address) {
+    emulator_unit_->RemoveBreakpoint(address);
 }
 
 void Controller::SetPinStatus(std::string module, int pin, bool status) {
-    auto port = dynamic_cast<modules::GPIO_Port *>(activePeripherals_[module]);
+    // Try to get GPIO module by name
+    auto port = dynamic_cast<modules::GPIO_Port *>(active_peripherals_[module]);
     if (port == nullptr) {
         return;
     }
@@ -188,29 +136,17 @@ void Controller::SetPinStatus(std::string module, int pin, bool status) {
     port->Set_Pin_Level(pin, status ? modules::GPIO_Pin_Level::HIGH : modules::GPIO_Pin_Level::LOW);
 }
 
-EventEmitter &Controller::GetEventEmitter() {
-    return emitter_;
-}
-
-int Controller::GetProgramReturnValue() {
-    return emulatorUnit_->GetReturnValue();
-}
-
-void Controller::AddBreakpoint(uint64_t address) {
-    emulatorUnit_->AddBreakpoint(address);
-}
-
-void Controller::RemoveBreakpoint(uint64_t address) {
-    emulatorUnit_->RemoveBreakpoint(address);
-}
-
-void Controller::SendUartMessage(std::string uart_name, std::string message) {
-    auto uart = dynamic_cast<modules::UART_Device *>(activePeripherals_[uart_name]);
+void Controller::SendUARTMessage(std::string uart_name, std::string message) {
+    auto uart = dynamic_cast<modules::UART_Device *>(active_peripherals_[uart_name]);
     uart->TransmitToDevice(message);
 }
 
 void Controller::ResetPeripherals() {
-    for (auto peripheral : activePeripherals_) {
+    for (auto peripheral : active_peripherals_) {
         peripheral.second->Reset();
     }
+}
+
+void Controller::RegisterPeripherals_() {
+    emulator_unit_->RegisterPeripherals(active_peripherals_);
 }
