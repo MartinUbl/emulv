@@ -1,0 +1,45 @@
+{
+  "device": {
+    "ram": {
+      "size": 32768,
+      "start-address": "0x20000000"
+    },
+    "program-arguments": [
+      "program","30"
+    ]
+  },
+  "peripherals": [
+    {
+      "type": "GPIO_Port",
+      "name": "GPIOA",
+      "mapping": {
+        "start-address": "0x40010800",
+        "end-address": "0x40010BFF"
+      }
+    },
+    {
+      "type": "GPIO_Port",
+      "name": "GPIOB",
+      "mapping": {
+        "start-address": "0x40010C00",
+        "end-address": "0x40010FFF"
+      }
+    },
+    {
+      "type": "GPIO_Port",
+      "name": "GPIOC",
+      "mapping": {
+        "start-address": "0x40011000",
+        "end-address": "0x400113FF"
+      }
+    },
+    {
+      "type": "UART_Device",
+      "name": "UART1",
+      "mapping": {
+        "start-address": "0x40013800",
+        "end-address": "0x40013BFF"
+      }
+    }
+  ]
+}
