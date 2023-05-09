@@ -108,4 +108,4 @@ periferní zařízení měla fungovat přesně tak, jako na mikrokontroleru
 
 ### Přibližný diagram
 
-![diagram](./doc/proposals/architecture/architecture.svg)
+![diagram](./doc/project/proposals/architecture/architecture.svg)
