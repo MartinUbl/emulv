@@ -1,5 +1,5 @@
 # Modulární emulátor platformy RISC-V
-## Veřejné zadání:
+## Původní zadání:
 
 Pro potřeby výuky vznikla potřeba mít emulátor hardwarové platformy RISC-V. V
 předmětu KIV/OS momentálně používáme hardware založený na ARM procesorech,
@@ -20,22 +20,9 @@ podobou této periferie. Emulátor by měl být multiplatformní (v současnosti
 Debian GNU/Linux a MS Windows 10). Preferovaným, nicméně ne vyžadovaným
 implementačním jazykem je C++.
 
----
-
-> Předpokládaná náročnost: 240 člověkohodin
-
-> Kontakt: Martin Úbl, ublm@kiv.zcu.cz
-
----
 
 ## Analýza problému a informace o projektu
 
-### Autoři
-| **Jméno**        | **Role**                                            |
-|------------------|-----------------------------------------------------|
-| Stanislav Kafara | vedoucí týmu, programátor                           |
-| Jonáš Dufek      | programátor, tvůrce dokumentace, RV ISA specialista |
-| Hynek Moudrý     | programátor, tester                                 |
 
 ### Stručné zadání
 Cílem je vytvořit emulátor platformy RISC-V včetně grafického rozhraní.
@@ -59,9 +46,9 @@ periferní zařízení měla fungovat přesně tak, jako na mikrokontroleru
     * Konfigurační soubor bude obsahovat informace o periferiích apod.
   * Případná další rozšíření:
     * File explorer
-    * Možnost přepínat mezi více soubory
+    * ~~Možnost přepínat mezi více soubory~~
     * Terminal podokno
-    * Run podokno
+    * ~~Run podokno~~
     
 
 * **Interface (komunikační rozhraní mezi GUI a Emulátorem instrukcí)**
@@ -70,7 +57,7 @@ periferní zařízení měla fungovat přesně tak, jako na mikrokontroleru
   * Nástroj pro čtení paměti
   * Komunikace periferií
   * Zajištění komunikace debuggeru (?)
-  * Výstupy programu (?)
+  * ~~Výstupy programu (?)~~
   
 
 * **Emulace instrukcí (backend)**
@@ -79,33 +66,30 @@ periferní zařízení měla fungovat přesně tak, jako na mikrokontroleru
   * Mapování periferií a jejich správná funkčnost
     * GPIO piny
     * UART
-    * Případně další:
-      * Timer
-      * ADC
-      * DMA controller (?)
+    * ~~Případně další:~~
+      * ~~Timer~~
+      * ~~ADC~~
+      * ~~DMA controller (?)~~
 
 ### Aktuální stav projektu
 
 | **Kategorie** | **Úkol**                              | **Stav** |
 |---------------|---------------------------------------|----------|
-| GUI           | GUI navrhnuto                         | ❌        |
-| GUI           | GUI plně implementováno               | ❌        |
-| GUI           | Konfigurační soubor                   | ❌        |
-| GUI           | Implementovány reakce na události GUI | ❌        |
-| Interface     | Implementována základní funkcionalita | ❌        |
-| Interface     | Kompletně implementováno              | ❌        |
-| Emulátor      | Inicializace emulátoru                | ❌        |
-| Emulátor      | Dekódování a provedení instrukcí      | ❌        |
-| Emulátor      | GPIO                                  | ❌        |
-| Emulátor      | UART                                  | ❌        |
+| GUI           | GUI navrhnuto                         | OK       |
+| GUI           | GUI plně implementováno               | OK       |
+| GUI           | Konfigurační soubor                   | OK       |
+| GUI           | Implementovány reakce na události GUI | OK       |
+| Interface     | Implementována základní funkcionalita | OK       |
+| Interface     | Kompletně implementováno              | ?        |
+| Emulátor      | Inicializace emulátoru                | OK       |
+| Emulátor      | Dekódování a provedení instrukcí      | OK       |
+| Emulátor      | GPIO                                  | ?        |
+| Emulátor      | UART                                  | ?        |
 
 ### Použité technologie a knihovny
 
 * Programovací jazyk: C++
-* Programová dokumentace: Doxygen
+* ~~Programová dokumentace: Doxygen~~
 * Knihovna pro tvorbu GUI: Qt6
 * Knihovna pro emulaci ISA: [libriscv](https://github.com/fwsGonzo/libriscv)
 
-### Přibližný diagram
-
-![diagram](./doc/project/proposals/architecture/architecture.svg)
