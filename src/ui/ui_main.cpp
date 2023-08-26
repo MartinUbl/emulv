@@ -8,7 +8,7 @@
 #include "ui/Controller.h"
 
 int main(int argc, char **argv) {
-    //Global exception handler - will show an error window with the exception before exiting program.
+    //Global exception handler - will print exception before exiting program.
     try {
         Controller c(argc, argv);
         return c.ShowWindow();

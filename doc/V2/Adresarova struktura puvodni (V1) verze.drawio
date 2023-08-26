@@ -1,0 +1,124 @@
+<mxfile host="Electron" modified="2023-07-09T20:41:23.454Z" agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) draw.io/21.6.1 Chrome/112.0.5615.204 Electron/24.6.1 Safari/537.36" etag="3u5PWmqkewbT85vtcdGg" version="21.6.1" type="device">
+  <diagram id="prtHgNgQTEPvFCAcTncT" name="Page-1">
+    <mxGraphModel dx="1962" dy="641" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="78NZZept41VwfYXE49mr-6" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="1" source="78NZZept41VwfYXE49mr-1" target="78NZZept41VwfYXE49mr-2">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="78NZZept41VwfYXE49mr-7" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.25;exitY=1;exitDx=0;exitDy=0;" edge="1" parent="1" source="78NZZept41VwfYXE49mr-1" target="78NZZept41VwfYXE49mr-5">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="78NZZept41VwfYXE49mr-8" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.75;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" edge="1" parent="1" source="78NZZept41VwfYXE49mr-1" target="78NZZept41VwfYXE49mr-4">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="78NZZept41VwfYXE49mr-1" value="project root" style="rounded=0;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="354" y="30" width="120" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="78NZZept41VwfYXE49mr-16" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0.568;entryY=0.035;entryDx=0;entryDy=0;entryPerimeter=0;" edge="1" parent="1" target="78NZZept41VwfYXE49mr-12">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="413.0344827586209" y="219.9700000000001" as="sourcePoint" />
+            <mxPoint x="57" y="439.97" as="targetPoint" />
+            <Array as="points">
+              <mxPoint x="413" y="400" />
+              <mxPoint x="62" y="400" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="78NZZept41VwfYXE49mr-21" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" edge="1" parent="1" source="78NZZept41VwfYXE49mr-2" target="78NZZept41VwfYXE49mr-17">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="414" y="400" />
+              <mxPoint x="234" y="400" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="78NZZept41VwfYXE49mr-22" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="1" source="78NZZept41VwfYXE49mr-2" target="78NZZept41VwfYXE49mr-18">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="414" y="420" />
+              <mxPoint x="414" y="420" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="78NZZept41VwfYXE49mr-23" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" edge="1" parent="1" source="78NZZept41VwfYXE49mr-2" target="78NZZept41VwfYXE49mr-19">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="414" y="400" />
+              <mxPoint x="594" y="400" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="78NZZept41VwfYXE49mr-24" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" edge="1" parent="1" source="78NZZept41VwfYXE49mr-2" target="78NZZept41VwfYXE49mr-20">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="414" y="400" />
+              <mxPoint x="774" y="400" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="78NZZept41VwfYXE49mr-2" value="src" style="rounded=0;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="354" y="160" width="120" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="78NZZept41VwfYXE49mr-4" value="test" style="rounded=0;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="624" y="160" width="120" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="78NZZept41VwfYXE49mr-11" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="1" source="78NZZept41VwfYXE49mr-5" target="78NZZept41VwfYXE49mr-10">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="78NZZept41VwfYXE49mr-5" value="doc" style="rounded=0;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="84" y="160" width="120" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="78NZZept41VwfYXE49mr-10" value="ZSWI dokumentace" style="rounded=0;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="84" y="300" width="120" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="78NZZept41VwfYXE49mr-12" value="elf" style="rounded=0;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="-6" y="440" width="120" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="78NZZept41VwfYXE49mr-14" value="Všechny zdrojové texty" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;" vertex="1" parent="1">
+          <mxGeometry x="420" y="230" width="90" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="78NZZept41VwfYXE49mr-17" value="emulator" style="rounded=0;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="174" y="440" width="120" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="78NZZept41VwfYXE49mr-18" value="modules" style="rounded=0;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="354" y="440" width="120" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="78NZZept41VwfYXE49mr-19" value="ui" style="rounded=0;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="534" y="440" width="120" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="78NZZept41VwfYXE49mr-20" value="utils" style="rounded=0;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="714" y="440" width="120" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="78NZZept41VwfYXE49mr-25" value="Manuální testy GPIO, UART; Automatizované Qt GUI testy; GoogleTest unit testy pro GPIO a UART" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;" vertex="1" parent="1">
+          <mxGeometry x="574.5" y="230" width="219" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="78NZZept41VwfYXE49mr-26" value="Zkompilované&amp;nbsp; testovací programy" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;" vertex="1" parent="1">
+          <mxGeometry x="-1" y="510" width="110" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="78NZZept41VwfYXE49mr-32" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;entryX=0.5;entryY=1;entryDx=0;entryDy=0;endArrow=none;endFill=0;dashed=1;dashPattern=8 8;" edge="1" parent="1" source="78NZZept41VwfYXE49mr-27" target="78NZZept41VwfYXE49mr-17">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="78NZZept41VwfYXE49mr-27" value="Obsahuje EmulatorUnit, tento soubor ovládá prostředky z knihovny Libriscv, poskytuje veřejné rozhraní pro interackci s &quot;backendem&quot; aplikace.&lt;br&gt;&lt;br&gt;&amp;nbsp;Tedy všechny funkce týkající se zpracovávání dat, vykonávání činností, apod. jsou umistěny v tomto souboru." style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;" vertex="1" parent="1">
+          <mxGeometry x="20" y="580" width="292" height="100" as="geometry" />
+        </mxCell>
+        <mxCell id="78NZZept41VwfYXE49mr-31" style="edgeStyle=orthogonalEdgeStyle;orthogonalLoop=1;jettySize=auto;html=1;entryX=0.25;entryY=1;entryDx=0;entryDy=0;curved=1;endArrow=none;endFill=0;dashed=1;dashPattern=8 8;" edge="1" parent="1" source="78NZZept41VwfYXE49mr-29" target="78NZZept41VwfYXE49mr-18">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="78NZZept41VwfYXE49mr-29" value="Obsahuje abstraktní třídu PeripheralDevice, ze které následně dědí třídy pro GPIO a UART. Paměťové adresy jednotivých periférních zařízení jsou nastaveny v konfiguračním souboru.&lt;br&gt;&lt;br&gt;&amp;nbsp;Objekty zařízení jsou vytvořeny po spuštění aplikace v souboru ui/Controller, poté jsou &quot;zaregistrovány&quot; (namapováy na paměť emulátoru) v souboru emulator/EmulatorUnit.&lt;br&gt;&lt;br&gt;&amp;nbsp;EmulatorUnit obsahuje algoritmus, který volá memory Write / Read metody jednotlivých zařízení. Periférie používají EventEmitter, pomocí jehož událostí informují GUI o změnách stavu." style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;" vertex="1" parent="1">
+          <mxGeometry x="114" y="790" width="406" height="160" as="geometry" />
+        </mxCell>
+        <mxCell id="78NZZept41VwfYXE49mr-36" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;entryX=0.25;entryY=1;entryDx=0;entryDy=0;endArrow=none;endFill=0;dashed=1;dashPattern=8 8;" edge="1" parent="1" source="78NZZept41VwfYXE49mr-33" target="78NZZept41VwfYXE49mr-19">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="78NZZept41VwfYXE49mr-33" value="Obsahuje Controller a okna GUI. Controller je volán z metody main, tedy je zodpovědný za konstrukci objektů a inicializaci aplikace. Controller slouží jako rozhraní mezi &quot;backendem&quot; (EmulatorUnit) a &quot;frontendem&quot; (GUI soubory).&lt;br&gt;&lt;br&gt;GUI soubory volají metody Controlleru, pokud potřebují přístup k některým funkcím emulátoru (PS: zde je místo k vylepění)." style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;" vertex="1" parent="1">
+          <mxGeometry x="430" y="570" width="236" height="190" as="geometry" />
+        </mxCell>
+        <mxCell id="78NZZept41VwfYXE49mr-35" value="Obsahuje &quot;statické&quot; části aplikace, které jsou použity napříč ostatními složkami. Tedy třídy starající se o konfigurační soubor, a třídy EventEmitteru (každá třída pro jednotlivou událost)" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;" vertex="1" parent="1">
+          <mxGeometry x="700" y="510" width="220" height="90" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>
