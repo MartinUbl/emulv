@@ -7,7 +7,7 @@
 
 
 #include "PeripheralDevice.h"
-#include "../utils/events/EventEmitter.h"
+#include "EventEmitter.h"
 
 namespace modules {
 

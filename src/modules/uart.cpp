@@ -6,7 +6,7 @@
 #include <stdexcept>
 #include <iostream>
 #include "uart.h"
-#include "../utils/events/uart_event.h"
+#include "uart_event.h"
 
 namespace modules {
 

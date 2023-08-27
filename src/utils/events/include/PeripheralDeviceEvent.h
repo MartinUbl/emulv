@@ -6,7 +6,7 @@
 #define EMULV_PERIPHERALDEVICEEVENT_H
 
 #include "AbstractEvent.h"
-#include "../../modules/gpio.h"
+#include "PeripheralDevice.h"
 
 class PeripheralDeviceEvent : public AbstractEvent {
 protected:

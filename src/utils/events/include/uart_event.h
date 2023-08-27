@@ -8,7 +8,7 @@
 #include <string>
 #include "AbstractEvent.h"
 #include "PeripheralDeviceEvent.h"
-#include "../../modules/uart.h"
+#include "uart.h"
 
 const std::string UART_event_description {"uart_message_received"};
 

@@ -7,10 +7,8 @@
 
 #include <unordered_set>
 #include <limits>
-
-#include "../emulator/EmulatorUnit.h"
-#include "../utils/events/EventEmitter.h"
-#include "../modules/PeripheralDevice.h"
+#include "EventEmitter.h"
+#include "EmulatorUnit.h"
 
 class Controller {
 public:

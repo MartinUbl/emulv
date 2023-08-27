@@ -3,9 +3,8 @@
 
 #include <libriscv/machine.hpp>
 #include <sstream>
+#include "Controller.h"
 
-#include "emulator/EmulatorUnit.h"
-#include "ui/Controller.h"
 
 int main(int argc, char **argv) {
     //Global exception handler - will print exception before exiting program.

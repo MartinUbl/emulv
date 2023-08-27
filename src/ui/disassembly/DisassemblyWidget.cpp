@@ -8,7 +8,7 @@
 #include <QLabel>
 #include <QTextBlock>
 
-#include "../../utils/events/BreakpointAreaWidgetEvents.h"
+#include "BreakpointAreaWidgetEvents.h"
 
 DisassemblyWidget::DisassemblyWidget(QWidget *parent, Controller *controller)
 : QWidget(parent)

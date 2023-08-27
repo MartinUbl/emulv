@@ -1,3 +1,4 @@
+include(FetchContent)
 FetchContent_Declare(
         riscv-disassembler
         GIT_REPOSITORY https://github.com/michaeljclark/riscv-disassembler.git

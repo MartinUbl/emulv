@@ -6,10 +6,10 @@
 #include <QApplication>
 
 #include "mainwindow.h"
-#include "../utils/events/EventEmitter.h"
-#include "../utils/events/SimpleEvent.h"
-#include "../utils/config/ConfigLoader.h"
-#include "../modules/uart.h"
+#include "EventEmitter.h"
+#include "SimpleEvent.h"
+#include "ConfigLoader.h"
+#include "uart.h"
 
 Controller::Controller(int argc, char **argv) {
     argc_ = argc;

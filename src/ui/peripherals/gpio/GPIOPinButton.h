@@ -6,8 +6,7 @@
 #define EMULV_GPIOPINBUTTON_H
 
 #include <QToolButton>
-
-#include "../../../utils/events/gpio_events.h"
+#include "gpio.h"
 
 class GPIOPinButton : public QToolButton {
     Q_OBJECT

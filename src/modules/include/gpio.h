@@ -12,6 +12,7 @@
 #include <bitset>
 
 #include "PeripheralDevice.h"
+#include "EventEmitter.h"
 
 
 namespace modules {

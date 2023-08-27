@@ -6,8 +6,8 @@
 #define EMULV_PERIPHERALDEVICE_H
 
 #include <cstdint>
+#include "EventEmitter.h"
 
-#include "../utils/events/EventEmitter.h"
 
 namespace modules {
 

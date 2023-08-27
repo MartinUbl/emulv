@@ -6,6 +6,7 @@
 #include "EmulatorUnit.h"
 #include "libriscv/rv32i_instr.hpp"
 #include "riscv-disas.h"
+#include "PeripheralDevice.h"
 
 namespace emulator {
     //##################################################################################################################

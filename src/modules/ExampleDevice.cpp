@@ -4,6 +4,7 @@
 
 #include <iostream>
 #include "ExampleDevice.h"
+#include "EventEmitter.h"
 
 namespace modules {
 

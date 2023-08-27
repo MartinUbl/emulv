@@ -9,7 +9,7 @@
 #include <stdexcept>
 #include <limits>
 #include "gpio.h"
-#include "../utils/events/gpio_events.h"
+#include "gpio_events.h"
 
 
 namespace modules {

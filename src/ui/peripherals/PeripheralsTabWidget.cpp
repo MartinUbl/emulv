@@ -6,7 +6,8 @@
 #include <QVBoxLayout>
 
 #include "uart/UARTWidget.h"
-#include "../../utils/events/uart_event.h"
+#include "uart_event.h"
+#include "gpio_events.h"
 
 PeripheralsTabWidget::PeripheralsTabWidget(QWidget *parent, Controller *controller)
 : QWidget(parent)

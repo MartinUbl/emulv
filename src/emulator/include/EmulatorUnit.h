@@ -3,9 +3,9 @@
 
 #include <vector>
 #include <unordered_set>
-#include "../utils/events/EventEmitter.h"
-#include "../modules/PeripheralDevice.h"
 #include "libriscv/types.hpp"
+#include "EventEmitter.h"
+#include "PeripheralDevice.h"
 
 //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 //! IMPORTANT

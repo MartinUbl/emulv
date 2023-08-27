@@ -11,8 +11,7 @@
 #include <string>
 
 #include "PeripheralDeviceEvent.h"
-#include "../../modules/gpio.h"
-
+#include "gpio.h"
 
 const std::string GPIO_Pin_Mode_Changed_Event_Description {"gpio-pin-mode-changed"};
 const std::string GPIO_Pin_Level_Changed_Event_Description {"gpio-pin-level-changed"};

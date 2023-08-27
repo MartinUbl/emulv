@@ -13,7 +13,7 @@
 #include <QMessageBox>
 
 #include "aboutwindow.h"
-#include "../utils/events/uart_event.h"
+#include "uart_event.h"
 
 MainWindow::MainWindow(QWidget *parent, Controller *controller)
 : QMainWindow(parent)

@@ -5,7 +5,7 @@
 
 #include <QLabel>
 
-#include "../../utils/events/BreakpointAreaWidgetEvents.h"
+#include "BreakpointAreaWidgetEvents.h"
 
 BreakpointAreaWidget::BreakpointAreaWidget(QWidget *parent, Controller *controller)
 : QFrame(parent)
