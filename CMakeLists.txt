@@ -8,8 +8,21 @@ list(APPEND CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake/module")
 # Disable in-source builds
 include(NoInSourceBuilds)
 
+# Set up doxygen
+# TO GENERATE DOCUMENTATION USE THE FOLLOWING COMMAND:
+# cmake --build cmake/build-debug-linux -t doxygen
+# OR BUILD THE "doxygen" TARGET USING YOUR IDE
+include(Doxygen)
+Doxygen(src docs)
+
 add_subdirectory(src bin)
 #TODO add_subdirectory(test)
 
 #TODO include install
+
+#TODO:
+# ---DONE--- 1) Doxygen
+# 2) Google test
+# 3) Install scripts
+
 
