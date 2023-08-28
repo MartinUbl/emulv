@@ -1,7 +1,7 @@
 #include <gtest/gtest.h>
 
-#include "../../../src/modules/gpio.h"
-#include "../../../src/utils/events/EventEmitter.h"
+#include "gpio.h"
+#include "EventEmitter.h"
 
 
 constexpr uint64_t kOffset_CTLO0 = 0x00;

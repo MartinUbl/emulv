@@ -16,7 +16,7 @@ include(Doxygen)
 Doxygen(src docs)
 
 add_subdirectory(src bin)
-#TODO add_subdirectory(test)
+add_subdirectory(test)
 
 #TODO include install
 
@@ -24,5 +24,7 @@ add_subdirectory(src bin)
 # ---DONE--- 1) Doxygen
 # 2) Google test
 # 3) Install scripts
+# EXP) Verify all functionality on windows
+# 4)
 
 

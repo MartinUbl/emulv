@@ -1,7 +1,7 @@
 #include <gtest/gtest.h>
 
-#include "../../../src/modules/uart.h"
-#include "../../../src/utils/events/EventEmitter.h"
+#include "uart.h"
+#include "EventEmitter.h"
 
 constexpr uint64_t kOffset_STAT = 0x00;
 constexpr uint64_t kOffset_DATA = 0x04;
