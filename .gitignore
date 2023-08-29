@@ -8,3 +8,5 @@
 /test/build-ui-Desktop-Debug
 /cmake/build-debug-linux/
 /cmake/build-debug-windows/
+/cmake/build-release-linux/
+/cmake/build-release-windows/

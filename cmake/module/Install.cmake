@@ -1,36 +1,14 @@
-include(GNUInstallDirs)
-# Calc library
-install(TARGETS calc_obj calc_shared calc_static
-  EXPORT CalcLibrary
-  ARCHIVE COMPONENT development
-  LIBRARY COMPONENT runtime
-  PUBLIC_HEADER DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/calc
-    COMPONENT runtime
-)
+# This script should be able to deploy the QtApp on linux. All of our own libraries should be
+# statically linked (they have the .a file extension), so there should be no need to include
+# them with the program itself.
 
-if (UNIX)
-  install(CODE "execute_process(COMMAND ldconfig)"
-          COMPONENT runtime
-  )
-endif()
-
-install(EXPORT CalcLibrary
-  DESTINATION ${CMAKE_INSTALL_LIBDIR}/calc/cmake
-  NAMESPACE Calc::
-  COMPONENT runtime
-)
-
-install(FILES "CalcConfig.cmake"
-  DESTINATION ${CMAKE_INSTALL_LIBDIR}/calc/cmake
-)
-
-# CalcConsole runtime
-install(TARGETS calc_console
-  RUNTIME COMPONENT runtime
-)
+# TODO - Figure our LINUX and WINDOWS deployment of Qt
+# https://stackoverflow.com/questions/2036873/static-library-install-under-linux-should-it-be-similar-to-dynamic-library-ins
+# https://github.com/ttroy50/cmake-examples/blob/master/06-installer/deb/CMakeLists.txt
+# https://www.qt.io/blog/deploying-to-linux-with-cmake
 
 # CPack configuration
-set(CPACK_PACKAGE_VENDOR "Example")
-set(CPACK_PACKAGE_CONTACT "email@example.com")
-set(CPACK_PACKAGE_DESCRIPTION "Simple Calculator")
+set(CPACK_PACKAGE_VENDOR "JD")
+set(CPACK_PACKAGE_CONTACT "info@zcu.cz")
+set(CPACK_PACKAGE_DESCRIPTION "RISC-V emulator")
 include(CPack)

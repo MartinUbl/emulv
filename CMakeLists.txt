@@ -18,13 +18,13 @@ Doxygen(src docs)
 add_subdirectory(src bin)
 add_subdirectory(test)
 
-#TODO include install
-
 #TODO:
 # ---DONE--- 1) Doxygen
-# 2) Google test
-# 3) Install scripts
+# ---DONE--- 2) Google test
+# ---ON HOLD--- 3) Install scripts
 # EXP) Verify all functionality on windows
-# 4)
-
+# ---DONE--- 4) Release build scripts
+# --- ON HOLD --- 5) webassembly build
+# 6) Logger?
+# 7) App architecture rework
 

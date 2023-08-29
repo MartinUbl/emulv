@@ -25,6 +25,29 @@
         "CMAKE_BUILD_TYPE": "Debug",
         "DCMAKE_CXX_FLAGS_INIT": "-DQT_QML_DEBUG"
       }
+    },
+    {
+      "name": "Relase-Linux",
+      "displayName": "Debug for Linux",
+      "description": "Basic release build for Linux.",
+      "generator": "Unix Makefiles",
+      "binaryDir": "${sourceDir}/cmake/build-release-linux",
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "Release"
+      }
+    },
+    {
+      "name": "Release-Windows",
+      "displayName": "Release for Windows",
+      "description": "Basic release build for Windows. Remember to change the compiler paths in the CMakePresets.json file.",
+      "generator": "Ninja",
+      "binaryDir": "${sourceDir}/cmake/build-release-windows",
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "Release",
+        "DCMAKE_PREFIX_PATH": "C:/Qt/6.4.3/mingw_64",
+        "DCMAKE_C_COMPILER": "C:/Qt/Tools/mingw1120_64/bin/gcc.exe",
+        "DCMAKE_CXX_COMPILER": "C:/Qt/Tools/mingw1120_64/bin/g++.exe"
+      }
     }
   ]
 }
