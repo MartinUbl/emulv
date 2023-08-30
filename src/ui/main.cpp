@@ -4,9 +4,20 @@
 #include <libriscv/machine.hpp>
 #include <sstream>
 #include "Controller.h"
-
+#include "spdlog/spdlog.h"
+#include "spdlog/sinks/stdout_sinks.h"
+#include "spdlog/sinks/daily_file_sink.h"
 
 int main(int argc, char **argv) {
+    //Set up global SpdLogger - writes both to console and to file
+    std::vector<spdlog::sink_ptr> sinks;
+    sinks.push_back(std::make_shared<spdlog::sinks::stdout_sink_st>());
+    sinks.push_back(std::make_shared<spdlog::sinks::daily_file_sink_st>("logs/logfile.txt", 23, 59));
+    auto combined_logger = std::make_shared<spdlog::logger>("Global Logger", begin(sinks), end(sinks));
+    spdlog::register_logger(combined_logger);
+    spdlog::set_default_logger(combined_logger);
+    spdlog::info("The program main function has started.");
+
     //Global exception handler - will print exception before exiting program.
     try {
         Controller c(argc, argv);
@@ -20,8 +31,7 @@ int main(int argc, char **argv) {
                       << "Exception message: " << ex.what() << "\n"
                       << "Errno: " << errno << "\n";
 
-        std::cout << error_message.str() << std::endl;
-
+        spdlog::error(error_message.str());
         //QMessageBox::critical(nullptr, "Error", QString::fromStdString(error_message.str()));
         return EXIT_FAILURE;
     }
@@ -32,10 +42,8 @@ int main(int argc, char **argv) {
                       << "Error name: " << typeid(std::current_exception()).name() << "\n"
                       << "Errno: " << errno << "\n";
 
-        std::cout << error_message.str() << std::endl;
-
+        spdlog::error(error_message.str());
         //QMessageBox::critical(nullptr, "Error", QString::fromStdString(error_message.str()));
         return EXIT_FAILURE;
     }
 }
-

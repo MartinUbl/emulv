@@ -22,6 +22,7 @@
 #endif
 
 #include "libriscv/machine.hpp"
+#include "spdlog/spdlog.h"
 
 namespace emulator {
     //Number of CPU's "X-registers"
@@ -143,6 +144,8 @@ namespace emulator {
                 latest_register_values_.emplace_back(reg_prefix + std::to_string(reg_num), 0);
             }
             latest_register_values_.emplace_back("pc", 0);
+
+            spdlog::info("New instance of EmulatorUnit has been constructed.");
         }
 
         /**

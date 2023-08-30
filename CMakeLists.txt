@@ -15,6 +15,12 @@ include(NoInSourceBuilds)
 include(Doxygen)
 Doxygen(src docs)
 
+# Set up the spdlog logging framework
+# By using link_libraries(), the spdlog library is
+# linked to ever target created after this call
+include(GetSpdlog)
+link_libraries(spdlog::spdlog)
+
 add_subdirectory(src bin)
 add_subdirectory(test)
 
@@ -25,6 +31,6 @@ add_subdirectory(test)
 # EXP) Verify all functionality on windows
 # ---DONE--- 4) Release build scripts
 # --- ON HOLD --- 5) webassembly build
-# 6) Logger?
+# 6) --- NEEDS COVERAGE --- Add logging framework
 # 7) App architecture rework
 
