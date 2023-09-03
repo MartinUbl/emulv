@@ -5,6 +5,9 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake/module")
 
+# Download all external dependencies into the extern folder
+set(FETCHCONTENT_BASE_DIR "${PROJECT_SOURCE_DIR}/extern/cmake_deps")
+
 # Disable in-source builds
 include(NoInSourceBuilds)
 
@@ -27,8 +30,8 @@ add_subdirectory(test)
 #TODO:
 # ---DONE--- 1) Doxygen
 # ---DONE--- 2) Google test
-# ---ON HOLD--- 3) Install scripts
-# EXP) Verify all functionality on windows
+# ---DONE--- 3) Install scripts
+# ---DONE?-- Verify all functionality on windows
 # ---DONE--- 4) Release build scripts
 # --- ON HOLD --- 5) webassembly build
 # 6) --- NEEDS COVERAGE --- Add logging framework

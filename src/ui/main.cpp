@@ -8,18 +8,38 @@
 #include "spdlog/sinks/stdout_sinks.h"
 #include "spdlog/sinks/daily_file_sink.h"
 
-int main(int argc, char **argv) {
-    //Set up global SpdLogger - writes both to console and to file
-    std::vector<spdlog::sink_ptr> sinks;
-    sinks.push_back(std::make_shared<spdlog::sinks::stdout_sink_st>());
-    sinks.push_back(std::make_shared<spdlog::sinks::daily_file_sink_st>("logs/logfile.txt", 23, 59));
-    auto combined_logger = std::make_shared<spdlog::logger>("Global Logger", begin(sinks), end(sinks));
-    spdlog::register_logger(combined_logger);
-    spdlog::set_default_logger(combined_logger);
-    spdlog::info("The program main function has started.");
+/**
+ * Function to prevent crashing if it's impossible to write logs.
+ * @param path Path to a test log file
+ * @return True if it's possible to write, otherwise false.
+ */
+bool canWriteLog(const char *path) {
+    std::ofstream file;
+    file.open(path, std::ios_base::app);
+    if (!file.is_open()) {
+        return false;
+    }
+    file.close();
+    remove(path);
+    return true;
+}
 
+int main(int argc, char **argv) {
     //Global exception handler - will print exception before exiting program.
     try {
+        //Set up global SpdLogger - writes both to console and to file
+        std::vector<spdlog::sink_ptr> sinks;
+        sinks.push_back(std::make_shared<spdlog::sinks::stdout_sink_st>());
+        //TODO: If installed into "Program files", it's impossible to write logs
+        if(canWriteLog("logs/test.txt")) {
+            sinks.push_back(std::make_shared<spdlog::sinks::daily_file_sink_st>("logs/logfile.txt", 23, 59));
+        }
+        auto combined_logger = std::make_shared<spdlog::logger>("Global Logger", begin(sinks), end(sinks));
+        spdlog::register_logger(combined_logger);
+        spdlog::set_default_logger(combined_logger);
+        spdlog::info("The program main function has started.");
+
+        //Start controller
         Controller c(argc, argv);
         return c.ShowWindow();
     }

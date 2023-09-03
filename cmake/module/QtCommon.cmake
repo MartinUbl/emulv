@@ -10,21 +10,21 @@ endmacro()
 
 macro(add_project_meta FILES_TO_INCLUDE)
 if (NOT RESOURCE_FOLDER)
-    set(RESOURCE_FOLDER res)
+    set(RESOURCE_FOLDER ${PROJECT_SOURCE_DIR}/src/ui/resources)
 endif()
 
 if (NOT ICON_NAME)
-    set(ICON_NAME AppIcon)
+    set(ICON_NAME logo)
 endif()
 
 if (APPLE)
-    set(ICON_FILE ${RESOURCE_FOLDER}/${ICON_NAME}.icns)
+    set(ICON_FILE ${RESOURCE_FOLDER}/img/${ICON_NAME}.icns)
 elseif (WIN32)
-    set(ICON_FILE ${RESOURCE_FOLDER}/${ICON_NAME}.ico)
+    set(ICON_FILE ${RESOURCE_FOLDER}/img/${ICON_NAME}.ico)
 endif()
 
 if (WIN32)
-    configure_file("${PROJECT_SOURCE_DIR}/cmake/windows_metafile.rc.in"
+    configure_file("${PROJECT_SOURCE_DIR}/cmake/script/windows_metafile.rc.in"
       "windows_metafile.rc"
     )
     set(RES_FILES "windows_metafile.rc")
