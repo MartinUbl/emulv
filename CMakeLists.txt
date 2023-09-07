@@ -33,7 +33,6 @@ add_subdirectory(test)
 # ---DONE--- 3) Install scripts
 # ---DONE?-- Verify all functionality on windows
 # ---DONE--- 4) Release build scripts
-# --- ON HOLD --- 5) webassembly build
+# ---ABANDOEND--- 5) webassembly build
 # 6) --- NEEDS COVERAGE --- Add logging framework
 # 7) App architecture rework
-
