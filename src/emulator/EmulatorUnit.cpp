@@ -17,11 +17,13 @@ namespace emulator {
 
         SetState_(kRunning);
         try {
+            spdlog::info("EmulatorUnit is RUNNING and executing a program");
+
             while (!active_machine_->stopped()) {
                 active_machine_->cpu.step_one();
             }
         } catch (const std::exception &e) {
-            std::cout << "Program error: " << e.what() << std::endl;
+            spdlog::error("A program error has occurred during it's execution: {0}", e.what());
             SetState_(kTerminated);
             return;
         }
@@ -33,6 +35,8 @@ namespace emulator {
     }
 
     void EmulatorUnit::Terminate() {
+        spdlog::info("Emulator terminate method has been called");
+
         if (active_machine_ == nullptr) {
             return;
         }
@@ -52,6 +56,8 @@ namespace emulator {
                 (std::istreambuf_iterator<char>(stream)),
                 std::istreambuf_iterator<char>()
         );
+        spdlog::info("ELF binary file has been loaded");
+
 
         //Use this if ValidateElf_() stops working:
         //auto *pMachine = new riscv::Machine<riscv::RISCV64>{binary};
@@ -65,6 +71,7 @@ namespace emulator {
     void EmulatorUnit::SetState_(emulator::EmulatorState state) {
         if (state != state_) {
             state_ = state;
+            spdlog::info("Emulator unit's state has changed to: {0}", state);
             emitter_.Emit(emulator::State_Changed_Event_Description, nullptr);
         }
     }
@@ -77,6 +84,7 @@ namespace emulator {
     //# Debugger methods
     //##################################################################################################################
     void EmulatorUnit::Debug(const std::vector<std::string> &machine_arguments) {
+        spdlog::info("EmulatorUnit started a program in debug mode");
         CreateNewMachine_(machine_arguments);
 
         //Run until the first breakpoint is reached
@@ -90,6 +98,7 @@ namespace emulator {
 
         if (!active_machine_->stopped()) {
             active_machine_->cpu.step_one();
+            spdlog::trace("Debug step has been performed");
         } else {
             SetState_(kTerminated);
         }
@@ -114,11 +123,12 @@ namespace emulator {
                 active_machine_->cpu.step_one();
                 if (breakpoints_.count(active_machine_->cpu.pc())) {
                     SetState_(kDebugPaused);
+                    spdlog::trace("Debug continue has been performed");
                     return;
                 }
             }
         } catch (const std::exception &e) {
-            std::cout << "Program error: " << e.what() << std::endl;
+            spdlog::error("A program error has occurred during the debug execution: {0}", e.what());
             SetState_(kTerminated);
             return;
         }
@@ -130,14 +140,17 @@ namespace emulator {
     }
 
     void EmulatorUnit::AddBreakpoint(uint64_t address) {
+        spdlog::trace("Breakpoint has been inserted at address: {0}", address);
         breakpoints_.insert(address);
     }
 
     void EmulatorUnit::RemoveBreakpoint(uint64_t address) {
+        spdlog::trace("Breakpoint has been removed at address: {0}", address);
         breakpoints_.erase(address);
     }
 
     void EmulatorUnit::ClearBreakpoints() {
+        spdlog::trace("All breakpoints have been created");
         breakpoints_.clear();
     }
 
@@ -146,6 +159,7 @@ namespace emulator {
     //##################################################################################################################
 
     void EmulatorUnit::RegisterPeripherals(std::map<std::string, modules::PeripheralDevice *> &devices) {
+        spdlog::info("Peripherals have been registered.");
         peripheral_devices_ = &devices;
     }
 
@@ -153,7 +167,7 @@ namespace emulator {
         page_peripherals_.clear();
 
         for (const auto &p: *peripheral_devices_) {
-            std::cout << "Setting up memory trap for device with name: " << p.first << std::endl;
+            spdlog::info("Setting up memory trap for device with name: {0}", p.first);
 
             modules::PeripheralDevice *pDevice = p.second;
             MapDeviceToPage_(pDevice);
@@ -305,6 +319,7 @@ namespace emulator {
             disassembly_machine.increment_counter(1);
         }
 
+        spdlog::info("Loaded ELF has been disassembled successfully");
         return output;
     }
 
@@ -363,15 +378,15 @@ namespace emulator {
         // Create a new 64-bit RISC-V machine
         active_machine_ = new riscv::Machine<riscv::RISCV64>{binary_};
         // Use string vector as arguments to the RISC-V program
-        active_machine_->setup_linux(
-                machine_arguments,
-                {"LC_TYPE=C", "LC_ALL=C", "USER=root"});
+        active_machine_->setup_linux(machine_arguments, {"LC_TYPE=C", "LC_ALL=C", "USER=root"});
         active_machine_->setup_linux_syscalls();
         active_machine_->set_max_instructions(std::numeric_limits<uint64_t>::max());
 
         // Setup memory traps for peripherals
         if (peripheral_devices_ != nullptr)
             SetupMemoryTraps_(*active_machine_);
+
+        spdlog::trace("A new machine has been created");
     }
 
     void EmulatorUnit::ValidateElf_(std::vector<uint8_t> &binary) {
@@ -406,6 +421,8 @@ namespace emulator {
         if (elf->e_phoff + program_headers * sizeof(riscv::Elf<8>::Phdr) > m_binary.size()) {
             throw std::runtime_error("ELF program-headers are outside the binary");
         }
+
+        spdlog::info("ELF file has been validated successfully, no defects were found");
     }
 
     //##################################################################################################################

@@ -1,12 +1,16 @@
 #include <fstream>
 #include <iostream>
 
+#define SPDLOG_ACTIVE_LEVEL SPDLOG_LEVEL_TRACE
+
 #include <libriscv/machine.hpp>
 #include <sstream>
 #include "Controller.h"
 #include "spdlog/spdlog.h"
 #include "spdlog/sinks/stdout_sinks.h"
 #include "spdlog/sinks/daily_file_sink.h"
+#include "spdlog/sinks/stdout_color_sinks.h"
+#include "spdlog/sinks/basic_file_sink.h"
 
 /**
  * Function to prevent crashing if it's impossible to write logs.
@@ -27,21 +31,24 @@ bool canWriteLog(const char *path) {
 int main(int argc, char **argv) {
     //Global exception handler - will print exception before exiting program.
     try {
-        //Set up global SpdLogger - writes both to console and to file
+       //Set up global SpdLogger - writes both to console and to file
         std::vector<spdlog::sink_ptr> sinks;
-        sinks.push_back(std::make_shared<spdlog::sinks::stdout_sink_st>());
+        sinks.push_back(std::make_shared<spdlog::sinks::stdout_color_sink_st>());
         //TODO: If installed into "Program files", it's impossible to write logs
-        if(canWriteLog("logs/test.txt")) {
+        if (canWriteLog("logs/test.txt")) {
             sinks.push_back(std::make_shared<spdlog::sinks::daily_file_sink_st>("logs/logfile.txt", 23, 59));
         }
         auto combined_logger = std::make_shared<spdlog::logger>("Global Logger", begin(sinks), end(sinks));
+        combined_logger->set_level(spdlog::level::trace);
         spdlog::register_logger(combined_logger);
         spdlog::set_default_logger(combined_logger);
+        spdlog::set_level(spdlog::level::trace);
+
         spdlog::info("The program main function has started.");
 
         //Start controller
-        Controller c(argc, argv);
-        return c.ShowWindow();
+//        Controller c(argc, argv);
+//        return c.ShowWindow();
     }
     catch (const std::exception &ex) {
 

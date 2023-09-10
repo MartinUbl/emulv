@@ -145,7 +145,7 @@ namespace emulator {
             }
             latest_register_values_.emplace_back("pc", 0);
 
-            spdlog::info("New instance of EmulatorUnit has been constructed.");
+            spdlog::info("New instance of EmulatorUnit has been constructed");
         }
 
         /**
