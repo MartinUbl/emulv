@@ -2,8 +2,7 @@
 // Created by Hynek on 30.04.2023.
 //
 
-#ifndef EMULV_MEMORYFORMATTER_H
-#define EMULV_MEMORYFORMATTER_H
+#pragma once
 
 #include <cstdint>
 #include <string>
@@ -26,5 +25,3 @@ private:
     static std::string FormatAddress(int address);
     static std::string FormatEmptyByte(MemoryFormat format);
 };
-
-#endif //EMULV_MEMORYFORMATTER_H

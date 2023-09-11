@@ -2,8 +2,7 @@
 // Created by Hynek on 25.04.2023.
 //
 
-#ifndef EMULV_MEMORYWIDGET_H
-#define EMULV_MEMORYWIDGET_H
+#pragma once
 
 #include <QFrame>
 #include <QRadioButton>
@@ -53,5 +52,3 @@ private:
     void UpdateButtons() const;
     void UpdateScroll(int value) const;
 };
-
-#endif //EMULV_MEMORYWIDGET_H

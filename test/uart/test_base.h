@@ -1,3 +1,5 @@
+#pragma once
+
 #include <gtest/gtest.h>
 
 #include "uart.h"
@@ -11,13 +13,13 @@ constexpr uint64_t kOffset_CTL2 = 0x14;
 
 
 class Test_UART_Device : public ::testing::Test {
-    protected:    
+protected:
 
-        static constexpr uint64_t kStart_Address = 0x40013800;
-        static constexpr uint64_t kEnd_Address = 0x40013BFF;
+    static constexpr uint64_t kStart_Address = 0x40013800;
+    static constexpr uint64_t kEnd_Address = 0x40013BFF;
 
-        EventEmitter emitter;
-        EventEmitter& rEmitter {emitter};
+    EventEmitter emitter;
+    EventEmitter &rEmitter{emitter};
 
-        modules::UART_Device *UART_Device;
+    modules::UART_Device *UART_Device;
 };

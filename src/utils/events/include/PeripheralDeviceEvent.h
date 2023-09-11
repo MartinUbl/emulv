@@ -2,8 +2,7 @@
 // Created by Hynek on 27.04.2023.
 //
 
-#ifndef EMULV_PERIPHERALDEVICEEVENT_H
-#define EMULV_PERIPHERALDEVICEEVENT_H
+#pragma once
 
 #include "AbstractEvent.h"
 #include "PeripheralDevice.h"
@@ -26,4 +25,3 @@ public:
 
 };
 
-#endif //EMULV_PERIPHERALDEVICEEVENT_H

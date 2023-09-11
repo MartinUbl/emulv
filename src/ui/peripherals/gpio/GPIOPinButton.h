@@ -2,8 +2,7 @@
 // Created by Hynek on 04.04.2023.
 //
 
-#ifndef EMULV_GPIOPINBUTTON_H
-#define EMULV_GPIOPINBUTTON_H
+#pragma once
 
 #include <QToolButton>
 #include "gpio.h"
@@ -27,5 +26,3 @@ private:
 
     void UpdateButton();
 };
-
-#endif //EMULV_GPIOPINBUTTON_H

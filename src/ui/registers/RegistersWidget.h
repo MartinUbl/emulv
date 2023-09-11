@@ -2,8 +2,7 @@
 // Created by Hynek on 19.04.2023.
 //
 
-#ifndef EMULV_REGISTERSWIDGET_H
-#define EMULV_REGISTERSWIDGET_H
+#pragma once
 
 #include <array>
 #include <string>
@@ -40,5 +39,3 @@ private:
     std::string FormatByte(int byte) const;
     std::string FormatBytes(uint32_t value) const;
 };
-
-#endif //EMULV_REGISTERSWIDGET_H

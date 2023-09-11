@@ -1,5 +1,4 @@
-#ifndef MAINWINDOW_H
-#define MAINWINDOW_H
+#pragma once
 
 #include <QMainWindow>
 #include <QToolButton>
@@ -69,4 +68,3 @@ private:
     void UpdateRegisters();
     void UpdateMemory() const;
 };
-#endif // MAINWINDOW_H

@@ -2,8 +2,7 @@
 // Created by xPC on 11.09.2023.
 //
 
-#ifndef EMULV_LOGGERCONFIG_H
-#define EMULV_LOGGERCONFIG_H
+#pragma once
 
 /**
  * Configures the global spdlog logger.
@@ -16,4 +15,3 @@ void setupLogger();
  */
 bool canWriteLog(const char *path);
 
-#endif //EMULV_LOGGERCONFIG_H

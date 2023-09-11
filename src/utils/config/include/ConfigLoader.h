@@ -2,9 +2,7 @@
 // Created by xPC on 04.05.2023.
 //
 
-#ifndef EMULV_CONFIGLOADER_H
-#define EMULV_CONFIGLOADER_H
-
+#pragma once
 
 #include "nlohmann/json.hpp"
 
@@ -15,5 +13,3 @@
  * @return Parsed JSON object
  */
 nlohmann::json loadConfig(const std::string& path);
-
-#endif //EMULV_CONFIGLOADER_H

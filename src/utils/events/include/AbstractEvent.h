@@ -2,8 +2,7 @@
 // Created by xPC on 26.04.2023.
 //
 
-#ifndef EMULV_ABSTRACTEVENT_H
-#define EMULV_ABSTRACTEVENT_H
+#pragma once
 
 /**
  * An enum specifying the various event types.
@@ -24,5 +23,3 @@ public:
      */
     virtual eventType getType() = 0;
 };
-
-#endif //EMULV_ABSTRACTEVENT_H

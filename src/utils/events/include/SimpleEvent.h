@@ -2,9 +2,7 @@
 // Created by xPC on 26.04.2023.
 //
 
-#ifndef EMULV_SIMPLEEVENT_H
-#define EMULV_SIMPLEEVENT_H
-
+#pragma once
 
 #include <string>
 #include "AbstractEvent.h"
@@ -23,5 +21,3 @@ public:
     virtual ~SimpleEvent();
 };
 
-
-#endif //EMULV_SIMPLEEVENT_H

@@ -1,5 +1,4 @@
-#ifndef DISASSEMBLYWIDGET_H
-#define DISASSEMBLYWIDGET_H
+#pragma once
 
 #include <unordered_set>
 #include <QGroupBox>
@@ -45,5 +44,3 @@ private:
     void RemoveBreakpoint(int line);
     int FindLine(uint64_t address);
 };
-
-#endif // DISASSEMBLYWIDGET_H

@@ -2,8 +2,7 @@
 // Created by Hynek on 04.04.2023.
 //
 
-#ifndef EMULV_GPIOPORTWIDGET_H
-#define EMULV_GPIOPORTWIDGET_H
+#pragma once
 
 #include <QFrame>
 #include "GPIOPinButton.h"
@@ -31,5 +30,3 @@ private:
     std::unordered_map<int, GPIOPinButton *> pins_;
 
 };
-
-#endif //EMULV_GPIOPORTWIDGET_H

@@ -2,8 +2,7 @@
 // Created by xPC on 04.04.2023.
 //
 
-#ifndef EMULV_PERIPHERALDEVICE_H
-#define EMULV_PERIPHERALDEVICE_H
+#pragma once
 
 #include <cstdint>
 #include "EventEmitter.h"
@@ -51,5 +50,3 @@ namespace modules {
         };
 
 }
-
-#endif //EMULV_PERIPHERALDEVICE_H

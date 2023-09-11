@@ -2,8 +2,7 @@
 // Created by Hynek on 06.04.2023.
 //
 
-#ifndef EMULV_UARTWIDGET_H
-#define EMULV_UARTWIDGET_H
+#pragma once
 
 #include <QPlainTextEdit>
 #include <QLineEdit>
@@ -37,5 +36,3 @@ private:
     const QString kLF = "LF";
     const QString kCRLF = "CRLF";
 };
-
-#endif //EMULV_UARTWIDGET_H

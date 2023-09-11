@@ -2,9 +2,7 @@
 // Created by xPC on 16.04.2023.
 //
 
-#ifndef EMULV_EXAMPLEDEVICE_H
-#define EMULV_EXAMPLEDEVICE_H
-
+#pragma once
 
 #include "PeripheralDevice.h"
 #include "EventEmitter.h"
@@ -37,5 +35,3 @@ namespace modules {
     };
 
 }
-
-#endif //EMULV_EXAMPLEDEVICE_H

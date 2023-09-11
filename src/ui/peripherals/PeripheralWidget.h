@@ -2,8 +2,7 @@
 // Created by Hynek on 29.04.2023.
 //
 
-#ifndef EMULV_PERIPHERALWIDGET_H
-#define EMULV_PERIPHERALWIDGET_H
+#pragma once
 
 #include <QWidget>
 
@@ -26,5 +25,3 @@ protected:
 
     std::string label_;
 };
-
-#endif //EMULV_PERIPHERALWIDGET_H

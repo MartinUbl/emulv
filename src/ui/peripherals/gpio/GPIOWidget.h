@@ -1,9 +1,7 @@
 //
 // Created by Hynek on 06.04.2023.
 //
-
-#ifndef EMULV_GPIOWIDGET_H
-#define EMULV_GPIOWIDGET_H
+#pragma once
 
 #include <QWidget>
 
@@ -21,5 +19,3 @@ public:
 private:
     std::unordered_map<std::string, GPIOPortWidget *> ports_;
 };
-
-#endif //EMULV_GPIOWIDGET_H

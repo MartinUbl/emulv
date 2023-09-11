@@ -2,8 +2,7 @@
 // Created by Hynek on 06.04.2023.
 //
 
-#ifndef EMULV_PERIPHERALSTABWIDGET_H
-#define EMULV_PERIPHERALSTABWIDGET_H
+#pragma once
 
 #include <QTabWidget>
 
@@ -31,5 +30,3 @@ private:
     void AddGPIOPortWidget(modules::GPIO_Port *gpio_port, const std::string &label);
     void AddUARTWidget(const std::string &label);
 };
-
-#endif //EMULV_PERIPHERALSTABWIDGET_H

@@ -22,7 +22,7 @@
 1) CMake install script pro Linux
 2) Správné použití namespace
 3) Modernizace kodu - přidání smart pointerů, apod.
-4) Pragma v header souborech 
+4) ~~Pragma v header souborech~~ 
 5) Na windows z neznámého důvodu nejde vypisovat nic na STDOUT, pokud není program spuštěn v admin režimu, nebo s připojeným debuggerem
 
 ## Changelog projektu

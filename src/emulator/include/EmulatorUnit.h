@@ -1,5 +1,4 @@
-#ifndef EMULV_EMULATORUNIT_H
-#define EMULV_EMULATORUNIT_H
+#pragma once
 
 #include <vector>
 #include <unordered_set>
@@ -267,5 +266,3 @@ namespace emulator {
     };
 
 }
-
-#endif

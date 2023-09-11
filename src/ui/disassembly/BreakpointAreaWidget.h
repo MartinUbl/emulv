@@ -2,8 +2,7 @@
 // Created by Hynek on 11.04.2023.
 //
 
-#ifndef EMULV_BREAKPOINTAREAWIDGET_H
-#define EMULV_BREAKPOINTAREAWIDGET_H
+#pragma once
 
 #include <QFrame>
 #include <QMouseEvent>
@@ -27,5 +26,3 @@ private:
 
     void mousePressEvent(QMouseEvent *event) override;
 };
-
-#endif //EMULV_BREAKPOINTAREAWIDGET_H

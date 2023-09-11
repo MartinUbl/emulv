@@ -1,3 +1,5 @@
+#pragma once
+
 #include <gtest/gtest.h>
 
 #include "gpio.h"
@@ -13,13 +15,13 @@ constexpr uint64_t kOffset_BC = 0x14;
 
 
 class Test_GPIO_Port : public ::testing::Test {
-    protected:    
+protected:
 
-        static constexpr uint64_t kStart_Address = 0x40010800;
-        static constexpr uint64_t kEnd_Address = 0x4001081B;
+    static constexpr uint64_t kStart_Address = 0x40010800;
+    static constexpr uint64_t kEnd_Address = 0x4001081B;
 
-        EventEmitter emitter;
-        EventEmitter& rEmitter {emitter};
+    EventEmitter emitter;
+    EventEmitter &rEmitter{emitter};
 
-        modules::GPIO_Port *GPIO_Port;
+    modules::GPIO_Port *GPIO_Port;
 };

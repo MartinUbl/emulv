@@ -2,8 +2,7 @@
 // Created by Hynek on 29.04.2023.
 //
 
-#ifndef EMULV_BREAKPOINTAREAWIDGETEVENTS_H
-#define EMULV_BREAKPOINTAREAWIDGETEVENTS_H
+#pragma once
 
 #include <string>
 #include "AbstractEvent.h"
@@ -22,4 +21,3 @@ public:
     }
 };
 
-#endif //EMULV_BREAKPOINTAREAWIDGETEVENTS_H
