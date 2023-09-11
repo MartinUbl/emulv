@@ -61,12 +61,12 @@ namespace modules {
         // Interface - PeripheralDevice
         virtual void WriteByte(uint64_t address, uint8_t value) override;
         virtual void WriteHalfword(uint64_t address, uint16_t value) override;
-        /** Handles writing to GPIO port registers. */
+        /** Handles writing to UART port registers. */
         virtual void WriteWord(uint64_t address, uint32_t value) override;
         virtual void WriteDoubleword(uint64_t address, uint64_t value) override;
         virtual uint8_t ReadByte(uint64_t address) override;
         virtual uint16_t ReadHalfword(uint64_t address) override;
-        /** Handles reading from GPIO port registers. */
+        /** Handles reading from UART port registers. */
         virtual uint32_t ReadWord(uint64_t address) override;
         virtual uint64_t ReadDoubleword(uint64_t address) override;
         

@@ -10,6 +10,7 @@
 #include <limits>
 #include "gpio.h"
 #include "gpio_events.h"
+#include "spdlog/spdlog.h"
 
 
 namespace modules {
@@ -20,14 +21,17 @@ namespace modules {
     }
 
     void GPIO_Port::WriteByte(uint64_t address, uint8_t value) {
+        spdlog::info("Called the WRITE BYTE method of GPIO port to address {0} with value {1}", address, value);
         WriteWord(address, value);
     }
 
     void GPIO_Port::WriteHalfword(uint64_t address, uint16_t value) {
+        spdlog::info("Called the WRITE HALFWORD method of GPIO port to address {0} with value {1}", address, value);
         WriteWord(address, value);
     }
 
     void GPIO_Port::WriteDoubleword(uint64_t address, uint64_t value) {
+        spdlog::info("Called the WRITE DOUBLEWORD method of GPIO port to address {0} with value {1}", address, value);
         if (value > std::numeric_limits<uint32_t>::max())
             throw std::runtime_error("GPIO: Cannot write 64 bit value! Only writes up to 32 bits are supported.");
 
@@ -35,21 +39,26 @@ namespace modules {
     }
 
     uint8_t GPIO_Port::ReadByte(uint64_t address) {
+        spdlog::info("Called the READ BYTE method of GPIO port with address {0}", address);
         //GPIO doesn't support reading 8 bits at a time
         throw std::runtime_error("GPIO: Reading a byte is not supported. Only >32 bit read is supported.");
     }
 
     uint16_t GPIO_Port::ReadHalfword(uint64_t address) {
+        spdlog::info("Called the READ HALFWORD method of GPIO port with address {0}", address);
         //GPIO doesn't support reading 16 bits at a time
         throw std::runtime_error("GPIO: Reading a halfword is not supported. Only >32 bit read is supported.");
     }
 
     uint64_t GPIO_Port::ReadDoubleword(uint64_t address) {
+        spdlog::info("Called the READ DOUBLEWORD method of GPIO port with address {0}", address);
         //Will read 32 bit value and return it as a 64 bit value.
         return ReadWord(address);
     }
 
     void GPIO_Port::WriteWord(uint64_t address, uint32_t value) {
+        spdlog::info("Called the WRITE WORD method of GPIO port to address {0} with value {1}", address, value);
+
         switch (address) {
             case GPIO_Port_Reg_Offset::CTL0:
                 Handle_Reg_CTL_Write(Reg_CTL0, 0, value);
@@ -81,8 +90,7 @@ namespace modules {
                         GPIO_Pin_Level previousLevel = Get_Pin_Level(i);
                         if (isToSet) {
                             Reg_OCTL.set(pinNo);
-                        }
-                        else {
+                        } else {
                             Reg_OCTL.reset(pinNo);
                         }
                         GPIO_Pin_Level currentLevel = Get_Pin_Level(pinNo);
@@ -113,6 +121,8 @@ namespace modules {
     }
 
     uint32_t GPIO_Port::ReadWord(uint64_t address) {
+        spdlog::info("Called the READ WORD method of GPIO port with address {0}", address);
+
         std::bitset<kReg_Size> reg;
         switch (address) {
             case GPIO_Port_Reg_Offset::CTL0:
@@ -139,10 +149,12 @@ namespace modules {
     }
 
     void GPIO_Port::Reset() {
-        Reg_CTL0 = std::bitset<kReg_Size> {kReg_CTL_RESET_VALUE};
-        Reg_CTL1 = std::bitset<kReg_Size> {kReg_CTL_RESET_VALUE};
-        Reg_ISTAT = std::bitset<kReg_Size> {};
-        Reg_OCTL = std::bitset<kReg_Size> {};
+        spdlog::info("Resetting registers of GPIO port to default values...");
+
+        Reg_CTL0 = std::bitset<kReg_Size>{kReg_CTL_RESET_VALUE};
+        Reg_CTL1 = std::bitset<kReg_Size>{kReg_CTL_RESET_VALUE};
+        Reg_ISTAT = std::bitset<kReg_Size>{};
+        Reg_OCTL = std::bitset<kReg_Size>{};
     }
 
     GPIO_Pin_Mode GPIO_Port::Get_Pin_Mode(const size_t pinNo) const {
@@ -180,6 +192,8 @@ namespace modules {
     }
 
     void GPIO_Port::Set_Pin_Level(const size_t pinNo, GPIO_Pin_Level level) {
+        spdlog::info("Setting GPIO pin {0} to level {1}", pinNo, level);
+
         if (Get_Pin_Mode(pinNo) == GPIO_Pin_Mode::OUTPUT) {
             return; // cannot set pin output value through interface
         }
@@ -200,19 +214,23 @@ namespace modules {
         }
     }
 
-    void GPIO_Port::Announce_Pin_Level_Change(const size_t pinNo, const GPIO_Pin_Level previousLevel, const GPIO_Pin_Level currentLevel) const {
+    void GPIO_Port::Announce_Pin_Level_Change(const size_t pinNo, const GPIO_Pin_Level previousLevel,
+                                              const GPIO_Pin_Level currentLevel) const {
         if (currentLevel == previousLevel) {
             return;
         }
 
-        Emitter.Emit(GPIO_Pin_Level_Changed_Event_Description, new GPIO_Pin_Level_Changed_Event(*this, pinNo, previousLevel, currentLevel));
+        Emitter.Emit(GPIO_Pin_Level_Changed_Event_Description,
+                     new GPIO_Pin_Level_Changed_Event(*this, pinNo, previousLevel, currentLevel));
     }
 
-    void GPIO_Port::Announce_Pin_Mode_Change(const size_t pinNo, const GPIO_Pin_Mode previousMode, const GPIO_Pin_Mode currentMode) const {
+    void GPIO_Port::Announce_Pin_Mode_Change(const size_t pinNo, const GPIO_Pin_Mode previousMode,
+                                             const GPIO_Pin_Mode currentMode) const {
         if (currentMode == previousMode) {
             return;
         }
 
-        Emitter.Emit(GPIO_Pin_Mode_Changed_Event_Description, new GPIO_Pin_Mode_Changed_Event(*this, pinNo, previousMode, currentMode));
+        Emitter.Emit(GPIO_Pin_Mode_Changed_Event_Description,
+                     new GPIO_Pin_Mode_Changed_Event(*this, pinNo, previousMode, currentMode));
     }
 }

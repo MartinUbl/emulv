@@ -10,7 +10,7 @@
 
 ## Aktuální TODO
 ### Hlavní
-1) Pokrýt "kritické" sekce kodu logovacími výpisy
+1) ~~Pokrýt "kritické" sekce kodu logovacími výpisy~~
 2) Přepracování architektury aplikace, úprava neefektivních algoritmů
 3) Přepracování a vylepšení GUI
 4) Přepracování a vylepšení UART / GPIO periférií
@@ -23,6 +23,7 @@
 2) Správné použití namespace
 3) Modernizace kodu - přidání smart pointerů, apod.
 4) Pragma v header souborech 
+5) Na windows z neznámého důvodu nejde vypisovat nic na STDOUT, pokud není program spuštěn v admin režimu, nebo s připojeným debuggerem
 
 ## Changelog projektu
 * Byly odstraněny temporary / nepotřebné soubory
