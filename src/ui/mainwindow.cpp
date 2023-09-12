@@ -13,7 +13,6 @@
 #include <QMessageBox>
 
 #include "aboutwindow.h"
-#include "uart_event.h"
 
 MainWindow::MainWindow(QWidget *parent, Controller *controller)
 : QMainWindow(parent)
@@ -25,7 +24,7 @@ MainWindow::MainWindow(QWidget *parent, Controller *controller)
 
     memory_widget_->SetAddressRangeLimit(controller->GetRamStartAddress(), controller->GetRamEndAddress());
 
-    controller->GetEventEmitter().On(emulator::State_Changed_Event_Description, [this](AbstractEvent *res) {
+    controller->GetEventEmitter().On(emulator::State_Changed_Event_Description, [this](EventsLib::EventData data) {
         QMetaObject::invokeMethod(this, "UpdateUI");
     });
 }

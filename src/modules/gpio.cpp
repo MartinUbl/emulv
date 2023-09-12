@@ -9,13 +9,13 @@
 #include <stdexcept>
 #include <limits>
 #include "gpio.h"
-#include "gpio_events.h"
 #include "spdlog/spdlog.h"
 
 
 namespace modules {
 
-    GPIO_Port::GPIO_Port(const std::string &name, EventEmitter &emitter, uint64_t start_address, uint64_t end_address) :
+    GPIO_Port::GPIO_Port(const std::string &name, EventsLib::EventEmitter &emitter, uint64_t start_address,
+                         uint64_t end_address) :
             PeripheralDevice(name, emitter, start_address, end_address) {
         Reset();
     }
@@ -220,8 +220,11 @@ namespace modules {
             return;
         }
 
-        Emitter.Emit(GPIO_Pin_Level_Changed_Event_Description,
-                     new GPIO_Pin_Level_Changed_Event(*this, pinNo, previousLevel, currentLevel));
+        Emitter.Emit("gpio-pin-level-changed", EventsLib::EventData{
+                {"gpioPort",      *this},
+                {"pinNo",         pinNo},
+                {"previousLevel", previousLevel},
+                {"currentLevel",  currentLevel}});
     }
 
     void GPIO_Port::Announce_Pin_Mode_Change(const size_t pinNo, const GPIO_Pin_Mode previousMode,
@@ -230,7 +233,10 @@ namespace modules {
             return;
         }
 
-        Emitter.Emit(GPIO_Pin_Mode_Changed_Event_Description,
-                     new GPIO_Pin_Mode_Changed_Event(*this, pinNo, previousMode, currentMode));
+        Emitter.Emit("gpio-pin-mode-changed", EventsLib::EventData{
+                {"gpioPort",     *this},
+                {"pinNo",        pinNo},
+                {"previousMode", previousMode},
+                {"currentMode",  currentMode}});
     }
 }

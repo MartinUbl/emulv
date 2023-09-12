@@ -39,7 +39,7 @@ void setupLogger() {
     if (canWriteLog("logs/test.txt")) {
         sinks.push_back(std::make_shared<spdlog::sinks::daily_file_sink_st>("logs/logfile.txt", 23, 59));
     }
-    auto combined_logger = std::make_shared<spdlog::logger>("Global Logger", begin(sinks), end(sinks));
+    auto combined_logger = std::make_shared<spdlog::logger>("GL", begin(sinks), end(sinks));
     combined_logger->set_level(spdlog::level::trace);
     spdlog::register_logger(combined_logger);
     spdlog::set_default_logger(combined_logger);

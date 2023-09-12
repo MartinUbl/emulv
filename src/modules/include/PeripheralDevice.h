@@ -14,12 +14,12 @@ namespace modules {
        
         protected:
             std::string Name;
-            EventEmitter &Emitter;
+            EventsLib::EventEmitter &Emitter;
             uint64_t Start_Address;
             uint64_t End_Address;
         
         public:
-            PeripheralDevice(const std::string &name, EventEmitter &emitter, uint64_t start_address, uint64_t end_address) :
+            PeripheralDevice(const std::string &name, EventsLib::EventEmitter &emitter, uint64_t start_address, uint64_t end_address) :
                 Name(name),
                 Emitter(emitter),
                 Start_Address(start_address),

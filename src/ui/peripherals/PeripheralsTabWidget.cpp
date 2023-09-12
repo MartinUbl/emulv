@@ -6,55 +6,55 @@
 #include <QVBoxLayout>
 
 #include "uart/UARTWidget.h"
-#include "uart_event.h"
-#include "gpio_events.h"
+#include "uart.h"
 
 PeripheralsTabWidget::PeripheralsTabWidget(QWidget *parent, Controller *controller)
-: QWidget(parent)
-, controller_(controller)
-, tab_widget_(new QTabWidget(this)) {
+        : QWidget(parent), controller_(controller), tab_widget_(new QTabWidget(this)) {
     setLayout(new QVBoxLayout(this));
     layout()->setSpacing(0);
     layout()->setContentsMargins(0, 0, 0, 0);
     layout()->addWidget(tab_widget_);
 
-    controller_->GetEventEmitter().On(GPIO_Pin_Mode_Changed_Event_Description, [this](AbstractEvent *res) {
-        auto event = dynamic_cast<GPIO_Pin_Mode_Changed_Event *>(res);
-        auto widget = widgets_[event->getPeripheralDevice().GetName()];
+    controller_->GetEventEmitter().On("gpio-pin-mode-changed", [this](EventsLib::EventData data) {
+        auto gpioPort = std::any_cast<modules::GPIO_Port>(data.getData("gpioPort"));
+        auto pinNo = std::any_cast<size_t>(data.getData("pinNo"));
+        auto currentMode = std::any_cast<modules::GPIO_Pin_Mode>(data.getData("currentMode"));
+
+        auto widget = widgets_[gpioPort.GetName()];
         auto gpioPortWidget = dynamic_cast<GPIOPortWidget *>(widget);
 
-        gpioPortWidget->SetPinMode(event->Pin_No, event->Current_Mode);
-
-        delete res;
+        gpioPortWidget->SetPinMode(pinNo, currentMode);
     });
 
-    controller_->GetEventEmitter().On(GPIO_Pin_Level_Changed_Event_Description, [this](AbstractEvent *res) {
-        auto event = dynamic_cast<GPIO_Pin_Level_Changed_Event *>(res);
-        auto widget = widgets_[event->getPeripheralDevice().GetName()];
+    controller_->GetEventEmitter().On("gpio-pin-level-changed", [this](EventsLib::EventData data) {
+        auto gpioPort = std::any_cast<modules::GPIO_Port>(data.getData("gpioPort"));
+        auto pinNo = std::any_cast<size_t>(data.getData("pinNo"));
+        auto currentLevel = std::any_cast<modules::GPIO_Pin_Level>(data.getData("currentLevel"));
+
+        auto widget = widgets_[gpioPort.GetName()];
         auto gpioPortWidget = dynamic_cast<GPIOPortWidget *>(widget);
 
-        gpioPortWidget->SetPinStatus(event->Pin_No, event->Current_Level);
-
-        delete res;
+        gpioPortWidget->SetPinStatus(pinNo, currentLevel);
     });
 
-    controller_->GetEventEmitter().On(UART_event_description, [this](AbstractEvent *res) {
-        auto event = dynamic_cast<uart_event *>(res);
-        auto widget = widgets_[event->getPeripheralDevice().GetName()];
+    controller_->GetEventEmitter().On("uart_message_received", [this](EventsLib::EventData data) {
+        auto uartDevice = std::any_cast<modules::UART_Device>(data.getData("uartDevice"));
+        auto frameData = std::any_cast<uint32_t>(data.getData("frameData"));
+
+        auto widget = widgets_[uartDevice.GetName()];
         auto uartWidget = dynamic_cast<UARTWidget *>(widget);
 
-        char c = static_cast<char>(event->getData());
+        char c = static_cast<char>(frameData);
 
         QMetaObject::invokeMethod(uartWidget, [uartWidget, c]() {
             uartWidget->AppendChar(c);
         });
 
-        delete res;
     });
 }
 
 void PeripheralsTabWidget::SetReadonly(bool readonly) {
-    for (auto widget : widgets_) {
+    for (auto widget: widgets_) {
         widget.second->SetReadonly(readonly);
     }
 }
@@ -66,7 +66,7 @@ void PeripheralsTabWidget::UpdateWidgets() {
 
     setVisible(!peripherals.empty());
 
-    for (const auto& peripheral : peripherals) {
+    for (const auto &peripheral: peripherals) {
         auto label = peripheral.first;
         auto device = peripheral.second;
         AddWidget(device, label);
@@ -116,7 +116,7 @@ void PeripheralsTabWidget::AddGPIOPortWidget(modules::GPIO_Port *gpio_port, cons
     gpio_widget_->AddPort(port_widget);
 
     // Initialize default port modes and levels
-    for (auto pin : pins) {
+    for (auto pin: pins) {
         port_widget->SetPinMode(pin, gpio_port->Get_Pin_Mode(pin));
         port_widget->SetPinStatus(pin, gpio_port->Get_Pin_Level(pin));
     }

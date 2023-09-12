@@ -56,23 +56,32 @@ namespace modules {
 
         std::queue<uint32_t> write_buffer;
     public:
-        UART_Device(const std::string &name, EventEmitter &emitter, uint64_t start_address, uint64_t end_address);
+        UART_Device(const std::string &name, EventsLib::EventEmitter &emitter, uint64_t start_address,
+                    uint64_t end_address);
 
         // Interface - PeripheralDevice
         virtual void WriteByte(uint64_t address, uint8_t value) override;
+
         virtual void WriteHalfword(uint64_t address, uint16_t value) override;
+
         /** Handles writing to UART port registers. */
         virtual void WriteWord(uint64_t address, uint32_t value) override;
+
         virtual void WriteDoubleword(uint64_t address, uint64_t value) override;
+
         virtual uint8_t ReadByte(uint64_t address) override;
+
         virtual uint16_t ReadHalfword(uint64_t address) override;
+
         /** Handles reading from UART port registers. */
         virtual uint32_t ReadWord(uint64_t address) override;
+
         virtual uint64_t ReadDoubleword(uint64_t address) override;
-        
+
         virtual void Reset() override;
 
         uint64_t GetStartAddress();
+
         uint64_t GetEndAddress();
 
         void TransmitToDevice(std::string message) override;

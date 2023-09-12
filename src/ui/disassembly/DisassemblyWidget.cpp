@@ -8,8 +8,6 @@
 #include <QLabel>
 #include <QTextBlock>
 
-#include "BreakpointAreaWidgetEvents.h"
-
 DisassemblyWidget::DisassemblyWidget(QWidget *parent, Controller *controller)
 : QWidget(parent)
 , controller_(controller) {
@@ -83,16 +81,14 @@ DisassemblyWidget::DisassemblyWidget(QWidget *parent, Controller *controller)
     connect(text_edit_instructions_->verticalScrollBar(), SIGNAL(valueChanged(int)),
             this, SLOT(OnTextEditInstructionsScroll()));
 
-    controller_->GetEventEmitter().On(Breakpoint_Added_Event_Description, [this](AbstractEvent *res) {
-        auto event = dynamic_cast<BreakpointAreaWidgetEvent *>(res);
-        AddBreakpoint(event->Line);
-        delete res;
+    controller_->GetEventEmitter().On("breakpoint-added", [this](EventsLib::EventData data) {
+        int line = std::any_cast<int>(data.getData("line"));
+        AddBreakpoint(line);
     });
 
-    controller_->GetEventEmitter().On(Breakpoint_Removed_Event_Description, [this](AbstractEvent *res) {
-        auto event = dynamic_cast<BreakpointAreaWidgetEvent *>(res);
-        RemoveBreakpoint(event->Line);
-        delete res;
+    controller_->GetEventEmitter().On("breakpoint-removed", [this](EventsLib::EventData data) {
+        int line = std::any_cast<int>(data.getData("line"));
+        RemoveBreakpoint(line);
     });
 }
 

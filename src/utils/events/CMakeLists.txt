@@ -1,3 +1,2 @@
-add_library(events BreakpointAreaWidgetEvents.cpp EventEmitter.cpp gpio_events.cpp SimpleEvent.cpp uart_event.cpp)
+add_library(events EventEmitter.cpp EventData.cpp Events.cpp)
 target_include_directories(events PUBLIC include)
-target_link_libraries(events PRIVATE modules)

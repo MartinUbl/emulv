@@ -39,7 +39,7 @@ public:
 
     int GetProgramReturnValue() { return emulator_unit_->GetReturnValue(); }
 
-    EventEmitter &GetEventEmitter() { return emitter_; }
+    EventsLib::EventEmitter &GetEventEmitter() { return emitter_; }
 
     emulator::EmulatorState GetProgramState() { return emulator_unit_->GetState(); }
 
@@ -71,7 +71,7 @@ public:
 
 private:
     emulator::EmulatorUnit *emulator_unit_;
-    EventEmitter emitter_;
+    EventsLib::EventEmitter emitter_;
 
     int argc_;
     char **argv_;
@@ -80,4 +80,6 @@ private:
     std::map<std::string, modules::PeripheralDevice *> active_peripherals_;
 
     void RegisterPeripherals();
+
+    void configCollector(const std::string &path);
 };

@@ -8,15 +8,13 @@
 
 #include "mainwindow.h"
 #include "EventEmitter.h"
-#include "SimpleEvent.h"
 #include "ConfigLoader.h"
 #include "uart.h"
 
-Controller::Controller(int argc, char **argv) {
+Controller::Controller(int argc, char **argv) : emitter_("CentralEM") {
     spdlog::info("A controller instance has been created");
     argc_ = argc;
     argv_ = argv;
-    emitter_ = EventEmitter();
     emulator_unit_ = new emulator::EmulatorUnit(emitter_);
 }
 
@@ -48,6 +46,13 @@ void Controller::ConfigureEmulator(const std::string &path) {
     ClearActivePeripherals();
 
     spdlog::info("Configuring the EmulatorUnit instance...");
+
+    configCollector(path);
+
+    RegisterPeripherals();
+}
+
+void Controller::configCollector(const std::string &path) {
     const nlohmann::json &config = loadConfig(path);
 
     spdlog::info("Parsing peripherals configuration...");
@@ -60,7 +65,7 @@ void Controller::ConfigureEmulator(const std::string &path) {
                 if (val.key() == "ram") {
                     //Information about ram
                     uint64_t ramSize = val.value()["size"].get<uint64_t>();
-                    uint64_t ramStartAddress = std::strtoull(val.value()["start-address"].get<std::string>().c_str(),
+                    uint64_t ramStartAddress = strtoull(val.value()["start-address"].get<std::string>().c_str(),
                                                              nullptr, 16);
                     emulator_unit_->SetRamSize(ramSize);
                     emulator_unit_->SetRamStartAddress(ramStartAddress);
@@ -81,9 +86,9 @@ void Controller::ConfigureEmulator(const std::string &path) {
             for (const auto &val: item.value().items()) {
                 std::string type = val.value()["type"].get<std::string>();
                 std::string name = val.value()["name"].get<std::string>();
-                uint64_t startAddress = std::strtoull(
+                uint64_t startAddress = strtoull(
                         val.value()["mapping"]["start-address"].get<std::string>().c_str(), nullptr, 16);
-                uint64_t endAddress = std::strtoull(val.value()["mapping"]["end-address"].get<std::string>().c_str(),
+                uint64_t endAddress = strtoull(val.value()["mapping"]["end-address"].get<std::string>().c_str(),
                                                     nullptr, 16);
 
                 spdlog::info("Found a peripheral of type: {0} name: {1} startAddress: {2} endAddress: {3}", type, name,
@@ -100,8 +105,6 @@ void Controller::ConfigureEmulator(const std::string &path) {
             }
         }
     }
-
-    RegisterPeripherals();
 }
 
 //######################################################################################################################

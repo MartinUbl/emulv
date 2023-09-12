@@ -6,12 +6,11 @@
 #include <stdexcept>
 #include <iostream>
 #include "uart.h"
-#include "uart_event.h"
 #include "spdlog/spdlog.h"
 
 namespace modules {
 
-    UART_Device::UART_Device(const std::string &name, EventEmitter &emitter, uint64_t start_address,
+    UART_Device::UART_Device(const std::string &name, EventsLib::EventEmitter &emitter, uint64_t start_address,
                              uint64_t end_address) : PeripheralDevice(name, emitter, start_address, end_address) {
         Reset();
     }
@@ -201,7 +200,9 @@ namespace modules {
     void UART_Device::DeviceReceivedFrame(unsigned long frame_data) {
         spdlog::info("UART has received (from user input) a new frame {0}", frame_data);
         //frame_data can contain either 8 bits of data, or 9 bits of data.
-        Emitter.Emit(UART_event_description, new uart_event(*this, frame_data));
+        Emitter.Emit("uart_message_received", EventsLib::EventData{
+                {"uartDevice", *this},
+                {"frameData",  frame_data}});
     }
 
     void UART_Device::TransmitFrameToDevice(uint8_t frame_data) {

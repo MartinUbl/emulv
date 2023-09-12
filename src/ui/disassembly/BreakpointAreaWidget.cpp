@@ -2,17 +2,14 @@
 // Created by Hynek on 11.04.2023.
 //
 #include "BreakpointAreaWidget.h"
-
+#include "EventData.h"
 #include <QLabel>
 
-#include "BreakpointAreaWidgetEvents.h"
-
 BreakpointAreaWidget::BreakpointAreaWidget(QWidget *parent, Controller *controller)
-: QFrame(parent)
-, controller_(controller) {}
+        : QFrame(parent), controller_(controller) {}
 
 void BreakpointAreaWidget::Clear() {
-    for (auto breakpoint : breakpoints_) {
+    for (auto breakpoint: breakpoints_) {
         delete breakpoint.second;
     }
 
@@ -24,7 +21,7 @@ void BreakpointAreaWidget::RemoveBreakpoint(int line) {
     breakpoints_.erase(line);
     delete breakpoint;
 
-    controller_->GetEventEmitter().Emit(Breakpoint_Removed_Event_Description, new BreakpointAreaWidgetEvent(line));
+    controller_->GetEventEmitter().Emit("breakpoint-removed", EventsLib::EventData{{"line", line}});
 }
 
 void BreakpointAreaWidget::SetMaximumBreakpoints(int max) {
@@ -68,5 +65,5 @@ void BreakpointAreaWidget::mousePressEvent(QMouseEvent *event) {
 
     breakpoints_[line] = breakpoint;
 
-    controller_->GetEventEmitter().Emit(Breakpoint_Added_Event_Description, new BreakpointAreaWidgetEvent(line));
+    controller_->GetEventEmitter().Emit("breakpoint-added", EventsLib::EventData{{"line", line}});
 }
