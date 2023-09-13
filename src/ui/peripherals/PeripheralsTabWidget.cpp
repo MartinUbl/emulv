@@ -8,7 +8,7 @@
 #include "uart/UARTWidget.h"
 #include "uart.h"
 
-PeripheralsTabWidget::PeripheralsTabWidget(QWidget *parent, Controller *controller)
+PeripheralsTabWidget::PeripheralsTabWidget(QWidget *parent, EmulvApi *controller)
         : QWidget(parent), controller_(controller), tab_widget_(new QTabWidget(this)) {
     setLayout(new QVBoxLayout(this));
     layout()->setSpacing(0);
@@ -62,7 +62,7 @@ void PeripheralsTabWidget::SetReadonly(bool readonly) {
 void PeripheralsTabWidget::UpdateWidgets() {
     Clear();
 
-    auto peripherals = controller_->GetPeripherals();
+    auto peripherals = controller_->getPeripherals();
 
     setVisible(!peripherals.empty());
 

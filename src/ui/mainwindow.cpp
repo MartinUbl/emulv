@@ -14,15 +14,15 @@
 
 #include "aboutwindow.h"
 
-MainWindow::MainWindow(QWidget *parent, Controller *controller)
+MainWindow::MainWindow(QWidget *parent, EmulvApi *EmulvApi)
 : QMainWindow(parent)
-, controller_(controller) {
+, emulvApi_(EmulvApi) {
     SetupUI();
     UpdateUI();
 
     peripherals_tab_widget_->UpdateWidgets();
 
-    memory_widget_->SetAddressRangeLimit(controller->GetRamStartAddress(), controller->GetRamEndAddress());
+    memory_widget_->SetAddressRangeLimit(EmulvApi->getRamStartAddress(), EmulvApi->getRamEndAddress());
 
     EventsLib::globalOn(emulator::State_Changed_Event_Description, [this](EventsLib::EventData data) {
         QMetaObject::invokeMethod(this, "UpdateUI");
@@ -30,7 +30,7 @@ MainWindow::MainWindow(QWidget *parent, Controller *controller)
 }
 
 MainWindow::~MainWindow() {
-    controller_->TerminateProgram();
+    emulvApi_->terminateProgram();
     JoinThread();
 }
 
@@ -101,8 +101,8 @@ void MainWindow::SetupUI() {
     btn_debug_->setIconSize(QSize(16, 16));
 
     btn_terminate_ = new QToolButton(toolBar);
-    btn_terminate_->setText("TerminateProgram");
-    btn_terminate_->setToolTip("TerminateProgram (Shift + F5)");
+    btn_terminate_->setText("terminateProgram");
+    btn_terminate_->setToolTip("terminateProgram (Shift + F5)");
     btn_terminate_->setShortcut(QKeySequence::fromString("Shift+F5"));
     btn_terminate_->setIcon(QIcon(":img/terminate.png"));
     btn_terminate_->setFixedSize(btnSize);
@@ -168,7 +168,7 @@ void MainWindow::SetupUI() {
     top_splitter_ = new QSplitter(main_splitter_);
     top_splitter_->setChildrenCollapsible(false);
 
-    disassembly_widget_ = new DisassemblyWidget(this, controller_);
+    disassembly_widget_ = new DisassemblyWidget(this, emulvApi_);
     registers_widget_ = new RegistersWidget(this);
 
     top_splitter_->addWidget(disassembly_widget_);
@@ -182,8 +182,8 @@ void MainWindow::SetupUI() {
     bot_splitter_ = new QSplitter(main_splitter_);
     bot_splitter_->setChildrenCollapsible(false);
 
-    memory_widget_ = new MemoryWidget(this, controller_);
-    peripherals_tab_widget_ = new PeripheralsTabWidget(this, controller_);
+    memory_widget_ = new MemoryWidget(this, emulvApi_);
+    peripherals_tab_widget_ = new PeripheralsTabWidget(this, emulvApi_);
 
     bot_splitter_->addWidget(memory_widget_);
     bot_splitter_->addWidget(peripherals_tab_widget_);
@@ -223,7 +223,7 @@ void MainWindow::UpdateUI() {
 
     disassembly_widget_->HighlightLine(-1);
 
-    auto state = controller_->GetProgramState();
+    auto state = emulvApi_->getProgramState();
 
     if (state == emulator::kTerminated) {
         UpdateRegisters();
@@ -232,12 +232,12 @@ void MainWindow::UpdateUI() {
     else if (state == emulator::kDebugPaused) {
         UpdateRegisters();
         UpdateMemory();
-        disassembly_widget_->HighlightLine(controller_->GetPc());
+        disassembly_widget_->HighlightLine(emulvApi_->getPc());
     }
 }
 
 void MainWindow::UpdateRunningIndicator() {
-    switch (controller_->GetProgramState()) {
+    switch (emulvApi_->getProgramState()) {
         case emulator::kRunning:
             running_indicator_->setVisible(true);
             debug_indicator_->setVisible(false);
@@ -255,7 +255,7 @@ void MainWindow::UpdateRunningIndicator() {
 }
 
 void MainWindow::UpdateWidgetsEnabled() {
-    switch (controller_->GetProgramState()) {
+    switch (emulvApi_->getProgramState()) {
         case emulator::kRunning:
         case emulator::kRunningDebug:
             memory_widget_->setEnabled(false);
@@ -307,7 +307,7 @@ void MainWindow::UpdateToolbarButtons() {
             {emulator::kTerminated,   { true,  true, false, false, false}},
     };
 
-    auto state = controller_->GetProgramState();
+    auto state = emulvApi_->getProgramState();
 
     for (size_t i = 0; i < toolbar_buttons.size(); ++i) {
         toolbar_buttons[i]->setEnabled(buttons_enabled[state][i]);
@@ -318,7 +318,7 @@ void MainWindow::UpdateToolbarButtons() {
 void MainWindow::UpdateProgramStatusLabel() {
     std::string string_pc;
 
-    switch (controller_->GetProgramState()) {
+    switch (emulvApi_->getProgramState()) {
         case emulator::kRunning:
             lbl_program_status_->setText("Running ...");
             break;
@@ -327,10 +327,11 @@ void MainWindow::UpdateProgramStatusLabel() {
             break;
         case emulator::kTerminated:
             lbl_program_status_->setText(
-                    QString::fromStdString("Program finished with value " + std::to_string(controller_->GetProgramReturnValue())));
+                    QString::fromStdString("Program finished with value " + std::to_string(
+                            emulvApi_->getProgramReturnValue())));
             break;
         case emulator::kDebugPaused:
-            string_pc = FormatAddress(controller_->GetPc());
+            string_pc = FormatAddress(emulvApi_->getPc());
             lbl_program_status_->setText(
                     QString::fromStdString("Program hit breakpoint " + string_pc));
             break;
@@ -340,7 +341,7 @@ void MainWindow::UpdateProgramStatusLabel() {
 }
 
 void MainWindow::UpdateRegisters() {
-    registers_widget_->SetRegisters(controller_->GetRegisters());
+    registers_widget_->SetRegisters(emulvApi_->getRegisters());
 }
 
 void MainWindow::UpdateMemory() const {
@@ -352,12 +353,12 @@ void MainWindow::OpenFile(const std::string& path) {
         return;
     }
 
-    controller_->TerminateProgram();
+    emulvApi_->terminateProgram();
     JoinThread();
 
     try {
-        controller_->LoadFile(path);
-        disassembly_widget_->SetInstructions(controller_->GetDisassembly());
+        emulvApi_->loadFile(path);
+        disassembly_widget_->SetInstructions(emulvApi_->getDisassembly());
     }
     catch (const std::exception &e) {
         ShowMessageBox("File error", QString::fromStdString("Could not load file " + path + '\n' + e.what()));
@@ -366,7 +367,7 @@ void MainWindow::OpenFile(const std::string& path) {
 
     memory_widget_->Clear();
     registers_widget_->SetRegisters({});
-    controller_->ResetPeripherals();
+    emulvApi_->resetPeripherals();
     peripherals_tab_widget_->UpdateWidgets();
 
     lbl_file_->setText(QString::fromStdString(path));
@@ -377,11 +378,11 @@ void MainWindow::SelectConfig(const std::string& path) {
         return;
     }
 
-    controller_->TerminateProgram();
+    emulvApi_->terminateProgram();
     JoinThread();
 
     try {
-        controller_->ConfigureEmulator(path);
+        emulvApi_->configureEmulator(path);
     }
     catch (const std::exception &e) {
         ShowMessageBox("File error", QString::fromStdString("Could not load file " + path + '\n' + e.what()));
@@ -391,18 +392,18 @@ void MainWindow::SelectConfig(const std::string& path) {
     peripherals_tab_widget_->UpdateWidgets();
     UpdateUI();
 
-    memory_widget_->SetAddressRangeLimit(controller_->GetRamStartAddress(), controller_->GetRamEndAddress());
-    memory_widget_->spinbox_memory_from_->setValue(controller_->GetRamStartAddress());
-    memory_widget_->spinbox_memory_to_->setValue(controller_->GetRamEndAddress());
+    memory_widget_->SetAddressRangeLimit(emulvApi_->getRamStartAddress(), emulvApi_->getRamEndAddress());
+    memory_widget_->spinbox_memory_from_->setValue(emulvApi_->getRamStartAddress());
+    memory_widget_->spinbox_memory_to_->setValue(emulvApi_->getRamEndAddress());
 
     lbl_config_->setText(QString::fromStdString(path));
 }
 
 void MainWindow::ClearConfig() {
-    controller_->TerminateProgram();
+    emulvApi_->terminateProgram();
     JoinThread();
 
-    controller_->ClearActivePeripherals();
+    emulvApi_->clearActivePeripherals();
     peripherals_tab_widget_->UpdateWidgets();
 
     lbl_config_->setText(kDefaultConfigLabel);
@@ -432,20 +433,20 @@ void MainWindow::OnAboutTriggered() {
 
 void MainWindow::OnRunClicked() {
     JoinThread();
-    controller_->ResetPeripherals();
+    emulvApi_->resetPeripherals();
     peripherals_tab_widget_->UpdateWidgets();
-    thread_ = std::make_unique<std::thread>(&Controller::RunProgram, controller_);
+    thread_ = std::make_unique<std::thread>(&EmulvApi::runProgram, emulvApi_);
 }
 
 void MainWindow::OnDebugClicked() {
     JoinThread();
-    controller_->ResetPeripherals();
+    emulvApi_->resetPeripherals();
     peripherals_tab_widget_->UpdateWidgets();
-    thread_ = std::make_unique<std::thread>(&Controller::DebugProgram, controller_);
+    thread_ = std::make_unique<std::thread>(&EmulvApi::debugProgram, emulvApi_);
 }
 
 void MainWindow::OnTerminateClicked() {
-    controller_->TerminateProgram();
+    emulvApi_->terminateProgram();
     JoinThread();
 
     UpdateRegisters();
@@ -453,12 +454,12 @@ void MainWindow::OnTerminateClicked() {
 }
 
 void MainWindow::OnStepClicked() {
-    controller_->DebugStep();
+    emulvApi_->debugStep();
 
     UpdateRegisters();
     UpdateMemory();
 
-    uint64_t pc = controller_->GetPc();
+    uint64_t pc = emulvApi_->getPc();
     disassembly_widget_->HighlightLine(pc);
 
     std::string pc_str = FormatAddress(pc);
@@ -467,7 +468,7 @@ void MainWindow::OnStepClicked() {
 
 void MainWindow::OnContinueClicked() {
     JoinThread();
-    thread_ = std::make_unique<std::thread>(&Controller::DebugContinue, controller_);
+    thread_ = std::make_unique<std::thread>(&EmulvApi::debugContinue, emulvApi_);
 }
 
 std::string MainWindow::FormatAddress(uint64_t address) {

@@ -7,19 +7,19 @@
 #include <QFrame>
 #include <QMouseEvent>
 
-#include "../Controller.h"
+#include "../EmulvApi.h"
 
 class BreakpointAreaWidget : public QFrame {
     Q_OBJECT
 public:
-    explicit BreakpointAreaWidget(QWidget *parent = nullptr, Controller *controller = nullptr);
+    explicit BreakpointAreaWidget(QWidget *parent = nullptr, EmulvApi *controller = nullptr);
 
     void SetMaximumBreakpoints(int max);
     void RemoveBreakpoint(int line);
     void Clear();
 
 private:
-    Controller *controller_;
+    EmulvApi *controller_;
 
     int max_breakpoints_ = 1;
     std::unordered_map<int, QWidget *> breakpoints_;

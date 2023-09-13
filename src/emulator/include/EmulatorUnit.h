@@ -102,7 +102,7 @@ namespace emulator {
 
         /**
          * Setups the required memory traps of peripheral devices on this machine instance.
-         * PeripheralDevices must first be registered using the RegisterPeripherals() method.
+         * PeripheralDevices must first be registered using the registerPeripherals_() method.
          * @param machine An active machine instance
          */
         void SetupMemoryTraps_(riscv::Machine<riscv::RISCV64> &machine);

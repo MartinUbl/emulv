@@ -9,6 +9,7 @@ set(IDENTIFIER "com.emulv.emulator")
 
 ##########################################################
 set(SOURCE_FILES
+        EmulvApi.h
         main.cpp
         mainwindow.cpp
         Controller.cpp

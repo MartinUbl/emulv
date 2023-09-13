@@ -5,7 +5,7 @@
 #include "Events.h"
 #include <QLabel>
 
-BreakpointAreaWidget::BreakpointAreaWidget(QWidget *parent, Controller *controller)
+BreakpointAreaWidget::BreakpointAreaWidget(QWidget *parent, EmulvApi *controller)
         : QFrame(parent), controller_(controller) {}
 
 void BreakpointAreaWidget::Clear() {

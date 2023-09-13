@@ -6,13 +6,13 @@
 
 #include <QFrame>
 #include "GPIOPinButton.h"
-#include "../../Controller.h"
+#include "../../EmulvApi.h"
 #include "../PeripheralWidget.h"
 
 class GPIOPortWidget : public PeripheralWidget {
     Q_OBJECT
 public:
-    explicit GPIOPortWidget(QWidget *parent = nullptr, Controller *controller = nullptr,
+    explicit GPIOPortWidget(QWidget *parent = nullptr, EmulvApi *controller = nullptr,
                             std::string label = "", std::vector<int> pin_ids = {});
 
     void SetPinMode(int pin_id, modules::GPIO_Pin_Mode mode);

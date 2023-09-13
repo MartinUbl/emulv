@@ -11,7 +11,7 @@
 #include <QPlainTextEdit>
 #include <QToolButton>
 
-#include "../Controller.h"
+#include "../EmulvApi.h"
 
 class MemoryWidget : public QFrame {
     Q_OBJECT
@@ -22,7 +22,7 @@ public:
     QTextEdit *text_edit_header_;
     QPlainTextEdit *text_edit_memory_;
 
-    explicit MemoryWidget(QWidget *parent = nullptr, Controller *controller = nullptr);
+    explicit MemoryWidget(QWidget *parent = nullptr, EmulvApi *controller = nullptr);
 
     void SetAddressRangeLimit(int min, int max);
     void UpdateMemory();
@@ -41,7 +41,7 @@ private slots:
 private:
     static const int kMaxAddress = 0x7FFFFFFF;
 
-    Controller *controller_;
+    EmulvApi *controller_;
 
     int memory_from_, memory_to_;
     std::vector<uint8_t> memory_;

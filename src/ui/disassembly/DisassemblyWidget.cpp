@@ -8,7 +8,7 @@
 #include <QLabel>
 #include <QTextBlock>
 
-DisassemblyWidget::DisassemblyWidget(QWidget *parent, Controller *controller)
+DisassemblyWidget::DisassemblyWidget(QWidget *parent, EmulvApi *controller)
 : QWidget(parent)
 , controller_(controller) {
     setLayout(new QVBoxLayout(this));
@@ -213,9 +213,9 @@ int DisassemblyWidget::FindLine(uint64_t address) {
 }
 
 void DisassemblyWidget::AddBreakpoint(int line) {
-    controller_->AddBreakpoint(addresses_.at(line));
+    controller_->addBreakpoint(addresses_.at(line));
 }
 
 void DisassemblyWidget::RemoveBreakpoint(int line) {
-    controller_->RemoveBreakpoint(addresses_.at(line));
+    controller_->removeBreakpoint(addresses_.at(line));
 }

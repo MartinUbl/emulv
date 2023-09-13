@@ -8,75 +8,81 @@
 #include <limits>
 #include "Events.h"
 #include "EmulatorUnit.h"
+#include "EmulvApi.h"
 
-class Controller {
+class Controller : public EmulvApi {
+private:
+    int argc_;
+    char **argv_;
+
+    emulator::EmulatorUnit *emulator_unit_;
+    std::vector<std::string> program_arguments_;
+    std::map<std::string, modules::PeripheralDevice *> active_peripherals_;
+
+    void registerPeripherals_();
+
+    void loadConfig_(const std::string &path);
+
 public:
     Controller(int argc, char **argv);
 
     ~Controller();
 
-    int ShowWindow();
+    int showWindow();
 
-    void ConfigureEmulator(const std::string &path);
+    //###########################################################################
+    //# API METHODS
+    //###########################################################################
 
-    void LoadFile(std::string file_path);
+    void clearActivePeripherals() override;
 
-    void RunProgram();
+    void configureEmulator(const std::string &path) override;
 
-    void DebugProgram();
+    void loadFile(std::string filePath) override;
 
-    void DebugStep();
+    void resetPeripherals() override;
 
-    void DebugContinue();
+    void runProgram() override;
 
-    void TerminateProgram();
+    void debugProgram() override;
 
-    void AddBreakpoint(uint64_t address);
+    void debugStep() override;
 
-    void RemoveBreakpoint(uint64_t address);
+    void debugContinue() override;
 
-    uint64_t GetPc() { return emulator_unit_->GetPc(); }
+    void terminateProgram() override;
 
-    int GetProgramReturnValue() { return emulator_unit_->GetReturnValue(); }
+    void addBreakpoint(uint64_t address) override;
 
-    emulator::EmulatorState GetProgramState() { return emulator_unit_->GetState(); }
+    void removeBreakpoint(uint64_t address) override;
 
-    std::vector<uint8_t> GetMemory(uint64_t from, uint64_t to) { return emulator_unit_->GetMemory(from, to); }
+    uint64_t getPc() override { return emulator_unit_->GetPc(); }
 
-    std::vector<std::tuple<uint64_t, std::string>> GetDisassembly() { return this->emulator_unit_->Disassemble(); }
+    int getProgramReturnValue() override { return emulator_unit_->GetReturnValue(); }
 
-    std::vector<std::tuple<std::string, uint32_t>> GetRegisters() { return emulator_unit_->GetRegisters(); }
+    emulator::EmulatorState getProgramState() override { return emulator_unit_->GetState(); }
 
-    std::map<std::string, modules::PeripheralDevice *> GetPeripherals() { return active_peripherals_; }
+    std::vector<uint8_t> getMemory(uint64_t from, uint64_t to) override { return emulator_unit_->GetMemory(from, to); }
 
-    uint64_t GetMemoryStartAddress() { return emulator_unit_->GetMemoryStartAddress(); }
+    std::vector<std::tuple<uint64_t, std::string>>
+    getDisassembly() override { return this->emulator_unit_->Disassemble(); }
 
-    uint64_t GetMemoryEndAddress() { return emulator_unit_->GetMemoryEndAddress(); }
+    std::vector<std::tuple<std::string, uint32_t>> getRegisters() override { return emulator_unit_->GetRegisters(); }
 
-    uint64_t GetRamStartAddress() { return emulator_unit_->GetRamStartAddress(); }
+    std::map<std::string, modules::PeripheralDevice *> getPeripherals() override { return active_peripherals_; }
 
-    uint64_t GetRamEndAddress() { return emulator_unit_->GetRamEndAddress(); }
+    uint64_t getMemoryStartAddress() override { return emulator_unit_->GetMemoryStartAddress(); }
 
-    uint64_t GetRamSize() { return emulator_unit_->GetRamSize(); }
+    uint64_t getMemoryEndAddress() override { return emulator_unit_->GetMemoryEndAddress(); }
 
-    void SetPinStatus(std::string module, int pin, bool status);
+    uint64_t getRamStartAddress() override { return emulator_unit_->GetRamStartAddress(); }
 
-    void SendUARTMessage(std::string uart_name, std::string message);
+    uint64_t getRamEndAddress() override { return emulator_unit_->GetRamEndAddress(); }
 
-    void ClearActivePeripherals();
+    uint64_t getRamSize() override { return emulator_unit_->GetRamSize(); }
 
-    void ResetPeripherals();
+    void setPinStatus(std::string moduleName, int pin, bool status) override;
 
-private:
-    emulator::EmulatorUnit *emulator_unit_;
+    void sendUartMessage(std::string uartName, std::string message) override;
 
-    int argc_;
-    char **argv_;
-
-    std::vector<std::string> program_arguments_;
-    std::map<std::string, modules::PeripheralDevice *> active_peripherals_;
-
-    void RegisterPeripherals();
-
-    void loadConfig(const std::string &path);
 };

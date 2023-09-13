@@ -15,7 +15,7 @@ public:
     QScrollArea *scroll_area_breakpoints_;
     BreakpointAreaWidget *breakpoint_area_widget_;
 
-    explicit DisassemblyWidget(QWidget *parent = nullptr, Controller *controller = nullptr);
+    explicit DisassemblyWidget(QWidget *parent = nullptr, EmulvApi *controller = nullptr);
 
     void SetInstructions(const std::vector<std::tuple<uint64_t, std::string>> &instructions);
     void HighlightLine(uint64_t address);
@@ -30,7 +30,7 @@ private:
     const QString kAddressTemplate = "00000000 ";
     const int kAddressWidth = 8;
 
-    Controller *controller_;
+    EmulvApi *controller_;
 
     std::vector<uint64_t> addresses_;
     // Map for quickly finding the corresponding line of an address

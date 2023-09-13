@@ -7,7 +7,7 @@
 #include <QSplitter>
 #include <thread>
 
-#include "Controller.h"
+#include "EmulvApi.h"
 #include "disassembly/DisassemblyWidget.h"
 #include "registers/RegistersWidget.h"
 #include "memory/MemoryWidget.h"
@@ -26,7 +26,7 @@ public:
     MemoryWidget *memory_widget_{};
     PeripheralsTabWidget *peripherals_tab_widget_{};
 
-    explicit MainWindow(QWidget *parent = nullptr, Controller *controller = nullptr);
+    explicit MainWindow(QWidget *parent = nullptr, EmulvApi *controller = nullptr);
     ~MainWindow() override;
 
     void OpenFile(const std::string& path);
@@ -52,7 +52,7 @@ private:
     const QString kDefaultFileLabel = "No file loaded";
     const QString kDefaultConfigLabel = "No config loaded";
 
-    Controller *controller_;
+    EmulvApi *emulvApi_;
     std::unique_ptr<std::thread> thread_;
 
     static void ShowMessageBox(const QString& title, const QString& message);

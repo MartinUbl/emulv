@@ -5,7 +5,7 @@
 
 #include <QVBoxLayout>
 
-UARTWidget::UARTWidget(QWidget *parent, Controller *controller, std::string label)
+UARTWidget::UARTWidget(QWidget *parent, EmulvApi *controller, std::string label)
 : PeripheralWidget(parent, controller, label)
 , text_edit_messages_(new QPlainTextEdit(this))
 , line_edit_send_message_(new QLineEdit(this))
@@ -85,7 +85,7 @@ void UARTWidget::OnSendMessageClicked() {
         message.append("\r\n");
     }
 
-    controller_->SendUARTMessage(label_, message);
+    controller_->sendUartMessage(label_, message);
 
     line_edit_send_message_->clear();
 }

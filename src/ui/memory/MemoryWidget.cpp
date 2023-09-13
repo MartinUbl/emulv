@@ -11,7 +11,7 @@
 
 #include "MemoryFormatter.h"
 
-MemoryWidget::MemoryWidget(QWidget *parent, Controller *controller)
+MemoryWidget::MemoryWidget(QWidget *parent, EmulvApi *controller)
 : QFrame(parent)
 , controller_(controller)
 , memory_from_(0), memory_to_(kMaxAddress)
@@ -138,8 +138,8 @@ void MemoryWidget::SetAddressRangeLimit(const int min, const int max) {
 
 void MemoryWidget::UpdateMemory() {
     try {
-        SetAddressRangeLimit(controller_->GetRamStartAddress(), controller_->GetRamEndAddress());
-        memory_ = controller_->GetMemory(memory_from_, memory_to_);
+        SetAddressRangeLimit(controller_->getRamStartAddress(), controller_->getRamEndAddress());
+        memory_ = controller_->getMemory(memory_from_, memory_to_);
     } catch (...) {
         text_edit_memory_->setPlainText("Failed to read memory");
         return;

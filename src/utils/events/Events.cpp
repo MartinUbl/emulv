@@ -7,19 +7,24 @@
 //
 
 #include "Events.h"
+#include "spdlog/spdlog.h"
 
 #include <utility>
 
 namespace EventsLib {
     void registerEmitter(std::shared_ptr<EventEmitter> emitter) {
+        spdlog::trace("EventsLib: The emitter {0} was registered", emitter->getName());
         EmitterStore::getInstance().emitters.try_emplace(emitter->getName(), emitter);
     }
 
     void removeEmitter(const std::string &name) {
+        spdlog::trace("EventsLib: The emitter {0} was removed", name);
         EmitterStore::getInstance().emitters.erase(name);
     }
 
     void setGlobalEmitter(const std::shared_ptr<EventEmitter> &emitter) {
+        spdlog::trace("EventsLib: The emitter {0} has been set as global", emitter->getName());
+
         EmitterStore &store = EmitterStore::getInstance();
 
         store.globalName = emitter->getName();
@@ -40,6 +45,7 @@ namespace EventsLib {
         }
 
         //There is no global emitter, create one
+        spdlog::trace("EventsLib: Creating a default global emitter...");
         auto global = std::make_shared<EventEmitter>("Global");
         setGlobalEmitter(global);
         return global;

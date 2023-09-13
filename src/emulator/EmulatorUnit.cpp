@@ -93,7 +93,7 @@ namespace emulator {
 
     void EmulatorUnit::DebugStep() {
         if (active_machine_ == nullptr) {
-            throw std::runtime_error("EmulatorUnit::DebugStep: active_machine_ is equal to null!");
+            throw std::runtime_error("EmulatorUnit::debugStep: active_machine_ is equal to null!");
         }
 
         if (!active_machine_->stopped()) {
@@ -107,7 +107,7 @@ namespace emulator {
 
     void EmulatorUnit::DebugContinue() {
         if (active_machine_ == nullptr) {
-            throw std::runtime_error("EmulatorUnit::DebugStep: active_machine_ is equal to null!");
+            throw std::runtime_error("EmulatorUnit::debugStep: active_machine_ is equal to null!");
         }
 
         try {
@@ -255,14 +255,14 @@ namespace emulator {
 
     uint64_t EmulatorUnit::GetMemoryStartAddress() {
         if (active_machine_ == nullptr) {
-            throw std::runtime_error("EmulatorUnit::GetMemoryStartAddress: active_machine_ is equal to null!");
+            throw std::runtime_error("EmulatorUnit::getMemoryStartAddress: active_machine_ is equal to null!");
         }
         return active_machine_->memory.start_address();
     }
 
     uint64_t EmulatorUnit::GetMemoryEndAddress() {
         if (active_machine_ == nullptr) {
-            throw std::runtime_error("EmulatorUnit::GetMemoryEndAddress: active_machine_ is equal to null!");
+            throw std::runtime_error("EmulatorUnit::getMemoryEndAddress: active_machine_ is equal to null!");
         }
 
         return active_machine_->memory.exit_address();
@@ -352,7 +352,7 @@ namespace emulator {
 
     uint64_t EmulatorUnit::GetPc() {
         if (active_machine_ == nullptr) {
-            throw std::runtime_error("EmulatorUnit::GetPc: active_machine_ is equal to null!");
+            throw std::runtime_error("EmulatorUnit::getPc: active_machine_ is equal to null!");
         }
 
         return active_machine_->cpu.pc();

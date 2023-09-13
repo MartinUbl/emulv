@@ -7,7 +7,7 @@
 #include <QTabWidget>
 
 #include "PeripheralWidget.h"
-#include "../Controller.h"
+#include "../EmulvApi.h"
 #include "gpio/GPIOWidget.h"
 
 class PeripheralsTabWidget : public QWidget {
@@ -17,14 +17,14 @@ public:
     GPIOWidget *gpio_widget_ = nullptr;
     std::unordered_map<std::string, PeripheralWidget *> widgets_;
 
-    explicit PeripheralsTabWidget(QWidget *parent = nullptr, Controller *controller = nullptr);
+    explicit PeripheralsTabWidget(QWidget *parent = nullptr, EmulvApi *controller = nullptr);
 
     void SetReadonly(bool readonly);
     void UpdateWidgets();
     void Clear();
 
 private:
-    Controller *controller_;
+    EmulvApi *controller_;
 
     void AddWidget(modules::PeripheralDevice *peripheral_device, const std::string &label);
     void AddGPIOPortWidget(modules::GPIO_Port *gpio_port, const std::string &label);

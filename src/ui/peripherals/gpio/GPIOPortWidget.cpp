@@ -6,7 +6,7 @@
 #include <QLabel>
 #include <QGridLayout>
 
-GPIOPortWidget::GPIOPortWidget(QWidget *parent, Controller *controller, std::string label, std::vector<int> pin_ids)
+GPIOPortWidget::GPIOPortWidget(QWidget *parent, EmulvApi *controller, std::string label, std::vector<int> pin_ids)
 : PeripheralWidget(parent, controller, label)
 , pins_() {
     setStyleSheet("GPIOPinButton, GPIOPinButton:pressed { border: 0px; background-color: transparent; }");
@@ -47,6 +47,6 @@ void GPIOPortWidget::OnPinButtonClicked() {
 
     if (clicked_pin->GetMode() == modules::GPIO_Pin_Mode::INPUT) {
         clicked_pin->SetStatus(!clicked_pin->GetStatus());
-        controller_->SetPinStatus(label_, clicked_pin->PinID(), clicked_pin->GetStatus());
+        controller_->setPinStatus(label_, clicked_pin->PinID(), clicked_pin->GetStatus());
     }
 }

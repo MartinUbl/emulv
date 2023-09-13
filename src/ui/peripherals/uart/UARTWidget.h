@@ -10,7 +10,7 @@
 #include <QToolButton>
 
 #include "../PeripheralWidget.h"
-#include "../../Controller.h"
+#include "../../EmulvApi.h"
 
 class UARTWidget : public PeripheralWidget {
     Q_OBJECT
@@ -20,7 +20,7 @@ public:
     QComboBox *combobox_line_separator_;
     QToolButton *button_send_message_;
 
-    explicit UARTWidget(QWidget *parent = nullptr, Controller *controller = nullptr, std::string label = "");
+    explicit UARTWidget(QWidget *parent = nullptr, EmulvApi *controller = nullptr, std::string label = "");
 
     void SetReadonly(bool readonly) override;
     void AppendChar(char c) const;

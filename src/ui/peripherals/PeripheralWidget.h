@@ -6,11 +6,11 @@
 
 #include <QWidget>
 
-#include "../Controller.h"
+#include "../EmulvApi.h"
 
 class PeripheralWidget : public QWidget {
 public:
-    explicit PeripheralWidget(QWidget *parent = nullptr, Controller *controller = nullptr, std::string label = "") :
+    explicit PeripheralWidget(QWidget *parent = nullptr, EmulvApi *controller = nullptr, std::string label = "") :
         QWidget(parent),
         controller_(controller),
         label_(label)
@@ -21,7 +21,7 @@ public:
     std::string GetLabel() { return label_; }
 
 protected:
-    Controller *controller_;
+    EmulvApi *controller_;
 
     std::string label_;
 };

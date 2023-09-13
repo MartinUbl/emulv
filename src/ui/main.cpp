@@ -18,7 +18,7 @@ int main(int argc, char **argv) {
 
         //Start controller
         Controller c(argc, argv);
-        return c.ShowWindow();
+        return c.showWindow();
     }
     catch (const std::exception &ex) {
 

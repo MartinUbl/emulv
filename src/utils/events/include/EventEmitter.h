@@ -4,13 +4,15 @@
 #include <map>
 #include <string>
 #include <functional>
+#include <mutex>
 #include "EventData.h"
 
 namespace EventsLib {
     class EventEmitter {
     private:
         std::map<std::string, std::vector<std::function<void(EventData)>>> eventMap_;
-        std::string name_;
+        const std::string name_;
+        std::mutex emitterMutex_;
     public:
 
         /**
