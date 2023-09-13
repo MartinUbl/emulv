@@ -18,8 +18,5 @@ protected:
     static constexpr uint64_t kStart_Address = 0x40013800;
     static constexpr uint64_t kEnd_Address = 0x40013BFF;
 
-    EventEmitter emitter;
-    EventEmitter &rEmitter{emitter};
-
     modules::UART_Device *UART_Device;
 };

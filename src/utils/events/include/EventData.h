@@ -33,6 +33,12 @@ namespace EventsLib {
          */
         std::map<std::string, std::any> getData();
 
+        /**
+         * Removes a {value,key} pair form the map.
+         * @param key Key of the value to remove
+         */
+        void removeData(const std::string &key);
+
         EventData();
 
         /**

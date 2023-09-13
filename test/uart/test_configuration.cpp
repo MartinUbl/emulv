@@ -5,7 +5,7 @@ class Test_UART_Device_Configuration : public Test_UART_Device {
     protected:
 
         void SetUp() override {
-            UART_Device = new modules::UART_Device {"UART", rEmitter, kStart_Address, kEnd_Address};
+            UART_Device = new modules::UART_Device {"UART", kStart_Address, kEnd_Address};
         }
 
         void TearDown() override {

@@ -26,13 +26,3 @@ link_libraries(spdlog::spdlog)
 
 add_subdirectory(src bin)
 add_subdirectory(test)
-
-#TODO:
-# ---DONE--- 1) Doxygen
-# ---DONE--- 2) Google test
-# ---DONE--- 3) Install scripts
-# ---DONE?-- Verify all functionality on windows
-# ---DONE--- 4) Release build scripts
-# ---ABANDOEND--- 5) webassembly build
-# 6) --- NEEDS COVERAGE --- Add logging framework
-# 7) App architecture rework

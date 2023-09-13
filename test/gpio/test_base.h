@@ -20,8 +20,5 @@ protected:
     static constexpr uint64_t kStart_Address = 0x40010800;
     static constexpr uint64_t kEnd_Address = 0x4001081B;
 
-    EventEmitter emitter;
-    EventEmitter &rEmitter{emitter};
-
     modules::GPIO_Port *GPIO_Port;
 };

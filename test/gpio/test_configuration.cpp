@@ -5,7 +5,7 @@ class Test_GPIO_Port_Configuration : public Test_GPIO_Port {
     protected:
 
         void SetUp() override {
-            GPIO_Port = new modules::GPIO_Port {"GPIO", rEmitter, kStart_Address, kEnd_Address};
+            GPIO_Port = new modules::GPIO_Port {"GPIO", kStart_Address, kEnd_Address};
         }
 
         void TearDown() override {
