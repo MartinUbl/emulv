@@ -5,7 +5,7 @@
 #pragma once
 
 #include "PeripheralDevice.h"
-#include "EventEmitter.h"
+#include "Events.h"
 
 namespace modules {
 
@@ -31,7 +31,7 @@ namespace modules {
 
         uint64_t GetEndAddress();
 
-        ExampleDevice(const std::string &name, EventsLib::EventEmitter &emitter, uint64_t start_address, uint64_t end_address);
+        ExampleDevice(const std::string &name, uint64_t start_address, uint64_t end_address);
     };
 
 }

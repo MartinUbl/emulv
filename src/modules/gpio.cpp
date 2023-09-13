@@ -14,9 +14,9 @@
 
 namespace modules {
 
-    GPIO_Port::GPIO_Port(const std::string &name, EventsLib::EventEmitter &emitter, uint64_t start_address,
+    GPIO_Port::GPIO_Port(const std::string &name, uint64_t start_address,
                          uint64_t end_address) :
-            PeripheralDevice(name, emitter, start_address, end_address) {
+            PeripheralDevice(name, start_address, end_address) {
         Reset();
     }
 
@@ -220,7 +220,7 @@ namespace modules {
             return;
         }
 
-        Emitter.Emit("gpio-pin-level-changed", EventsLib::EventData{
+        EventsLib::globalEmit("gpio-pin-level-changed", EventsLib::EventData{
                 {"gpioPort",      *this},
                 {"pinNo",         pinNo},
                 {"previousLevel", previousLevel},
@@ -233,7 +233,7 @@ namespace modules {
             return;
         }
 
-        Emitter.Emit("gpio-pin-mode-changed", EventsLib::EventData{
+        EventsLib::globalEmit("gpio-pin-mode-changed", EventsLib::EventData{
                 {"gpioPort",     *this},
                 {"pinNo",        pinNo},
                 {"previousMode", previousMode},

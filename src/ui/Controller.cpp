@@ -7,15 +7,17 @@
 #include "spdlog/spdlog.h"
 
 #include "mainwindow.h"
-#include "EventEmitter.h"
 #include "ConfigLoader.h"
 #include "uart.h"
 
-Controller::Controller(int argc, char **argv) : emitter_("CentralEM") {
+Controller::Controller(int argc, char **argv) {
     spdlog::info("A controller instance has been created");
     argc_ = argc;
     argv_ = argv;
-    emulator_unit_ = new emulator::EmulatorUnit(emitter_);
+    emulator_unit_ = new emulator::EmulatorUnit();
+
+    //Initialize the global emitter
+    EventsLib::getGlobalEmitter();
 }
 
 Controller::~Controller() {
@@ -95,12 +97,12 @@ void Controller::configCollector(const std::string &path) {
                              startAddress, endAddress);
                 //A GPIO_Port element
                 if (type == "GPIO_Port") {
-                    active_peripherals_[name] = new modules::GPIO_Port(name, emitter_, startAddress, endAddress);
+                    active_peripherals_[name] = new modules::GPIO_Port(name, startAddress, endAddress);
                 }
 
                 //An UART_Device element
                 if (type == "UART_Device") {
-                    active_peripherals_[name] = new modules::UART_Device(name, emitter_, startAddress, endAddress);
+                    active_peripherals_[name] = new modules::UART_Device(name, startAddress, endAddress);
                 }
             }
         }

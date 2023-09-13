@@ -6,7 +6,7 @@
 
 #include <unordered_set>
 #include <limits>
-#include "EventEmitter.h"
+#include "Events.h"
 #include "EmulatorUnit.h"
 
 class Controller {
@@ -39,8 +39,6 @@ public:
 
     int GetProgramReturnValue() { return emulator_unit_->GetReturnValue(); }
 
-    EventsLib::EventEmitter &GetEventEmitter() { return emitter_; }
-
     emulator::EmulatorState GetProgramState() { return emulator_unit_->GetState(); }
 
     std::vector<uint8_t> GetMemory(uint64_t from, uint64_t to) { return emulator_unit_->GetMemory(from, to); }
@@ -71,7 +69,6 @@ public:
 
 private:
     emulator::EmulatorUnit *emulator_unit_;
-    EventsLib::EventEmitter emitter_;
 
     int argc_;
     char **argv_;

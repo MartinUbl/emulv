@@ -56,7 +56,7 @@ namespace modules {
 
         std::queue<uint32_t> write_buffer;
     public:
-        UART_Device(const std::string &name, EventsLib::EventEmitter &emitter, uint64_t start_address,
+        UART_Device(const std::string &name, uint64_t start_address,
                     uint64_t end_address);
 
         // Interface - PeripheralDevice

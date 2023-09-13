@@ -81,12 +81,12 @@ DisassemblyWidget::DisassemblyWidget(QWidget *parent, Controller *controller)
     connect(text_edit_instructions_->verticalScrollBar(), SIGNAL(valueChanged(int)),
             this, SLOT(OnTextEditInstructionsScroll()));
 
-    controller_->GetEventEmitter().On("breakpoint-added", [this](EventsLib::EventData data) {
+    EventsLib::globalOn("breakpoint-added", [this](EventsLib::EventData data) {
         int line = std::any_cast<int>(data.getData("line"));
         AddBreakpoint(line);
     });
 
-    controller_->GetEventEmitter().On("breakpoint-removed", [this](EventsLib::EventData data) {
+    EventsLib::globalOn("breakpoint-removed", [this](EventsLib::EventData data) {
         int line = std::any_cast<int>(data.getData("line"));
         RemoveBreakpoint(line);
     });

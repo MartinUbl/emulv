@@ -1,8 +1,14 @@
 //
 // Created by xPC on 12.09.2023.
 //
+// "Every type in C++ is determined at compile-time."
+// "The auto keyword is a type inference feature in C++ that allows the compiler to deduce the type of variable from its initializer expression. The type of the variable is then automatically determined at compile time."
+//
+//
 
 #include "Events.h"
+
+#include <utility>
 
 namespace EventsLib {
     void registerEmitter(std::shared_ptr<EventEmitter> emitter) {
@@ -13,7 +19,7 @@ namespace EventsLib {
         EmitterStore::getInstance().emitters.erase(name);
     }
 
-    void setGlobalEmitter(const std::shared_ptr<EventEmitter>& emitter) {
+    void setGlobalEmitter(const std::shared_ptr<EventEmitter> &emitter) {
         EmitterStore &store = EmitterStore::getInstance();
 
         store.globalName = emitter->getName();
@@ -34,8 +40,20 @@ namespace EventsLib {
         }
 
         //There is no global emitter, create one
-        auto global = std::make_shared<EventEmitter>("GlobalEmitter");
+        auto global = std::make_shared<EventEmitter>("Global");
         setGlobalEmitter(global);
         return global;
+    }
+
+    void globalEmit(const std::string &evt_name) {
+        getGlobalEmitter()->Emit(evt_name);
+    }
+
+    void globalEmit(const std::string &evt_name, EventData data) {
+        getGlobalEmitter()->Emit(evt_name,std::move(data));
+    }
+
+    void globalOn(const std::string &evt_name, std::function<void(EventData)> listener) {
+        getGlobalEmitter()->On(evt_name,std::move(listener));
     }
 }

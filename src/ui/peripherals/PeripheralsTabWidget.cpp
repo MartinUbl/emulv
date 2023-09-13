@@ -15,7 +15,7 @@ PeripheralsTabWidget::PeripheralsTabWidget(QWidget *parent, Controller *controll
     layout()->setContentsMargins(0, 0, 0, 0);
     layout()->addWidget(tab_widget_);
 
-    controller_->GetEventEmitter().On("gpio-pin-mode-changed", [this](EventsLib::EventData data) {
+    EventsLib::globalOn("gpio-pin-mode-changed", [this](EventsLib::EventData data) {
         auto gpioPort = std::any_cast<modules::GPIO_Port>(data.getData("gpioPort"));
         auto pinNo = std::any_cast<size_t>(data.getData("pinNo"));
         auto currentMode = std::any_cast<modules::GPIO_Pin_Mode>(data.getData("currentMode"));
@@ -26,7 +26,7 @@ PeripheralsTabWidget::PeripheralsTabWidget(QWidget *parent, Controller *controll
         gpioPortWidget->SetPinMode(pinNo, currentMode);
     });
 
-    controller_->GetEventEmitter().On("gpio-pin-level-changed", [this](EventsLib::EventData data) {
+    EventsLib::globalOn("gpio-pin-level-changed", [this](EventsLib::EventData data) {
         auto gpioPort = std::any_cast<modules::GPIO_Port>(data.getData("gpioPort"));
         auto pinNo = std::any_cast<size_t>(data.getData("pinNo"));
         auto currentLevel = std::any_cast<modules::GPIO_Pin_Level>(data.getData("currentLevel"));
@@ -37,7 +37,7 @@ PeripheralsTabWidget::PeripheralsTabWidget(QWidget *parent, Controller *controll
         gpioPortWidget->SetPinStatus(pinNo, currentLevel);
     });
 
-    controller_->GetEventEmitter().On("uart_message_received", [this](EventsLib::EventData data) {
+    EventsLib::globalOn("uart_message_received", [this](EventsLib::EventData data) {
         auto uartDevice = std::any_cast<modules::UART_Device>(data.getData("uartDevice"));
         auto frameData = std::any_cast<uint32_t>(data.getData("frameData"));
 

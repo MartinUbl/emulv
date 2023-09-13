@@ -12,7 +12,7 @@
 #include <bitset>
 
 #include "PeripheralDevice.h"
-#include "EventEmitter.h"
+#include "Events.h"
 
 
 namespace modules {
@@ -80,7 +80,7 @@ namespace modules {
             void Announce_Pin_Mode_Change(const size_t pinNo, const GPIO_Pin_Mode previousMode, const GPIO_Pin_Mode currentMode) const;
 
         public:
-            GPIO_Port(const std::string &name, EventsLib::EventEmitter &emitter, uint64_t start_address, uint64_t end_address);
+            GPIO_Port(const std::string &name, uint64_t start_address, uint64_t end_address);
 
             // Interface - PeripheralDevice
             virtual void WriteByte(uint64_t address, uint8_t value) override;

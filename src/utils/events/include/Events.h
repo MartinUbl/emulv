@@ -57,4 +57,26 @@ namespace EventsLib {
      */
     std::shared_ptr<EventEmitter> getGlobalEmitter();
 
+    /**
+     * Emits an event via the global emitter.
+     * Special case function, internally creates an empty EventData object.
+     * @param evt_name Name of the event
+     */
+    void globalEmit(const std::string &evt_name);
+
+    /**
+     * Emits an event via the global emitter.
+     * @param evt_name Name of the event
+     * @param data Event's data
+     */
+    void globalEmit(const std::string &evt_name, EventData data);
+
+    /**
+     * Attaches a listener function to the global emitter.
+     * @param evt_name Name of handled event
+     * @param listener Reference to the handler function
+     */
+    void globalOn(const std::string &evt_name, std::function<void(EventData)> listener);
+
+
 }

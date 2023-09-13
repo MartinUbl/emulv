@@ -72,7 +72,7 @@ namespace emulator {
         if (state != state_) {
             state_ = state;
             spdlog::info("Emulator unit's state has changed to: {0}", state);
-            emitter_.Emit(emulator::State_Changed_Event_Description);
+            EventsLib::globalEmit(emulator::State_Changed_Event_Description);
         }
     }
 

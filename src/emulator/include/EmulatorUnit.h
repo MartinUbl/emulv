@@ -3,7 +3,7 @@
 #include <vector>
 #include <unordered_set>
 #include "libriscv/types.hpp"
-#include "EventEmitter.h"
+#include "Events.h"
 #include "PeripheralDevice.h"
 
 //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
@@ -50,9 +50,6 @@ namespace emulator {
 
         //Size of for the virtual machine's RAM
         uint64_t ramSize_ = 1 << 15; // 32kB
-
-        //Emitter passed from controller
-        EventsLib::EventEmitter &emitter_;
 
         //Current state of the emulator
         EmulatorState state_ = kDefault;
@@ -137,7 +134,7 @@ namespace emulator {
          * Constructs the EmulatorUnit instance.
          * @param emitter Emulator state changed events will be emitted using this emitter.
          */
-        EmulatorUnit(EventsLib::EventEmitter &emitter) : emitter_(emitter), page_peripherals_() {
+        EmulatorUnit() : page_peripherals_() {
             for (int reg_num = 0; reg_num < X_REGISTER_COUNT; reg_num++) {
                 std::string reg_prefix = "x";
                 latest_register_values_.emplace_back(reg_prefix + std::to_string(reg_num), 0);
