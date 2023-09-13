@@ -78,5 +78,5 @@ private:
 
     void RegisterPeripherals();
 
-    void configCollector(const std::string &path);
+    void loadConfig(const std::string &path);
 };

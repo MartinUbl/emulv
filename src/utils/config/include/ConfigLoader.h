@@ -5,17 +5,24 @@
 #pragma once
 
 #include "nlohmann/json.hpp"
+#include "PeripheralDevice.h"
 
-//struct ConfigData {
-//    uint64_t ramSize;
-//    uint64_t ramStartAddress;
-//    std::vector<std::basic_string<char>> programArgs;
-//    std::map<std::basic_string<char>, modules::PeripheralDevice *> peripheralDevices;
-//};
+namespace configLoader {
+    /**
+    * Stores all data gathered from the configuration file.
+    */
+    struct ConfigData {
+        uint64_t ramSize;
+        uint64_t ramStartAddress;
+        std::vector<std::basic_string<char>> programArgs;
+        std::map<std::basic_string<char>, modules::PeripheralDevice *> peripheralDevices;
+    };
 
-/**
- * Will load the specified configuration file.
- * @param path Path to the JSON file.
- * @return Parsed JSON object
- */
-nlohmann::json loadConfig(const std::string &path);
+    /**
+    * Will parse the specified JSON config file. And return it's values.
+    * @param path Filesystem path of the config file
+    * @return A ConfigData object containing loaded data
+    */
+    ConfigData configParser(const std::string &path);
+
+}

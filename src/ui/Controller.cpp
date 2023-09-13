@@ -49,64 +49,18 @@ void Controller::ConfigureEmulator(const std::string &path) {
 
     spdlog::info("Configuring the EmulatorUnit instance...");
 
-    configCollector(path);
+    loadConfig(path);
 
     RegisterPeripherals();
 }
 
-void Controller::configCollector(const std::string &path) {
-    const nlohmann::json &config = loadConfig(path);
+void Controller::loadConfig(const std::string &path) {
+    const configLoader::ConfigData data = configLoader::configParser(path);
 
-    spdlog::info("Parsing peripherals configuration...");
-    for (const auto &item: config.items()) {
-        if (item.key() == "device") {
-            //The device element
-            spdlog::info("Found a new 'device' config entry");
-
-            for (const auto &val: item.value().items()) {
-                if (val.key() == "ram") {
-                    //Information about ram
-                    uint64_t ramSize = val.value()["size"].get<uint64_t>();
-                    uint64_t ramStartAddress = strtoull(val.value()["start-address"].get<std::string>().c_str(),
-                                                             nullptr, 16);
-                    emulator_unit_->SetRamSize(ramSize);
-                    emulator_unit_->SetRamStartAddress(ramStartAddress);
-
-                    spdlog::info("Set the RamSize to {0} and RamStartAddress to {1}", ramSize, ramStartAddress);
-                } else if (val.key() == "program-arguments") {
-                    //The program arguments list
-                    program_arguments_ = val.value().get<std::vector<std::string>>();
-
-                    spdlog::info("Set the program_arguments");
-                }
-            }
-        } else if (item.key() == "peripherals") {
-            //The peripherals element
-            spdlog::info("Found a new 'peripherals' config entry");
-
-            //Iterate over the peripherals list
-            for (const auto &val: item.value().items()) {
-                std::string type = val.value()["type"].get<std::string>();
-                std::string name = val.value()["name"].get<std::string>();
-                uint64_t startAddress = strtoull(
-                        val.value()["mapping"]["start-address"].get<std::string>().c_str(), nullptr, 16);
-                uint64_t endAddress = strtoull(val.value()["mapping"]["end-address"].get<std::string>().c_str(),
-                                                    nullptr, 16);
-
-                spdlog::info("Found a peripheral of type: {0} name: {1} startAddress: {2} endAddress: {3}", type, name,
-                             startAddress, endAddress);
-                //A GPIO_Port element
-                if (type == "GPIO_Port") {
-                    active_peripherals_[name] = new modules::GPIO_Port(name, startAddress, endAddress);
-                }
-
-                //An UART_Device element
-                if (type == "UART_Device") {
-                    active_peripherals_[name] = new modules::UART_Device(name, startAddress, endAddress);
-                }
-            }
-        }
-    }
+    emulator_unit_->SetRamSize(data.ramSize);
+    emulator_unit_->SetRamStartAddress(data.ramStartAddress);
+    program_arguments_ = data.programArgs;
+    active_peripherals_ = data.peripheralDevices;
 }
 
 //######################################################################################################################
