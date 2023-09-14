@@ -16,9 +16,9 @@ PeripheralsTabWidget::PeripheralsTabWidget(QWidget *parent, EmulvApi *controller
     layout()->addWidget(tab_widget_);
 
     EventsLib::globalOn("gpio-pin-mode-changed", [this](EventsLib::EventData data) {
-        auto gpioPort = std::any_cast<modules::GPIO_Port>(data.getData("gpioPort"));
+        auto gpioPort = std::any_cast<peripherals::GPIO_Port>(data.getData("gpioPort"));
         auto pinNo = std::any_cast<size_t>(data.getData("pinNo"));
-        auto currentMode = std::any_cast<modules::GPIO_Pin_Mode>(data.getData("currentMode"));
+        auto currentMode = std::any_cast<peripherals::GPIO_Pin_Mode>(data.getData("currentMode"));
 
         auto widget = widgets_[gpioPort.GetName()];
         auto gpioPortWidget = dynamic_cast<GPIOPortWidget *>(widget);
@@ -27,9 +27,9 @@ PeripheralsTabWidget::PeripheralsTabWidget(QWidget *parent, EmulvApi *controller
     });
 
     EventsLib::globalOn("gpio-pin-level-changed", [this](EventsLib::EventData data) {
-        auto gpioPort = std::any_cast<modules::GPIO_Port>(data.getData("gpioPort"));
+        auto gpioPort = std::any_cast<peripherals::GPIO_Port>(data.getData("gpioPort"));
         auto pinNo = std::any_cast<size_t>(data.getData("pinNo"));
-        auto currentLevel = std::any_cast<modules::GPIO_Pin_Level>(data.getData("currentLevel"));
+        auto currentLevel = std::any_cast<peripherals::GPIO_Pin_Level>(data.getData("currentLevel"));
 
         auto widget = widgets_[gpioPort.GetName()];
         auto gpioPortWidget = dynamic_cast<GPIOPortWidget *>(widget);
@@ -38,7 +38,7 @@ PeripheralsTabWidget::PeripheralsTabWidget(QWidget *parent, EmulvApi *controller
     });
 
     EventsLib::globalOn("uart_message_received", [this](EventsLib::EventData data) {
-        auto uartDevice = std::any_cast<modules::UART_Device>(data.getData("uartDevice"));
+        auto uartDevice = std::any_cast<peripherals::UART_Device>(data.getData("uartDevice"));
         auto frameData = std::any_cast<uint32_t>(data.getData("frameData"));
 
         auto widget = widgets_[uartDevice.GetName()];
@@ -86,23 +86,23 @@ void PeripheralsTabWidget::Clear() {
     layout()->addWidget(tab_widget_);
 }
 
-void PeripheralsTabWidget::AddWidget(modules::PeripheralDevice *peripheral_device, const std::string &label) {
+void PeripheralsTabWidget::AddWidget(peripherals::PeripheralDevice *peripheral_device, const std::string &label) {
     // Cast device to GPIO_Port pointer, if successful add a new GPIOPortWidget
-    auto gpio_port = dynamic_cast<modules::GPIO_Port *>(peripheral_device);
+    auto gpio_port = dynamic_cast<peripherals::GPIO_Port *>(peripheral_device);
     if (gpio_port != nullptr) {
         AddGPIOPortWidget(gpio_port, label);
         return;
     }
 
     // Cast device to UART_Device pointer, if successful add a new UARTWidget
-    auto uart = dynamic_cast<modules::UART_Device *>(peripheral_device);
+    auto uart = dynamic_cast<peripherals::UART_Device *>(peripheral_device);
     if (uart != nullptr) {
         AddUARTWidget(uart->GetName());
         return;
     }
 }
 
-void PeripheralsTabWidget::AddGPIOPortWidget(modules::GPIO_Port *gpio_port, const std::string &label) {
+void PeripheralsTabWidget::AddGPIOPortWidget(peripherals::GPIO_Port *gpio_port, const std::string &label) {
     // If no GPIO port has been added yet, create the widget for all ports
     if (gpio_widget_ == nullptr) {
         gpio_widget_ = new GPIOWidget(tab_widget_);

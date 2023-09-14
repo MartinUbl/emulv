@@ -15,10 +15,10 @@ public:
     explicit GPIOPortWidget(QWidget *parent = nullptr, EmulvApi *controller = nullptr,
                             std::string label = "", std::vector<int> pin_ids = {});
 
-    void SetPinMode(int pin_id, modules::GPIO_Pin_Mode mode);
+    void SetPinMode(int pin_id, peripherals::GPIO_Pin_Mode mode);
     void SetPinStatus(int pin_id, bool status);
 
-    modules::GPIO_Pin_Mode GetPinMode(int pin_id) { return pins_[pin_id]->GetMode(); }
+    peripherals::GPIO_Pin_Mode GetPinMode(int pin_id) { return pins_[pin_id]->GetMode(); }
     bool GetPinStatus(int pin_id) { return pins_[pin_id]->GetStatus(); }
 
     void SetReadonly(bool readonly) override;

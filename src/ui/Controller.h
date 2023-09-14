@@ -15,9 +15,20 @@ private:
     int argc_;
     char **argv_;
 
-    emulator::EmulatorUnit *emulator_unit_;
-    std::vector<std::string> program_arguments_;
-    std::map<std::string, modules::PeripheralDevice *> active_peripherals_;
+    /**
+     * Pointer to the active emulatorUnit_ instance
+     */
+    std::unique_ptr<emulator::EmulatorUnit> emulatorUnit_;
+
+    /**
+     * A list of emulatorUnit program arguments, loaded from the configuration file
+     */
+    std::vector<std::string> programArguments_;
+
+    /**
+     * A map containing all active peripherals, loaded from the configuration file
+     */
+    std::map<std::string, peripherals::PeripheralDevice *> activePeripherals_;
 
     void registerPeripherals_();
 
@@ -56,30 +67,30 @@ public:
 
     void removeBreakpoint(uint64_t address) override;
 
-    uint64_t getPc() override { return emulator_unit_->GetPc(); }
+    uint64_t getPc() override { return emulatorUnit_->GetPc(); }
 
-    int getProgramReturnValue() override { return emulator_unit_->GetReturnValue(); }
+    int getProgramReturnValue() override { return emulatorUnit_->GetReturnValue(); }
 
-    emulator::EmulatorState getProgramState() override { return emulator_unit_->GetState(); }
+    emulator::EmulatorState getProgramState() override { return emulatorUnit_->GetState(); }
 
-    std::vector<uint8_t> getMemory(uint64_t from, uint64_t to) override { return emulator_unit_->GetMemory(from, to); }
+    std::vector<uint8_t> getMemory(uint64_t from, uint64_t to) override { return emulatorUnit_->GetMemory(from, to); }
 
     std::vector<std::tuple<uint64_t, std::string>>
-    getDisassembly() override { return this->emulator_unit_->Disassemble(); }
+    getDisassembly() override { return this->emulatorUnit_->Disassemble(); }
 
-    std::vector<std::tuple<std::string, uint32_t>> getRegisters() override { return emulator_unit_->GetRegisters(); }
+    std::vector<std::tuple<std::string, uint32_t>> getRegisters() override { return emulatorUnit_->GetRegisters(); }
 
-    std::map<std::string, modules::PeripheralDevice *> getPeripherals() override { return active_peripherals_; }
+    std::map<std::string, peripherals::PeripheralDevice *> getPeripherals() override { return activePeripherals_; }
 
-    uint64_t getMemoryStartAddress() override { return emulator_unit_->GetMemoryStartAddress(); }
+    uint64_t getMemoryStartAddress() override { return emulatorUnit_->GetMemoryStartAddress(); }
 
-    uint64_t getMemoryEndAddress() override { return emulator_unit_->GetMemoryEndAddress(); }
+    uint64_t getMemoryEndAddress() override { return emulatorUnit_->GetMemoryEndAddress(); }
 
-    uint64_t getRamStartAddress() override { return emulator_unit_->GetRamStartAddress(); }
+    uint64_t getRamStartAddress() override { return emulatorUnit_->GetRamStartAddress(); }
 
-    uint64_t getRamEndAddress() override { return emulator_unit_->GetRamEndAddress(); }
+    uint64_t getRamEndAddress() override { return emulatorUnit_->GetRamEndAddress(); }
 
-    uint64_t getRamSize() override { return emulator_unit_->GetRamSize(); }
+    uint64_t getRamSize() override { return emulatorUnit_->GetRamSize(); }
 
     void setPinStatus(std::string moduleName, int pin, bool status) override;
 

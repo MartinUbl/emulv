@@ -11,8 +11,7 @@
  * This abstract class contains all methods which are available to the GUI to use.
  * A GUI controller should have these methods always implemented.
  */
-class EmulvApi
-{
+class EmulvApi {
 public:
     virtual ~EmulvApi() {}
 
@@ -22,7 +21,7 @@ public:
 
     virtual void loadFile(std::string filePath) = 0;
 
-    virtual void resetPeripherals()  = 0;
+    virtual void resetPeripherals() = 0;
 
     virtual void runProgram() = 0;
 
@@ -50,7 +49,7 @@ public:
 
     virtual std::vector<std::tuple<std::string, uint32_t>> getRegisters() = 0;
 
-    virtual std::map<std::string, modules::PeripheralDevice *> getPeripherals() = 0;
+    virtual std::map<std::string, peripherals::PeripheralDevice *> getPeripherals() = 0;
 
     virtual uint64_t getMemoryStartAddress() = 0;
 

@@ -65,7 +65,7 @@ SET(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} ${ADDITIONAL_CMAKE_EXE_LIN
 ##########################################################
 target_link_libraries(QtApp riscv)
 target_link_libraries(QtApp emulator)
-target_link_libraries(QtApp modules)
+target_link_libraries(QtApp peripherals)
 target_link_libraries(QtApp events)
 target_link_libraries(QtApp config)
 

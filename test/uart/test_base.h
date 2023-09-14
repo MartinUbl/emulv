@@ -18,5 +18,5 @@ protected:
     static constexpr uint64_t kStart_Address = 0x40013800;
     static constexpr uint64_t kEnd_Address = 0x40013BFF;
 
-    modules::UART_Device *UART_Device;
+    peripherals::UART_Device *UART_Device;
 };

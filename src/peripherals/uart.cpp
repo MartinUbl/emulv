@@ -9,7 +9,7 @@
 #include "spdlog/spdlog.h"
 #include "Events.h"
 
-namespace modules {
+namespace peripherals {
 
     UART_Device::UART_Device(const std::string &name, uint64_t start_address,
                              uint64_t end_address) : PeripheralDevice(name, start_address, end_address) {

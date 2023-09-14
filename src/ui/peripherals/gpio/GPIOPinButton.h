@@ -12,16 +12,16 @@ class GPIOPinButton : public QToolButton {
 public:
     explicit GPIOPinButton(QWidget *parent = nullptr, int id = 0);
 
-    void SetMode(modules::GPIO_Pin_Mode mode);
+    void SetMode(peripherals::GPIO_Pin_Mode mode);
     void SetStatus(bool status);
 
     int PinID() const { return id_; }
     bool GetStatus() const { return status_; }
-    modules::GPIO_Pin_Mode GetMode() const { return mode_; }
+    peripherals::GPIO_Pin_Mode GetMode() const { return mode_; }
 
 private:
     int id_;
-    modules::GPIO_Pin_Mode mode_ = modules::GPIO_Pin_Mode::INPUT;
+    peripherals::GPIO_Pin_Mode mode_ = peripherals::GPIO_Pin_Mode::INPUT;
     bool status_ = false;
 
     void UpdateButton();

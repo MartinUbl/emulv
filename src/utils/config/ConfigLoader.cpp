@@ -63,12 +63,12 @@ namespace configLoader {
                                  startAddress, endAddress);
                     //A GPIO_Port element
                     if (type == "GPIO_Port") {
-                        data.peripheralDevices[name] = new modules::GPIO_Port(name, startAddress, endAddress);
+                        data.peripheralDevices[name] = new peripherals::GPIO_Port(name, startAddress, endAddress);
                     }
 
                     //An UART_Device element
                     if (type == "UART_Device") {
-                        data.peripheralDevices[name] = new modules::UART_Device(name, startAddress, endAddress);
+                        data.peripheralDevices[name] = new peripherals::UART_Device(name, startAddress, endAddress);
                     }
                 }
             }

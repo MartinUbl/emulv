@@ -8,7 +8,7 @@
 #include <queue>
 #include "PeripheralDevice.h" // TODO: WTF?
 
-namespace modules {
+namespace peripherals {
 
     enum UART_Register_Offset {
         uSTAT = 0x0, //Status register

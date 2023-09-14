@@ -11,7 +11,7 @@ GPIOPinButton::GPIOPinButton(QWidget *parent, int id)
     setIconSize(QSize(height() - 2, height() - 2));
 }
 
-void GPIOPinButton::SetMode(modules::GPIO_Pin_Mode mode) {
+void GPIOPinButton::SetMode(peripherals::GPIO_Pin_Mode mode) {
     mode_ = mode;
     UpdateButton();
 }
@@ -22,7 +22,7 @@ void GPIOPinButton::SetStatus(bool status) {
 }
 
 void GPIOPinButton::UpdateButton() {
-    if (mode_ == modules::GPIO_Pin_Mode::INPUT) {
+    if (mode_ == peripherals::GPIO_Pin_Mode::INPUT) {
         setCursor(Qt::PointingHandCursor);
 
         if (status_ == false) {
@@ -32,7 +32,7 @@ void GPIOPinButton::UpdateButton() {
             setIcon(QIcon(":img/gpio_input_high.svg"));
         }
     }
-    else if (mode_ == modules::GPIO_Pin_Mode::OUTPUT) {
+    else if (mode_ == peripherals::GPIO_Pin_Mode::OUTPUT) {
         this->unsetCursor();
 
         if (status_ == false) {

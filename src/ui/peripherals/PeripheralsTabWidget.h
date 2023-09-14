@@ -26,7 +26,7 @@ public:
 private:
     EmulvApi *controller_;
 
-    void AddWidget(modules::PeripheralDevice *peripheral_device, const std::string &label);
-    void AddGPIOPortWidget(modules::GPIO_Port *gpio_port, const std::string &label);
+    void AddWidget(peripherals::PeripheralDevice *peripheral_device, const std::string &label);
+    void AddGPIOPortWidget(peripherals::GPIO_Port *gpio_port, const std::string &label);
     void AddUARTWidget(const std::string &label);
 };

@@ -6,7 +6,7 @@
 
 #include <cstdint>
 
-namespace modules {
+namespace peripherals {
 
     class PeripheralDevice {
        

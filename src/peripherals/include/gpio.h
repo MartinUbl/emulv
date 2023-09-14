@@ -15,7 +15,7 @@
 #include "Events.h"
 
 
-namespace modules {
+namespace peripherals {
 
     enum class GPIO_Pin_Mode {
         INPUT,

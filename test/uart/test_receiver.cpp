@@ -8,7 +8,7 @@ class Test_UART_Device_Receiver : public Test_UART_Device {
         static constexpr uint32_t CTL1 = 0b00000000000000000000000000000000;
 
         void SetUp() override {
-            UART_Device = new modules::UART_Device {"UART", kStart_Address, kEnd_Address};
+            UART_Device = new peripherals::UART_Device {"UART", kStart_Address, kEnd_Address};
             UART_Device->WriteWord(kOffset_CTL0, CTL0);
             UART_Device->WriteWord(kOffset_CTL1, CTL1);
         }

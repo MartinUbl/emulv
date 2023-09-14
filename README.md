@@ -11,7 +11,7 @@
 ## Aktuální TODO
 ### Hlavní
 1) ~~Pokrýt "kritické" sekce kodu logovacími výpisy~~
-2) Přepracování architektury aplikace, úprava neefektivních algoritmů
+2) ~~Přepracování architektury aplikace, úprava neefektivních algoritmů~~
 3) Přepracování a vylepšení GUI
 4) Přepracování a vylepšení UART / GPIO periférií
 5) Lepší pokrytí aplikace unit testy

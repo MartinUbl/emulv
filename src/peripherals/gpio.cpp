@@ -12,7 +12,7 @@
 #include "spdlog/spdlog.h"
 
 
-namespace modules {
+namespace peripherals {
 
     GPIO_Port::GPIO_Port(const std::string &name, uint64_t start_address,
                          uint64_t end_address) :

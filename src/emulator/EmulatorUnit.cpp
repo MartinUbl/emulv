@@ -158,7 +158,7 @@ namespace emulator {
     //# Memory controller methods
     //##################################################################################################################
 
-    void EmulatorUnit::RegisterPeripherals(std::map<std::string, modules::PeripheralDevice *> &devices) {
+    void EmulatorUnit::RegisterPeripherals(std::map<std::string, peripherals::PeripheralDevice *> &devices) {
         spdlog::info("Peripherals have been registered.");
         peripheral_devices_ = &devices;
     }
@@ -169,7 +169,7 @@ namespace emulator {
         for (const auto &p: *peripheral_devices_) {
             spdlog::info("Setting up memory trap for device with name: {0}", p.first);
 
-            modules::PeripheralDevice *pDevice = p.second;
+            peripherals::PeripheralDevice *pDevice = p.second;
             MapDeviceToPage_(pDevice);
 
             //Check if the address range isn't too big
@@ -195,7 +195,7 @@ namespace emulator {
                 // Find the real device for which this callback was called for
                 uint64_t page_start = GetPageStart_(pDevice->GetStartAddress());
                 uint64_t real_address = page_start + offset;
-                modules::PeripheralDevice *real_device = GetRealDevice_(real_address);
+                peripherals::PeripheralDevice *real_device = GetRealDevice_(real_address);
 
                 if (!real_device) {
                     return;
@@ -224,20 +224,20 @@ namespace emulator {
         }
     }
 
-    void EmulatorUnit::MapDeviceToPage_(modules::PeripheralDevice *device) {
+    void EmulatorUnit::MapDeviceToPage_(peripherals::PeripheralDevice *device) {
         uint64_t page_start = GetPageStart_(device->GetStartAddress());
 
         auto entry = page_peripherals_.find(page_start);
         if (entry != page_peripherals_.end()) {
             entry->second.push_back(device);
         } else {
-            auto peripherals = std::vector<modules::PeripheralDevice *>();
+            auto peripherals = std::vector<peripherals::PeripheralDevice *>();
             peripherals.push_back(device);
             page_peripherals_[page_start] = peripherals;
         }
     }
 
-    modules::PeripheralDevice *EmulatorUnit::GetRealDevice_(uint64_t address) {
+    peripherals::PeripheralDevice *EmulatorUnit::GetRealDevice_(uint64_t address) {
         uint64_t page_start = GetPageStart_(address);
         auto page_peripherals = this->page_peripherals_[page_start];
 
@@ -331,41 +331,6 @@ namespace emulator {
         return result;
     }
 
-    std::vector<std::tuple<std::string, uint32_t>> EmulatorUnit::GetRegisters() {
-        if (active_machine_ == nullptr) {
-            //Machine is inactive. Return the last saved register values.
-            return latest_register_values_;
-        }
-
-        std::vector<std::tuple<std::string, uint32_t>> registers;
-        latest_register_values_.clear();
-
-        for (int reg_num = 0; reg_num < X_REGISTER_COUNT; reg_num++) {
-            std::string reg_prefix = "x";
-            registers.emplace_back(reg_prefix + std::to_string(reg_num), active_machine_->cpu.reg(reg_num));
-        }
-        registers.emplace_back("pc", active_machine_->cpu.pc());
-
-        latest_register_values_ = registers;
-        return registers;
-    }
-
-    uint64_t EmulatorUnit::GetPc() {
-        if (active_machine_ == nullptr) {
-            throw std::runtime_error("EmulatorUnit::getPc: active_machine_ is equal to null!");
-        }
-
-        return active_machine_->cpu.pc();
-    }
-
-    int EmulatorUnit::GetReturnValue() {
-        if (active_machine_ == nullptr) {
-            return -1;
-        }
-
-        return active_machine_->return_value<long>();
-    }
-
     //##################################################################################################################
     //# Internal helper methods
     //##################################################################################################################
@@ -426,8 +391,43 @@ namespace emulator {
     }
 
     //##################################################################################################################
-    //# Set + Get
+    //# Remaining set + get
     //##################################################################################################################
+
+    std::vector<std::tuple<std::string, uint32_t>> EmulatorUnit::GetRegisters() {
+        if (active_machine_ == nullptr) {
+            //Machine is inactive. Return the last saved register values.
+            return latest_register_values_;
+        }
+
+        std::vector<std::tuple<std::string, uint32_t>> registers;
+        latest_register_values_.clear();
+
+        for (int reg_num = 0; reg_num < X_REGISTER_COUNT; reg_num++) {
+            std::string reg_prefix = "x";
+            registers.emplace_back(reg_prefix + std::to_string(reg_num), active_machine_->cpu.reg(reg_num));
+        }
+        registers.emplace_back("pc", active_machine_->cpu.pc());
+
+        latest_register_values_ = registers;
+        return registers;
+    }
+
+    uint64_t EmulatorUnit::GetPc() {
+        if (active_machine_ == nullptr) {
+            throw std::runtime_error("EmulatorUnit::getPc: active_machine_ is equal to null!");
+        }
+
+        return active_machine_->cpu.pc();
+    }
+
+    int EmulatorUnit::GetReturnValue() {
+        if (active_machine_ == nullptr) {
+            return -1;
+        }
+
+        return active_machine_->return_value<long>();
+    }
 
     void EmulatorUnit::SetRamStartAddress(uint64_t ramStartAddress) {
         ramStartAddress_ = ramStartAddress;

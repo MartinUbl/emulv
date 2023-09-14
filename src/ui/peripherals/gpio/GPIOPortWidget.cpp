@@ -28,7 +28,7 @@ GPIOPortWidget::GPIOPortWidget(QWidget *parent, EmulvApi *controller, std::strin
     }
 }
 
-void GPIOPortWidget::SetPinMode(int pin_id, modules::GPIO_Pin_Mode mode) {
+void GPIOPortWidget::SetPinMode(int pin_id, peripherals::GPIO_Pin_Mode mode) {
     pins_[pin_id]->SetMode(mode);
 }
 
@@ -45,7 +45,7 @@ void GPIOPortWidget::SetReadonly(bool readonly) {
 void GPIOPortWidget::OnPinButtonClicked() {
     auto clicked_pin = dynamic_cast<GPIOPinButton *>(QObject::sender());
 
-    if (clicked_pin->GetMode() == modules::GPIO_Pin_Mode::INPUT) {
+    if (clicked_pin->GetMode() == peripherals::GPIO_Pin_Mode::INPUT) {
         clicked_pin->SetStatus(!clicked_pin->GetStatus());
         controller_->setPinStatus(label_, clicked_pin->PinID(), clicked_pin->GetStatus());
     }
