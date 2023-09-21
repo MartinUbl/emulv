@@ -23,7 +23,8 @@
       "binaryDir": "${sourceDir}/cmake/build-debug-linux",
       "cacheVariables": {
         "CMAKE_BUILD_TYPE": "Debug",
-        "CMAKE_CXX_FLAGS_INIT": "-DQT_QML_DEBUG"
+        "CMAKE_CXX_FLAGS_INIT": "-DQT_QML_DEBUG",
+        "CMAKE_PREFIX_PATH": "/opt/Qt/6.2.4/gcc_64"
       }
     },
     {
@@ -33,7 +34,8 @@
       "generator": "Unix Makefiles",
       "binaryDir": "${sourceDir}/cmake/build-release-linux",
       "cacheVariables": {
-        "CMAKE_BUILD_TYPE": "Release"
+        "CMAKE_BUILD_TYPE": "Release",
+        "CMAKE_PREFIX_PATH": "/opt/Qt/6.2.4/gcc_64"
       }
     },
     {
