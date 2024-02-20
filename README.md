@@ -1,66 +1,69 @@
-# Modulární emulátor platformy RISC-V
+# Modulární emulátor platformy RISC-V pro výukové účely (BP 2023/24)
 
-## Původní požadavky zadání
+# Zadání
 
-* Původně emulátor RISC-V určen pro předmět KIV/OS
-* Cílem je emulace základní RV ISA, a ovládání pomocí GUI (Tok instrukcí - disassembly, obsah registrů, memory view, debugging - brekpointy, krokování)
-* Emulátor musí zahrnovat možnost připojit periférie (V GUI realizované pomocí podokna)
-* Periférie by měly kopírovat hardware MC [*Sipeed Longan Nano GD32VF103CBT6*](https://www.seeedstudio.com/Sipeed-Longan-Nano-V1-1-p-5118.html)
-* Výsledný frontend by měl být multiplatformní
+Bakalářská práce v oborech Informatika (Bc), Výpočetní technika (Bc), Informační systémy (Bc).
 
-## Aktuální TODO
-### Hlavní
-1) ~~Pokrýt "kritické" sekce kodu logovacími výpisy~~
-2) ~~Přepracování architektury aplikace, úprava neefektivních algoritmů~~
-3) Přepracování a vylepšení GUI
-4) Přepracování a vylepšení UART / GPIO periférií
-5) Lepší pokrytí aplikace unit testy
-6) Risc-v kompilátor?
-7) ?
+### Modulární emulátor platformy RISC-V pro výukové účely
 
-### Vedlejší
-1) CMake install script pro Linux
-2) Správné použití namespace
-3) Modernizace kodu - přidání smart pointerů, apod.
-4) ~~Pragma v header souborech~~ 
-5) Na windows z neznámého důvodu nejde vypisovat nic na STDOUT, pokud není program spuštěn v admin režimu, nebo s připojeným debuggerem
+1. Seznamte se s architekturou RISC-V a nejrozšířenějšími implementacemi její instrukční sady
+2. Analyzujte dostupná řešení pro emulaci a ladění programů pro tuto architekturu
+3. Navrhněte nástroj, který umožní emulovat platformu RISC-V s možností definovat a konfigurovat periferie odděleně od jeho jádra a provádět
+   úkony související s laděním
+4. Implementujte tento nástroj jako modulární, umožněte vytvářet periferie definované v dynamicky linkovaných knihovnách
+5. Otestujte řešení na sadě standardních úloh a zhodnoťte dosažené výsledky
 
-## Changelog projektu
-* Byly odstraněny temporary / nepotřebné soubory
-  * Tímto krokem byla zlepšena přehlednost souborů projektu, zároveň nebylo nic ztraceno, všechny smazané soubory se nachází v původním gitlab repozitáři
-* Předelána CMake struktura projektu
-  * upravena adresářová struktura; CMake soubory jsou nyní správně dekomponovány na jednotlivé targety, díky tomu je build process nyní spolehlivější a přehlednější; využito bylo také CMake modulů, které zabraňují vznik duplicitního kodu a zpřehledňují CMake soubory (využitím include() příkazů)
-* Přidána Doxygen dokumentace
-  * Doxygen dokumentaci je nyní možné vygenerovat pomocí CMake targetu "doxygen", CMake navíc stáhne a aplikuje "doxygen awesome CSS" knihovnu
-  * Po nainstalování GraphViz a Doxygen na počítači kde je prováděna kompilace se dokumentace vygeneruje včetně UML dependency, class grafů, apod.
-* Integrace GoogleTest frameworku do CMake
-  * Rízení GoogleTest unit testů je nyní integrováno do CMake souboru tohoto projektu
-* Přidání CMakePresets.json 
-  * Byl přidán konfigurační soubor pro parametry CMake; Tento soubor nahrazuje ruční zadávání parametrů příkazové řádky, lze tak jednoduše zvolit například Release-Windows preset a CMake parametry budou automaticky nakonfigurovány podle tohoto json souboru
-  * Je možné, že na jiném počítači bude vždy potřeba některé části tohoto souboru přepsat (konkrétně polohu adresáře Qt na windows), stále je to ale mnohem lepší a jednoduché řešení než soubor neposkytovat vůbec
-* Přidán logging framework
-  * Byl přidán logovací framework Spdlog, tímto krokem je ulehčeno debuggování a sledování stavu aplikace
-* CMake instalační skripty
-  * Na OS Windows je nyní možno pomocí CMake vygenerovat grafický NSIS instalátor, Linux zatím podporován není, ale neměl by být problém ho přidat
-* Docker build skript
-  * Byl přidán Docker build skript, jehož cílem byla jednoduchá kompilace Release verze aplikace na jakémkoliv počítači; v aktuální podobě je tento skript schopen úspěšně zkompilovat "Hello world" Qt aplikaci pro Linux, MacOs (x86-64 a ARM) a Windows (x86-64); Kompilace tohoto projektu ale při aktuálním nastavení selhává, kvůli různým specifickým problémům při kompilaci a linkování, tyto problémy by bylo do budoucna možné odstranit metodou "pokus-omyl" (předpokládaná časová náročnost 2 až 3 dny práce)
-  * Velký benefit by mohl být WebAssembly build této aplikace, který by umožnil spuštění v jakémkoliv kompatibilním webovém prohlížeci na jakékoliv platformě. Teoreticky nic nebrání tomu aby tento build byl proveden. Pokus bylo o použití prostředí Emscripten, které je založeno na kompilátoru LLVM/Clang, ukázalo se, že je třeba využít speciální verze Qt6 které je zkompilováno pro multithreading (Emscripten - Clang vyžaduje následující: pokud je jeden soubor zkompilován s -pthread přepínačem, tak tímto způsobem musí být zkompilovány všechny soubory včetně knihoven, jinak nastane error při linkování), tento problém byl vyřešen použítím modifikované Qt6 webassembly docker image; Následně bylo možné úspěšně zkompilovat "hello world" Qt projekt, opět ale nastal problém s kompilací tohoto projektu, proces linkování vždy selhal s chybou undefined symbol "getrandom", tuto chybu se nepodařilo odstranit, zřejmě je způsobena nekompatibilitou Libriscv knihovny a aktuální verze Emscripten
-* EventsLib knihovna
-  * Původní EventEmitter a Event třídy byly nahrazeny novou knihovnou pro správu událostí. Práce s Eventy a EventEmittery je nyní jednoduší, již není potřeba pro každý event vytvářet novou třídu, na místo toho byla vytvořena třída EventData, která díky použití std::any může přenášet data jakéhokoliv datového typu. Data jsou zde interně ukládána do hashmapy. Jediná limitace tohoto přístupu je nutnost použití std::any_cast(), to je způsobeno tím, že C++ vynucuje determinaci datového typu proměnné před kompilací.
+| Téma vypsal                | Vypsáno pro akademický rok | Zadáno komu |
+|----------------------------|----------------------------|-------------|
+| *Ing. Martin Úbl* (UN 332) | 2023/2024 (dne 2023-04-11) | Jonáš Dufek |
 
-## Dosavadní SW dependence projektu nutné ke kompilaci
+# Dosavadní stav
 
-* Programovací jazyk: C++
-* Programová dokumentace: Doxygen + GraphViz
-  * Pro generování dokumentace je potřeba oba nainstalovat na systému kde se provádí kompilace
-* Knihovna pro tvorbu GUI: Qt6
-  * Je potřeba nainstalovat na systému kde se prování kompilace, poté případně v CMakePresets.json upravit cestu k adresáři instalace Qt
-* Následující knihovny jsou automaticky staženy pomocí CMake:
-  * libriscv knihovna pro emulaci ISA: https://github.com/fwsGonzo/libriscv
-  * doxygen-awesome-css: https://github.com/jothepro/doxygen-awesome-css
-  * JSON for Modern C++: https://github.com/nlohmann/json
-  * riscv-disassembler: https://github.com/michaeljclark/riscv-disassembler
-  * spdlog: https://github.com/gabime/spdlog
-  * GoogleTest: https://github.com/google/googletest
+### 26.8.2023 - 21.9.2023
+
+---
+
+* odstraněny dočasné / nevyužité soubory
+* Upravena adresářová struktura repozitáře (zpřehlednění)
+* Původní CMake soubor byl odstraněn, nahrazen CMakeList soubory v každé složce, byly využity CMake moduly, jednotlivé logické části
+  aplikace jsou nyní vzájemně nezávislé (každá část má svůj "target")
+* Přidán Doxygen pro generování dokumentace - programovou dokumentaci lze nyní automaticky vygenerovat pomocí CMake
+* GoogleTest je nyní integrován do hlavního CMakeList souboru, unit testy lze nyní spustit pomocí CMake)
+* Původní unit testy byly upraveny, některé nové byly přidány
+* Přidán CMakePresets.json (snadnější nastavení parametrů CMake jako adresáře Qt)
+* Přidán install.cmake script, lze pomocí něj vygenerovat NSIS instalátor pro Windows
+* Přidán Spdlog logging framework, aplikace je pokryta logovacími výpisy
+* Pokus o build aplikace pro Windows / MacOs / Linux pomocí docker scritpu
+* EventEmitter byl vylepšen, nyní není třeba pro každý typ eventu vytvořit samostatnou třídu, využito std::any
+* Rozhraní mezi GUI a zbytkem programu bylo odděleno do samostatného souboru EmulvApi.h
+* Další drobné změny
+
+### 19.2.2024 - ?
+
+---
+
+* Příprava nového GUI
+*
+
+# Závislosti projektu
+
+### Knihovny nainstalové v OS potřebné pro kompilaci
+
+| Název              | Účel                    |
+|--------------------|-------------------------|
+| Doxygen + GraphViz | Generování dokumentace  |
+| Qt6                | Knihovna pro tvorbu GUI |
+
+### Následující knihovny jsou automaticky staženy pomocí CMake:
+
+| Název               | Odkaz                                                                                                      |
+|---------------------|------------------------------------------------------------------------------------------------------------|
+| libriscv            | [https://github.com/fwsGonzo/libriscv](https://github.com/fwsGonzo/libriscv)                               |
+| doxygen-awesome-css | [https://github.com/jothepro/doxygen-awesome-css](https://github.com/jothepro/doxygen-awesome-css)         |
+| JSON for Modern C++ | [https://github.com/nlohmann/json](https://github.com/nlohmann/json)                                       |
+| riscv-disassembler  | [https://github.com/michaeljclark/riscv-disassembler](https://github.com/michaeljclark/riscv-disassembler) |
+| spdlog              | [https://github.com/gabime/spdlog](https://github.com/gabime/spdlog)                                       |
+| GoogleTest          | [https://github.com/google/googletest](https://github.com/google/googletest)                               |
+
 
 

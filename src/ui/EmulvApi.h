@@ -8,7 +8,7 @@
 #include "EmulatorUnit.h"
 
 /**
- * This abstract class contains all methods which are available to the GUI to use.
+ * This abstract class contains all methods which are available for the GUI to use.
  * A GUI controller should have these methods always implemented.
  */
 class EmulvApi {
