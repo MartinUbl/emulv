@@ -7,7 +7,9 @@ function(Doxygen input output)
         return()
     endif ()
 
+
     set(DOXYGEN_GENERATE_HTML YES)
+    set(DOXYGEN_EXTRACT_ALL YES)
     set(DOXYGEN_HTML_OUTPUT ${PROJECT_BINARY_DIR}/${output})
 
     UseDoxygenAwesomeCss()
@@ -23,7 +25,7 @@ macro(UseDoxygenAwesomeCss)
             GIT_REPOSITORY
             https://github.com/jothepro/doxygen-awesome-css.git
             GIT_TAG
-            v2.2.1
+            v2.3.1
             )
     FetchContent_MakeAvailable(doxygen-awesome-css)
     set(DOXYGEN_GENERATE_TREEVIEW YES)
