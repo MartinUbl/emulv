@@ -43,7 +43,7 @@ namespace emulator {
     class EmulatorUnit {
     private:
         //Maximal allowed memory for the virtual machine
-        uint64_t maxMemory_ = 128ull << 20; // 128MB
+        uint64_t maxMemory_ = 128uLL << 20; // 128MB
 
         //Starting address of the virtual machine's RAM (currently unimplemented)
         uint64_t ramStartAddress_ = 0x20000000;

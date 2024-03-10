@@ -1,73 +1,96 @@
-# Include Qt basic functions
-include(QtCommon)
-# Set PROJECT_VERSION_PATCH and PROJECT_VERSION_TWEAK to 0 if not present, needed by add_project_meta
-fix_project_version()
+##########################################################
+# Initialization
+##########################################################
+
 # Set additional project information
-set(COMPANY "Example")
-set(COPYRIGHT "Copyright (c) 2023. All rights reserved.")
+set(COMPANY "EMULV")
+set(COPYRIGHT "Copyright (c) 2024. All rights reserved.")
 set(IDENTIFIER "com.emulv.emulator")
 
 ##########################################################
-set(SOURCE_FILES
-        EmulvApi.h
-        main.cpp
-        mainwindow.cpp
-        Controller.cpp
-        aboutwindow.cpp
-        registers/RegistersWidget.cpp
-        peripherals/PeripheralsTabWidget.cpp
-        peripherals/uart/UARTWidget.cpp
-        peripherals/gpio/GPIOPinButton.cpp
-        peripherals/gpio/GPIOPortWidget.cpp
-        peripherals/gpio/GPIOWidget.cpp
-        memory/MemoryFormatter.cpp
-        memory/MemoryWidget.cpp
-        disassembly/BreakpointAreaWidget.cpp
-        disassembly/DisassemblyWidget.cpp
-        )
+# Set up Qt
+##########################################################
 
-add_project_meta(META_FILES_TO_INCLUDE)
-
-set(RESOURCE_FILES resources/resources.qrc)
-
-# Try to first use Qt6, if it's not available revert back to Qt5
-set(QT_VERSION "Qt6")
-find_package(${QT_VERSION} COMPONENTS Widgets)
-if (NOT ${QT_VERSION}_FOUND)
-    message(WARNING
-            "\n=============================================\n"
-            "Qt6 not found, attempting to use Qt5 instead.\n"
-            "============================================="
-            )
-    set(QT_VERSION "Qt5")
-    find_package(${QT_VERSION} COMPONENTS Widgets REQUIRED)
+message(STATUS "Trying to find Qt6 Quick... (Required version >= 6.5)")
+find_package(Qt6 QUIET 6.5 COMPONENTS Quick)
+if (Qt6_FOUND)
+    message(STATUS "Qt6 found successfully.")
+else ()
+    message(FATAL_ERROR "ERROR: Cannot find Qt6, make sure CMAKE_PREFIX_PATH, CMAKE_C_COMPILER, CMAKE_CXX_COMPILER are correctly set in the CMakePresets.json file.")
 endif ()
 
-# source_group("UI Files" FILES ${UI_FILES}
+qt_standard_project_setup(REQUIRES 6.5)
+set(CMAKE_AUTORCC ON)
 
-add_executable(QtApp ${OS_BUNDLE} # Expands to WIN32 or MACOS_BUNDLE depending on OS
-        ${SOURCE_FILES} ${META_FILES_TO_INCLUDE} ${RESOURCE_FILES}
-        )
+qt_add_executable(appBorderless_lib_test
+        main.cpp
+        Controller.cpp
+        Controller.h
+        EmulvApi.h
+        resources.qrc
+)
 
-target_precompile_headers(QtApp INTERFACE QtWidgets.h)
+# The colors file must be set as singleton
+set_source_files_properties(./qml/styles/Colors.qml PROPERTIES QT_QML_SINGLETON_TYPE TRUE)
+# This is needed so headers inside /qml/models/ will be discovered by compiler
+include_directories(./qml/models)
+# Specify all QML files and other sources
+qt_add_qml_module(appBorderless_lib_test
+        URI Borderless_lib_test
+        VERSION 1.0
+        QML_FILES ./qml/views/Main.qml
+        QML_FILES ./qml/controls/WindowButton.qml
+        QML_FILES ./qml/windows/BorderlessWindow.qml
+        QML_FILES ./qml/styles/Colors.qml
+        QML_FILES ./qml/windows/BorderlessPopup.qml
+        QML_FILES ./qml/layouts/MainWindowLayout.qml
+        QML_FILES ./qml/controls/ActionButton.qml
+        QML_FILES ./qml/panels/CenterPlaceholderPanel.qml
+        QML_FILES ./qml/controls/SidebarButton.qml
+        QML_FILES ./qml/panels/FileExplorerPanel.qml
+        QML_FILES ./qml/panels/LastOpenedFilesPanel.qml
+        QML_FILES ./qml/controls/IconButton.qml
+        QML_FILES ./qml/panels/SidePanelControlsPanel.qml
+        QML_FILES ./qml/panels/MemoryAreaPanel.qml
+        QML_FILES ./qml/panels/RegistersPanel.qml
+        QML_FILES ./qml/panels/DebugInfoPanel.qml
+        QML_FILES ./qml/panels/CodeAreaPanel.qml
+        QML_FILES ./qml/views/About.qml
+        SOURCES ./qml/models/filesystemmodel.cpp
+        SOURCES ./qml/models/filesystemmodel.h
+        SOURCES ./qml/models/RegistersTableModel.cpp
+        SOURCES ./qml/models/RegistersTableModel.h
+        SOURCES ./qml/models/MemoryTableModel.cpp
+        SOURCES ./qml/models/MemoryTableModel.h
+)
 
-target_link_libraries(QtApp ${QT_VERSION}::Widgets)
+# Qt for iOS sets MACOSX_BUNDLE_GUI_IDENTIFIER automatically since Qt 6.1.
+# If you are developing for iOS or macOS you should consider setting an
+# explicit, fixed bundle identifier manually though.
+set_target_properties(appBorderless_lib_test PROPERTIES
+        MACOSX_BUNDLE_BUNDLE_VERSION ${PROJECT_VERSION}
+        MACOSX_BUNDLE_SHORT_VERSION_STRING ${PROJECT_VERSION_MAJOR}.${PROJECT_VERSION_MINOR}
+        MACOSX_BUNDLE TRUE
+        WIN32_EXECUTABLE TRUE
+)
 
+target_link_libraries(appBorderless_lib_test
+        PRIVATE Qt6::Quick
+)
 
-SET(ADDITIONAL_CMAKE_CXX_FLAGS "-pthread")
-SET(ADDITIONAL_CMAKE_EXE_LINKER_FLAGS "-lpthread")
-
-SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${ADDITIONAL_CMAKE_CXX_FLAGS}")
-SET(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} ${ADDITIONAL_CMAKE_EXE_LINKER_FLAGS}")
+#Link downloaded library
+target_link_libraries(appBorderless_lib_test PRIVATE QWindowKit::Quick)
 
 ##########################################################
 # Dependencies of QtApp
 ##########################################################
-target_link_libraries(QtApp riscv)
-target_link_libraries(QtApp emulator)
-target_link_libraries(QtApp peripherals)
-target_link_libraries(QtApp events)
-target_link_libraries(QtApp config)
+target_link_libraries(appBorderless_lib_test PUBLIC riscv)
+target_link_libraries(appBorderless_lib_test PUBLIC emulator)
+target_link_libraries(appBorderless_lib_test PUBLIC peripherals)
+target_link_libraries(appBorderless_lib_test PUBLIC events)
+target_link_libraries(appBorderless_lib_test PUBLIC config)
 
+##########################################################
+# Other
 ##########################################################
 include(Install)

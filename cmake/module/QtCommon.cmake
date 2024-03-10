@@ -10,7 +10,7 @@ endmacro()
 
 macro(add_project_meta FILES_TO_INCLUDE)
 if (NOT RESOURCE_FOLDER)
-    set(RESOURCE_FOLDER ${PROJECT_SOURCE_DIR}/src/ui/resources)
+    set(RESOURCE_FOLDER ${PROJECT_SOURCE_DIR}/src/ui/qml/assets)
 endif()
 
 if (NOT ICON_NAME)

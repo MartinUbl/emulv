@@ -3,7 +3,7 @@
 //
 
 #pragma once
-
+#include <string>
 /**
  * Configures the global spdlog logger.
  */
@@ -13,5 +13,5 @@ void setupLogger();
  * @param path Path to a test log file
  * @return True if it's possible to write, otherwise false.
  */
-bool canWriteLog(const char *path);
+bool canWriteLog(const std::string& path);
 

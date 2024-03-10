@@ -18,6 +18,12 @@ include(NoInSourceBuilds)
 include(Doxygen)
 Doxygen(src docs)
 
+#Download the QWindowKit library for QtQuick
+include(GetQWindowKit)
+
+set (CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin/ui)
+set (CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin/ui)
+
 # Set up the spdlog logging framework
 # By using link_libraries(), the spdlog library is
 # linked to ever target created after this call

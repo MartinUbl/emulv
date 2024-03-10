@@ -1,0 +1,41 @@
+<RCC>
+    <qresource prefix="/assets">
+        <file alias="ev_square.svg">./qml/assets/ev_square.svg</file>
+        <file alias="close.svg">./qml/assets/close.svg</file>
+        <file alias="fullscreen.svg">./qml/assets/fullscreen.svg</file>
+        <file alias="maximize.svg">./qml/assets/maximize.svg</file>
+        <file alias="minimize.svg">./qml/assets/minimize.svg</file>
+        <file alias="more-line.svg">./qml/assets/more-line.svg</file>
+        <file alias="restore.svg">./qml/assets/restore.svg</file>
+        <file alias="breakpoint.svg">./qml/assets/breakpoint.svg</file>
+        <file alias="continue_button.svg">./qml/assets/continue_button.svg</file>
+        <file alias="step_button.svg">./qml/assets/step_button.svg</file>
+        <file alias="stop_button.svg">./qml/assets/stop_button.svg</file>
+        <file alias="app_logo.svg">./qml/assets/app_logo.svg</file>
+        <file alias="debug_button.svg">./qml/assets/debug_button.svg</file>
+        <file alias="run_button.svg">./qml/assets/run_button.svg</file>
+        <file alias="placeholder_image.svg">./qml/assets/placeholder_image.svg</file>
+        <file alias="folder_yellow.svg">./qml/assets/folder_yellow.svg</file>
+        <file alias="folder_blue.svg">./qml/assets/folder_blue.svg</file>
+        <file alias="default_icon.svg">./qml/assets/default_icon.svg</file>
+        <file alias="popup_icon.svg">./qml/assets/popup_icon.svg</file>
+        <file alias="info_icon.svg">./qml/assets/info_icon.svg</file>
+        <file alias="memory_icon.svg">./qml/assets/memory_icon.svg</file>
+        <file alias="registers_icon.svg">./qml/assets/registers_icon.svg</file>
+        <file alias="file_icon.svg">./qml/assets/file_icon.svg</file>
+        <file alias="folder_closed.svg">./qml/assets/folder_closed.svg</file>
+        <file alias="folder_open.svg">./qml/assets/folder_open.svg</file>
+        <file alias="drive_icon.svg">./qml/assets/drive_icon.svg</file>
+        <file alias="home_icon.svg">./qml/assets/home_icon.svg</file>
+        <file alias="desktop_icon.svg">./qml/assets/desktop_icon.svg</file>
+        <file alias="up_icon.svg">./qml/assets/up_icon.svg</file>
+        <file alias="download_icon.svg">./qml/assets/download_icon.svg</file>
+        <file alias="ev_icon.svg">./qml/assets/ev_icon.svg</file>
+        <file alias="refresh_icon.svg">./qml/assets/refresh_icon.svg</file>
+        <file alias="search_icon.svg">./qml/assets/search_icon.svg</file>
+    </qresource>
+
+    <qresource prefix="/">
+        <file>qtquickcontrols2.conf</file>
+    </qresource>
+</RCC>

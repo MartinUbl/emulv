@@ -29,7 +29,6 @@ int main(int argc, char **argv) {
                       << "Errno: " << errno << "\n";
 
         spdlog::error(error_message.str());
-        //QMessageBox::critical(nullptr, "Error", QString::fromStdString(error_message.str()));
         return EXIT_FAILURE;
     }
     catch (...) {
@@ -40,7 +39,6 @@ int main(int argc, char **argv) {
                       << "Errno: " << errno << "\n";
 
         spdlog::error(error_message.str());
-        //QMessageBox::critical(nullptr, "Error", QString::fromStdString(error_message.str()));
         return EXIT_FAILURE;
     }
 }

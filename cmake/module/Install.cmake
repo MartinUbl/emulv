@@ -19,20 +19,9 @@ message(STATUS "Build type is ${CMAKE_BUILD_TYPE}, starting the install script..
 if (WIN32)
     #########################################################################
     # First we need to locate a Qt install.
-    # Try to first use Qt6, if it's not available revert back to Qt5
     set(QT_VERSION "Qt6")
     message(STATUS "Trying to find the Qt package install location...")
-
     find_package(${QT_VERSION} COMPONENTS Core)
-    if (NOT ${QT_VERSION}_FOUND)
-        message(WARNING
-                "\n=============================================\n"
-                "Qt6 not found, attempting to use Qt5 instead.\n"
-                "============================================="
-                )
-        set(QT_VERSION "Qt5")
-        find_package(${QT_VERSION} COMPONENTS Core REQUIRED)
-    endif ()
 
     #########################################################################
     # Secondly we need to find the windeployqt executable
@@ -65,7 +54,6 @@ if (WIN32)
             DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/qtDeploy/"
             TYPE BIN
     )
-
 
     # CPack configuration
     set(CPACK_RESOURCE_FILE_LICENSE "${PROJECT_SOURCE_DIR}/LICENSE.txt")

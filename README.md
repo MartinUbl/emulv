@@ -65,5 +65,3 @@ Bakalářská práce v oborech Informatika (Bc), Výpočetní technika (Bc), Inf
 | spdlog              | [https://github.com/gabime/spdlog](https://github.com/gabime/spdlog)                                       |
 | GoogleTest          | [https://github.com/google/googletest](https://github.com/google/googletest)                               |
 
-
-
