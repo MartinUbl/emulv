@@ -7,7 +7,7 @@ import EmulvQt
 // Ensure bound component behavior
 pragma ComponentBehavior: Bound
 
-                          Rectangle {
+Rectangle {
     id: root
     anchors.fill: parent
 
@@ -74,25 +74,26 @@ pragma ComponentBehavior: Bound
                     "Desktop": desktopSVG,
                     "App Directory": appSVG,
                     "Home": homeSVG,
-                    "Downloads": downloadSVG}
+                    "Downloads": downloadSVG
+                }
 
-                onActivated: function(index){
-                    switch(index) {
-                    case 0:
-                        fileSystemTreeView.model.setToFilesystemRoot();
-                        break;
-                    case 1:
-                        fileSystemTreeView.model.setTreeRootDirectory(fileSystemTreeView.model.desktopPath);
-                        break
-                    case 2:
-                        fileSystemTreeView.model.setTreeRootDirectory(fileSystemTreeView.model.appPath);
-                        break
-                    case 3:
-                        fileSystemTreeView.model.setTreeRootDirectory(fileSystemTreeView.model.homePath);
-                        break
-                    case 4:
-                        fileSystemTreeView.model.setTreeRootDirectory(fileSystemTreeView.model.downloadsPath);
-                        break
+                onActivated: function (index) {
+                    switch (index) {
+                        case 0:
+                            fileSystemTreeView.model.setToFilesystemRoot();
+                            break;
+                        case 1:
+                            fileSystemTreeView.model.setTreeRootDirectory(fileSystemTreeView.model.desktopPath);
+                            break
+                        case 2:
+                            fileSystemTreeView.model.setTreeRootDirectory(fileSystemTreeView.model.appPath);
+                            break
+                        case 3:
+                            fileSystemTreeView.model.setTreeRootDirectory(fileSystemTreeView.model.homePath);
+                            break
+                        case 4:
+                            fileSystemTreeView.model.setTreeRootDirectory(fileSystemTreeView.model.downloadsPath);
+                            break
                     }
                 }
 
@@ -161,7 +162,8 @@ pragma ComponentBehavior: Bound
                         model: topComboBox.popup.visible ? topComboBox.delegateModel : null
                         currentIndex: topComboBox.highlightedIndex
 
-                        ScrollIndicator.vertical: ScrollIndicator { }
+                        ScrollIndicator.vertical: ScrollIndicator {
+                        }
                     }
 
                     background: Rectangle {
@@ -177,7 +179,6 @@ pragma ComponentBehavior: Bound
     }
 
 
-
     // TreeView representing the file system structure
     TreeView {
         id: fileSystemTreeView
@@ -185,15 +186,15 @@ pragma ComponentBehavior: Bound
 
         onRootIndexChanged: {
             var pth = model.getCurrentRootPath();
-            if(pth === "")
+            if (pth === "")
                 comboContentLabel.text = "Filesystem Root"
             else
                 comboContentLabel.text = pth
         }
 
         // File system model
-        model: FileSystemModel
-        rootIndex: FileSystemModel.rootIndex
+        model: UiController.fileSystemModel
+        rootIndex: UiController.fileSystemModel.rootIndex
 
         // Flickable behavior
         boundsBehavior: Flickable.StopAtBounds
@@ -289,20 +290,20 @@ pragma ComponentBehavior: Bound
                 TapHandler {
                     acceptedButtons: Qt.LeftButton | Qt.RightButton
                     onSingleTapped: (eventPoint, button) => {
-                                        switch (button) {
-                                            case Qt.LeftButton:
-                                            fileSystemTreeView.toggleExpanded(treeDelegate.row)
-                                            fileSystemTreeView.lastIndex = treeDelegate.index
-                                            // If this model item doesn't have children, it means it's representing a file.
-                                            if (!treeDelegate.hasChildren) {
-                                                root.fileClicked(treeDelegate.filePath)
-                                            }
-                                            break;
-                                            case Qt.RightButton:
-                                            itemMenu.popup()
-                                            break;
-                                        }
-                                    }
+                        switch (button) {
+                            case Qt.LeftButton:
+                                fileSystemTreeView.toggleExpanded(treeDelegate.row)
+                                fileSystemTreeView.lastIndex = treeDelegate.index
+                                // If this model item doesn't have children, it means it's representing a file.
+                                if (!treeDelegate.hasChildren) {
+                                    root.fileClicked(treeDelegate.filePath)
+                                }
+                                break;
+                            case Qt.RightButton:
+                                itemMenu.popup()
+                                break;
+                        }
+                    }
                 }
 
             }

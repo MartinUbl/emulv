@@ -3,22 +3,32 @@
 
 #define SPDLOG_ACTIVE_LEVEL SPDLOG_LEVEL_TRACE
 
-#include <libriscv/machine.hpp>
+#include <QGuiApplication>
+#include <QQmlApplicationEngine>
+#include <QStandardPaths>
+#include <QFontDatabase>
+#include <QQmlContext>
+#include <QIcon>
+#include <QWKQuick/qwkquickglobal.h>
+
 #include <sstream>
-#include "EmulatorInterface.h"
 #include "spdlog/spdlog.h"
 #include "LoggerConfig.h"
+#include "Events.h"
+
+// Implemented below main
+int startQt(int argc, char **argv);
 
 int main(int argc, char **argv) {
     //Global exception handler - will print exception before exiting program.
     try {
-        setupLogger();
+        //Initialize the global emitter
+        EventsLib::getGlobalEmitter();
 
+        setupLogger();
         spdlog::info("The program main function has started.");
 
-        //Start controller
-        EmulatorInterface c(argc, argv);
-        return c.showWindow();
+        return startQt(argc, argv);
     }
     catch (const std::exception &ex) {
 
@@ -41,4 +51,37 @@ int main(int argc, char **argv) {
         spdlog::error(error_message.str());
         return EXIT_FAILURE;
     }
+}
+
+int startQt(int argc, char **argv) {
+    QGuiApplication app(argc, argv);
+
+    QGuiApplication::setOrganizationName("emulv_org");
+    QGuiApplication::setApplicationName("emulv");
+    QGuiApplication::setApplicationVersion(QT_VERSION_STR);
+    QGuiApplication::setWindowIcon(QIcon(":/assets/ev_square.svg"));
+
+    // ENABLE OPENGL
+    qputenv("QSG_RHI_BACKEND", "opengl");
+    QGuiApplication::setHighDpiScaleFactorRoundingPolicy(Qt::HighDpiScaleFactorRoundingPolicy::PassThrough);
+
+    QQmlApplicationEngine engine;
+
+    // Qt Borderless window library
+    QWK::registerTypes(&engine);
+
+    QObject::connect(
+            &engine,
+            &QQmlApplicationEngine::objectCreationFailed,
+            &app,
+            []() { QCoreApplication::exit(-1); },
+            Qt::QueuedConnection);
+    engine.loadFromModule("EmulvQt", "Main");
+
+    //Monospace font
+    const QFont monospaceFont = QFontDatabase::systemFont(QFontDatabase::FixedFont);
+    engine.rootContext()->setContextProperty("monospaceFont", monospaceFont);
+
+    spdlog::trace("Qt has been started.");
+    return app.exec();
 }

@@ -10,6 +10,8 @@ Rectangle {
     color: Colors.primaryPanel
     property bool topHeaderVisible: false
 
+    property var memoryModel: UiController.memoryTableModel
+
     // Top row
     Rectangle {
         anchors.top: parent.top
@@ -55,7 +57,7 @@ Rectangle {
                     var addr = parseInt(addressField.text, 16);
                     if(addr === NaN)
                         return;
-                    var rowIndex = MemoryTableModel.getRowFromAddress(addr);
+                    var rowIndex = memoryModel.getRowFromAddress(addr);
                     tableView.positionViewAtRow(rowIndex, TableView.AlignTop)
                 }
             }
@@ -63,7 +65,7 @@ Rectangle {
                 source: "qrc:///assets/refresh_icon.svg"
                 iconColor: "#53C2F8" // Fixed color
                 onClicked: {
-                    MemoryTableModel.refreshModel()
+                    memoryModel.refreshModel()
                 }
             }
         }
@@ -88,11 +90,11 @@ Rectangle {
                 model: ["8", "16", "32"]
                 onCurrentIndexChanged: {
                     if(currentIndex === 0) {
-                        MemoryTableModel.setMemoryCellColumns(8);
+                        memoryModel.setMemoryCellColumns(8);
                     } else if(currentIndex === 1) {
-                        MemoryTableModel.setMemoryCellColumns(16);
+                        memoryModel.setMemoryCellColumns(16);
                     } else if(currentIndex === 2) {
-                        MemoryTableModel.setMemoryCellColumns(32);
+                        memoryModel.setMemoryCellColumns(32);
                     }
                     tableView.forceLayout()
                 }
@@ -110,11 +112,11 @@ Rectangle {
                 model: ["Hex", "Dec", "Bin"]
                 onCurrentIndexChanged: {
                     if(currentIndex === 0) {
-                        MemoryTableModel.switchToHex();
+                        memoryModel.switchToHex();
                     } else if(currentIndex === 1) {
-                        MemoryTableModel.switchToDec();
+                        memoryModel.switchToDec();
                     } else if(currentIndex === 2) {
-                        MemoryTableModel.switchToBin();
+                        memoryModel.switchToBin();
                     }
                     tableView.forceLayout()
                 }
@@ -157,7 +159,7 @@ Rectangle {
             boundsBehavior: Flickable.StopAtBounds
             boundsMovement: Flickable.StopAtBounds
 
-            model: MemoryTableModel
+            model: memoryModel
 
             // The table cell:
             delegate: Rectangle {

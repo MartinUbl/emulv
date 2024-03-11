@@ -9,6 +9,8 @@ Rectangle {
     anchors.fill: parent
     color: Colors.primaryPanel
 
+    property var registersModel: UiController.registersTableModel
+
     // Contains top row with controls
     Rectangle {
         anchors.top: parent.top
@@ -31,7 +33,7 @@ Rectangle {
                 text: "Hex"
                 onCheckedChanged: {
                     if(checked) {
-                        RegistersTableModel.switchToHex();
+                        registersModel.switchToHex();
                     }
                 }
             }
@@ -39,7 +41,7 @@ Rectangle {
                 text: "Dec"
                 onCheckedChanged: {
                     if(checked) {
-                        RegistersTableModel.switchToDec();
+                        registersModel.switchToDec();
                     }
                 }
             }
@@ -47,7 +49,7 @@ Rectangle {
                 text: "Bin"
                 onCheckedChanged: {
                     if(checked) {
-                        RegistersTableModel.switchToBin();
+                        registersModel.switchToBin();
                     }
                 }
             }
@@ -75,7 +77,7 @@ Rectangle {
             boundsBehavior: Flickable.StopAtBounds
             boundsMovement: Flickable.StopAtBounds
 
-            model: RegistersTableModel
+            model: registersModel
 
             delegate: Rectangle {
                 color: Colors.primaryPanel

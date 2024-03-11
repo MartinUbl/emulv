@@ -1,7 +1,3 @@
-//
-// Created by xPC on 04.04.2023.
-//
-
 #pragma once
 
 #include <unordered_set>
@@ -12,9 +8,6 @@
 
 class EmulatorInterface : public EmulvApi {
 private:
-    int argc_;
-    char **argv_;
-
     /**
      * Pointer to the active emulatorUnit_ instance
      */
@@ -35,11 +28,9 @@ private:
     void loadConfig_(const std::string &path);
 
 public:
-    EmulatorInterface(int argc, char **argv);
+    EmulatorInterface();
 
     ~EmulatorInterface();
-
-    int showWindow();
 
     //###########################################################################
     //# API METHODS

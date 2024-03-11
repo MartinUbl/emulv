@@ -24,13 +24,11 @@ set(CMAKE_AUTORCC ON)
 
 qt_add_executable(EMULV_Qt_GUI
         main.cpp
-        EmulatorInterface.cpp
-        UiController.cpp
         resources.qrc
+        EmulatorInterface.cpp
 )
 # Directory with header files
 target_include_directories(EMULV_Qt_GUI PUBLIC include)
-
 
 # The colors file must be set as singleton
 set_source_files_properties(./qml/styles/Colors.qml PROPERTIES QT_QML_SINGLETON_TYPE TRUE)
@@ -58,17 +56,16 @@ qt_add_qml_module(EMULV_Qt_GUI
         QML_FILES ./qml/panels/DebugInfoPanel.qml
         QML_FILES ./qml/panels/CodeAreaPanel.qml
         QML_FILES ./qml/views/About.qml
-        SOURCES ./qml/models/filesystemmodel.cpp
-        SOURCES ./qml/models/filesystemmodel.h
+        SOURCES qml/models/FileSystemModel.cpp
+        SOURCES qml/models/FileSystemModel.h
         SOURCES ./qml/models/RegistersTableModel.cpp
         SOURCES ./qml/models/RegistersTableModel.h
         SOURCES ./qml/models/MemoryTableModel.cpp
         SOURCES ./qml/models/MemoryTableModel.h
+        SOURCES ./UiController.cpp
+        SOURCES ./include/UiController.h
 )
 
-# Qt for iOS sets MACOSX_BUNDLE_GUI_IDENTIFIER automatically since Qt 6.1.
-# If you are developing for iOS or macOS you should consider setting an
-# explicit, fixed bundle identifier manually though.
 set_target_properties(EMULV_Qt_GUI PROPERTIES
         MACOSX_BUNDLE_BUNDLE_VERSION ${PROJECT_VERSION}
         MACOSX_BUNDLE_SHORT_VERSION_STRING ${PROJECT_VERSION_MAJOR}.${PROJECT_VERSION_MINOR}
@@ -76,14 +73,15 @@ set_target_properties(EMULV_Qt_GUI PROPERTIES
         WIN32_EXECUTABLE TRUE
 )
 
-# Link Qt Quick
-target_link_libraries(EMULV_Qt_GUI PRIVATE Qt6::Quick)
-#Link downloaded library
-target_link_libraries(EMULV_Qt_GUI PRIVATE QWindowKit::Quick)
-
 ##########################################################
 # Dependencies of EMULV_Qt_GUI
 ##########################################################
+# Link Qt Quick
+target_link_libraries(EMULV_Qt_GUI PRIVATE Qt6::Quick)
+# Link downloaded library
+target_link_libraries(EMULV_Qt_GUI PRIVATE QWindowKit::Quick)
+
+# In-project modules
 target_link_libraries(EMULV_Qt_GUI PUBLIC riscv)
 target_link_libraries(EMULV_Qt_GUI PUBLIC emulator)
 target_link_libraries(EMULV_Qt_GUI PUBLIC peripherals)

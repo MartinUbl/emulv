@@ -7,8 +7,7 @@
 class FileSystemModel : public QFileSystemModel
 {
     Q_OBJECT
-    QML_ELEMENT
-    QML_SINGLETON
+
     Q_PROPERTY(QModelIndex rootIndex READ rootIndex WRITE setRootIndex NOTIFY rootIndexChanged)
     Q_PROPERTY(QString appPath READ getAppPath CONSTANT)
     Q_PROPERTY(QString desktopPath READ getDesktopPath CONSTANT)
@@ -19,8 +18,8 @@ public:
     explicit FileSystemModel(QObject *parent = nullptr);
 
     // Functions invokable from QML
-    Q_INVOKABLE QString readFile(const QString &filePath);
-    Q_INVOKABLE int currentLineNumber(QQuickTextDocument *textDocument, int cursorPosition);
+    Q_INVOKABLE void readFile(const QString &filePath);
+
     Q_INVOKABLE void setTreeRootDirectory(const QString &path = getDefaultRootDir());
     Q_INVOKABLE void setParentDirectoryAsRoot();
     Q_INVOKABLE QString getCurrentRootPath();
@@ -42,7 +41,7 @@ public:
     QString getHomePath() {return QDir(QStandardPaths::writableLocation(QStandardPaths::HomeLocation)).path();};
     QString getDownloadsPath() {return QDir(QStandardPaths::writableLocation(QStandardPaths::DownloadLocation)).path();};
 
-signals:
+Q_SIGNALS:
     void rootIndexChanged();
 
 private:

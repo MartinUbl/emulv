@@ -1,67 +1,45 @@
-//
-// Created by xPC on 04.04.2023.
-//
 #include "EmulatorInterface.h"
 
-#include <QGuiApplication>
-#include <QQmlApplicationEngine>
-#include <QStandardPaths>
-#include <QFontDatabase>
-#include <QQmlContext>
-#include <QIcon>
-#include <QWKQuick/qwkquickglobal.h>
 #include "spdlog/spdlog.h"
 
 #include "ConfigLoader.h"
 #include "uart.h"
 
-EmulatorInterface::EmulatorInterface(int argc, char **argv) {
-    spdlog::info("A controller instance has been created");
-    argc_ = argc;
-    argv_ = argv;
-    emulatorUnit_ = std::make_unique<emulator::EmulatorUnit>();
+//###############################################################
+//# Constructor / destructor
+//###############################################################
 
-    //Initialize the global emitter
-    EventsLib::getGlobalEmitter();
+EmulatorInterface::EmulatorInterface() {
+    spdlog::info("An EmulatorInterface instance has been created");
+    emulatorUnit_ = std::make_unique<emulator::EmulatorUnit>();
 }
 
 EmulatorInterface::~EmulatorInterface() {
     clearActivePeripherals();
-    spdlog::info("A controller instance has been destructed");
+    spdlog::info("An EmulatorInterface instance has been destructed");
 }
 
-int EmulatorInterface::showWindow() {
-    QGuiApplication app(argc_, argv_);
+//###############################################################
+//# Class members
+//###############################################################
 
-    QGuiApplication::setOrganizationName("jonas");
-    QGuiApplication::setApplicationName("emulv");
-    QGuiApplication::setApplicationVersion(QT_VERSION_STR);
-    QGuiApplication::setWindowIcon(QIcon(":/assets/ev_square.svg"));
+void EmulatorInterface::loadConfig_(const std::string &path) {
+    const configLoader::ConfigData data = configLoader::configParser(path);
 
-    // ENABLE OPENGL
-    qputenv("QSG_RHI_BACKEND", "opengl");
-    QGuiApplication::setHighDpiScaleFactorRoundingPolicy(Qt::HighDpiScaleFactorRoundingPolicy::PassThrough);
-
-    QQmlApplicationEngine engine;
-
-    // Qt Borderless window library
-    QWK::registerTypes(&engine);
-
-    QObject::connect(
-            &engine,
-            &QQmlApplicationEngine::objectCreationFailed,
-            &app,
-            []() { QCoreApplication::exit(-1); },
-            Qt::QueuedConnection);
-    engine.loadFromModule("EmulvQt", "Main");
-
-    //Monospace font
-    const QFont monospaceFont = QFontDatabase::systemFont(QFontDatabase::FixedFont);
-    engine.rootContext()->setContextProperty("monospaceFont", monospaceFont);
-
-    spdlog::trace("A Qt window has been shown");
-    return app.exec();
+    emulatorUnit_->SetRamSize(data.ramSize);
+    emulatorUnit_->SetRamStartAddress(data.ramStartAddress);
+    programArguments_ = data.programArgs;
+    activePeripherals_ = data.peripheralDevices;
 }
+
+void EmulatorInterface::registerPeripherals_() {
+    emulatorUnit_->RegisterPeripherals(activePeripherals_);
+    spdlog::info("The active peripherals map has been registered with emulator unit");
+}
+
+//###############################################################
+//# UI interface methods (EmulvApi.h)
+//###############################################################
 
 void EmulatorInterface::clearActivePeripherals() {
     for (auto const &peripheral: activePeripherals_) {
@@ -82,24 +60,6 @@ void EmulatorInterface::configureEmulator(const std::string &path) {
 
     registerPeripherals_();
 }
-
-void EmulatorInterface::loadConfig_(const std::string &path) {
-    const configLoader::ConfigData data = configLoader::configParser(path);
-
-    emulatorUnit_->SetRamSize(data.ramSize);
-    emulatorUnit_->SetRamStartAddress(data.ramStartAddress);
-    programArguments_ = data.programArgs;
-    activePeripherals_ = data.peripheralDevices;
-}
-
-void EmulatorInterface::registerPeripherals_() {
-    emulatorUnit_->RegisterPeripherals(activePeripherals_);
-    spdlog::info("The active peripherals map has been registered with emulator unit");
-}
-
-//######################################################################################################################
-//# UI interface methods
-//######################################################################################################################
 
 void EmulatorInterface::loadFile(std::string filePath) {
     emulatorUnit_->LoadElfFile(filePath);
