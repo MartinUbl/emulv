@@ -2,7 +2,7 @@ import QtQuick
 import QtQuick.Controls
 import QtQuick.Layouts
 import "../controls"
-import Borderless_lib_test
+import EmulvQt
 
 // Ensure bound component behavior
 pragma ComponentBehavior: Bound

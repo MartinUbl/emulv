@@ -5,7 +5,7 @@
 
 #include <libriscv/machine.hpp>
 #include <sstream>
-#include "Controller.h"
+#include "EmulatorInterface.h"
 #include "spdlog/spdlog.h"
 #include "LoggerConfig.h"
 
@@ -17,7 +17,7 @@ int main(int argc, char **argv) {
         spdlog::info("The program main function has started.");
 
         //Start controller
-        Controller c(argc, argv);
+        EmulatorInterface c(argc, argv);
         return c.showWindow();
     }
     catch (const std::exception &ex) {

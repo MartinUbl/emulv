@@ -10,7 +10,7 @@
 #include "EmulatorUnit.h"
 #include "EmulvApi.h"
 
-class Controller : public EmulvApi {
+class EmulatorInterface : public EmulvApi {
 private:
     int argc_;
     char **argv_;
@@ -35,9 +35,9 @@ private:
     void loadConfig_(const std::string &path);
 
 public:
-    Controller(int argc, char **argv);
+    EmulatorInterface(int argc, char **argv);
 
-    ~Controller();
+    ~EmulatorInterface();
 
     int showWindow();
 

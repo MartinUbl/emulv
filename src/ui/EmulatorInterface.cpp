@@ -1,7 +1,7 @@
 //
 // Created by xPC on 04.04.2023.
 //
-#include "Controller.h"
+#include "EmulatorInterface.h"
 
 #include <QGuiApplication>
 #include <QQmlApplicationEngine>
@@ -15,7 +15,7 @@
 #include "ConfigLoader.h"
 #include "uart.h"
 
-Controller::Controller(int argc, char **argv) {
+EmulatorInterface::EmulatorInterface(int argc, char **argv) {
     spdlog::info("A controller instance has been created");
     argc_ = argc;
     argv_ = argv;
@@ -25,12 +25,12 @@ Controller::Controller(int argc, char **argv) {
     EventsLib::getGlobalEmitter();
 }
 
-Controller::~Controller() {
+EmulatorInterface::~EmulatorInterface() {
     clearActivePeripherals();
     spdlog::info("A controller instance has been destructed");
 }
 
-int Controller::showWindow() {
+int EmulatorInterface::showWindow() {
     QGuiApplication app(argc_, argv_);
 
     QGuiApplication::setOrganizationName("jonas");
@@ -53,7 +53,7 @@ int Controller::showWindow() {
             &app,
             []() { QCoreApplication::exit(-1); },
             Qt::QueuedConnection);
-    engine.loadFromModule("Borderless_lib_test", "Main");
+    engine.loadFromModule("EmulvQt", "Main");
 
     //Monospace font
     const QFont monospaceFont = QFontDatabase::systemFont(QFontDatabase::FixedFont);
@@ -63,7 +63,7 @@ int Controller::showWindow() {
     return app.exec();
 }
 
-void Controller::clearActivePeripherals() {
+void EmulatorInterface::clearActivePeripherals() {
     for (auto const &peripheral: activePeripherals_) {
         delete peripheral.second;
     }
@@ -73,7 +73,7 @@ void Controller::clearActivePeripherals() {
     registerPeripherals_();
 }
 
-void Controller::configureEmulator(const std::string &path) {
+void EmulatorInterface::configureEmulator(const std::string &path) {
     clearActivePeripherals();
 
     spdlog::info("Configuring the EmulatorUnit instance...");
@@ -83,7 +83,7 @@ void Controller::configureEmulator(const std::string &path) {
     registerPeripherals_();
 }
 
-void Controller::loadConfig_(const std::string &path) {
+void EmulatorInterface::loadConfig_(const std::string &path) {
     const configLoader::ConfigData data = configLoader::configParser(path);
 
     emulatorUnit_->SetRamSize(data.ramSize);
@@ -92,7 +92,7 @@ void Controller::loadConfig_(const std::string &path) {
     activePeripherals_ = data.peripheralDevices;
 }
 
-void Controller::registerPeripherals_() {
+void EmulatorInterface::registerPeripherals_() {
     emulatorUnit_->RegisterPeripherals(activePeripherals_);
     spdlog::info("The active peripherals map has been registered with emulator unit");
 }
@@ -101,48 +101,48 @@ void Controller::registerPeripherals_() {
 //# UI interface methods
 //######################################################################################################################
 
-void Controller::loadFile(std::string filePath) {
+void EmulatorInterface::loadFile(std::string filePath) {
     emulatorUnit_->LoadElfFile(filePath);
     emulatorUnit_->ClearBreakpoints();
     spdlog::trace("A new ELF file has been loaded");
 }
 
-void Controller::runProgram() {
+void EmulatorInterface::runProgram() {
     emulatorUnit_->Execute(programArguments_);
     spdlog::trace("A program was executed in the emulator unit");
 }
 
-void Controller::debugProgram() {
+void EmulatorInterface::debugProgram() {
     emulatorUnit_->Debug(programArguments_);
     spdlog::trace("A program was executed in the emulator unit in debug mode");
 }
 
-void Controller::debugStep() {
+void EmulatorInterface::debugStep() {
     emulatorUnit_->DebugStep();
     spdlog::trace("A debug step was performed");
 }
 
-void Controller::debugContinue() {
+void EmulatorInterface::debugContinue() {
     emulatorUnit_->DebugContinue();
     spdlog::trace("A debug continue was performed");
 }
 
-void Controller::terminateProgram() {
+void EmulatorInterface::terminateProgram() {
     emulatorUnit_->Terminate();
     spdlog::trace("A program was terminated");
 }
 
-void Controller::addBreakpoint(uint64_t address) {
+void EmulatorInterface::addBreakpoint(uint64_t address) {
     emulatorUnit_->AddBreakpoint(address);
     spdlog::trace("A breakpoint was added at address {0}", address);
 }
 
-void Controller::removeBreakpoint(uint64_t address) {
+void EmulatorInterface::removeBreakpoint(uint64_t address) {
     emulatorUnit_->RemoveBreakpoint(address);
     spdlog::trace("A breakpoint was removed at address {0}", address);
 }
 
-void Controller::setPinStatus(std::string moduleName, int pin, bool status) {
+void EmulatorInterface::setPinStatus(std::string moduleName, int pin, bool status) {
     // Try to get GPIO module by name
 //    auto port = dynamic_cast<peripherals::GPIO_Port *>(activePeripherals_[moduleName]);
 //    if (port == nullptr) {
@@ -153,13 +153,13 @@ void Controller::setPinStatus(std::string moduleName, int pin, bool status) {
 //    spdlog::trace("The pin {0} for module {1} was set to {2}", pin, moduleName, status);
 }
 
-void Controller::sendUartMessage(std::string uartName, std::string message) {
+void EmulatorInterface::sendUartMessage(std::string uartName, std::string message) {
     auto uart = dynamic_cast<peripherals::UART_Device *>(activePeripherals_[uartName]);
     uart->TransmitToDevice(message);
     spdlog::trace("A UART message {0} was transmitted to device {1}", uartName, message);
 }
 
-void Controller::resetPeripherals() {
+void EmulatorInterface::resetPeripherals() {
     for (auto peripheral: activePeripherals_) {
         peripheral.second->Reset();
     }

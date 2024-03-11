@@ -22,21 +22,23 @@ endif ()
 qt_standard_project_setup(REQUIRES 6.5)
 set(CMAKE_AUTORCC ON)
 
-qt_add_executable(appBorderless_lib_test
+qt_add_executable(EMULV_Qt_GUI
         main.cpp
-        Controller.cpp
-        Controller.h
-        EmulvApi.h
+        EmulatorInterface.cpp
+        UiController.cpp
         resources.qrc
 )
+# Directory with header files
+target_include_directories(EMULV_Qt_GUI PUBLIC include)
+
 
 # The colors file must be set as singleton
 set_source_files_properties(./qml/styles/Colors.qml PROPERTIES QT_QML_SINGLETON_TYPE TRUE)
 # This is needed so headers inside /qml/models/ will be discovered by compiler
 include_directories(./qml/models)
 # Specify all QML files and other sources
-qt_add_qml_module(appBorderless_lib_test
-        URI Borderless_lib_test
+qt_add_qml_module(EMULV_Qt_GUI
+        URI EmulvQt
         VERSION 1.0
         QML_FILES ./qml/views/Main.qml
         QML_FILES ./qml/controls/WindowButton.qml
@@ -67,28 +69,26 @@ qt_add_qml_module(appBorderless_lib_test
 # Qt for iOS sets MACOSX_BUNDLE_GUI_IDENTIFIER automatically since Qt 6.1.
 # If you are developing for iOS or macOS you should consider setting an
 # explicit, fixed bundle identifier manually though.
-set_target_properties(appBorderless_lib_test PROPERTIES
+set_target_properties(EMULV_Qt_GUI PROPERTIES
         MACOSX_BUNDLE_BUNDLE_VERSION ${PROJECT_VERSION}
         MACOSX_BUNDLE_SHORT_VERSION_STRING ${PROJECT_VERSION_MAJOR}.${PROJECT_VERSION_MINOR}
         MACOSX_BUNDLE TRUE
         WIN32_EXECUTABLE TRUE
 )
 
-target_link_libraries(appBorderless_lib_test
-        PRIVATE Qt6::Quick
-)
-
+# Link Qt Quick
+target_link_libraries(EMULV_Qt_GUI PRIVATE Qt6::Quick)
 #Link downloaded library
-target_link_libraries(appBorderless_lib_test PRIVATE QWindowKit::Quick)
+target_link_libraries(EMULV_Qt_GUI PRIVATE QWindowKit::Quick)
 
 ##########################################################
-# Dependencies of QtApp
+# Dependencies of EMULV_Qt_GUI
 ##########################################################
-target_link_libraries(appBorderless_lib_test PUBLIC riscv)
-target_link_libraries(appBorderless_lib_test PUBLIC emulator)
-target_link_libraries(appBorderless_lib_test PUBLIC peripherals)
-target_link_libraries(appBorderless_lib_test PUBLIC events)
-target_link_libraries(appBorderless_lib_test PUBLIC config)
+target_link_libraries(EMULV_Qt_GUI PUBLIC riscv)
+target_link_libraries(EMULV_Qt_GUI PUBLIC emulator)
+target_link_libraries(EMULV_Qt_GUI PUBLIC peripherals)
+target_link_libraries(EMULV_Qt_GUI PUBLIC events)
+target_link_libraries(EMULV_Qt_GUI PUBLIC config)
 
 ##########################################################
 # Other

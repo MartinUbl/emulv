@@ -1,7 +1,7 @@
 import QtQuick
 import QtQuick.Layouts
 import QtQuick.Controls
-import Borderless_lib_test
+import EmulvQt
 
 Rectangle {
     id: root

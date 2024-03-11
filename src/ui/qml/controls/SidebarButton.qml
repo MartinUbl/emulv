@@ -1,7 +1,7 @@
 import QtQuick
 import QtQuick.Controls
 import QtQuick.Layouts
-import Borderless_lib_test
+import EmulvQt
 
 Button {
     id: root

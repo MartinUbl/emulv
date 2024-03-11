@@ -1,6 +1,6 @@
 import QtQuick
 import QtQuick.Controls
-import Borderless_lib_test
+import EmulvQt
 import QtQuick.Effects
 
 Button {

@@ -6,7 +6,7 @@ import Qt.labs.platform
 import QWindowKit
 import "../controls"
 import "../styles"
-import Borderless_lib_test
+import EmulvQt
 
 Window {
     id: window

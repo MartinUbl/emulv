@@ -1,5 +1,5 @@
 import QtQuick
-import Borderless_lib_test
+import EmulvQt
 import "../windows"
 import "../layouts"
 import "../controls"
