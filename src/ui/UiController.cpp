@@ -7,10 +7,15 @@
 
 UiController::UiController() : QObject() {
     QObject::connect(this, &UiController::disassemblyTextChanged, _codeAreaModel.get(), &CodeAreaModel::updateDisassembly);
+    QObject::connect(this, &UiController::steppedTo, _codeAreaModel.get(), &CodeAreaModel::stepTo);
     QObject::connect(_codeAreaModel.get(), &CodeAreaModel::addBreakpoint, this, &UiController::addBreakpoint);
     QObject::connect(_codeAreaModel.get(), &CodeAreaModel::removeBreakpoint, this, &UiController::removeBreakpoint);
 
-    // Invoke this class method when emulator state changes (Switches from running to terminated, etc.)
+    QObject::connect(this, &UiController::registersChanged, _registersTableModel.get(), &RegistersTableModel::updateRegisters);
+
+    QObject::connect(this, &UiController::memoryChanged, _memoryTableModel.get(), &MemoryTableModel::loadMemory);
+
+    // Invoke a method when emulator state changes (Switches from running to terminated, etc.)
     EventsLib::globalOn(emulator::State_Changed_Event_Description, [this](EventsLib::EventData data) {
         QMetaObject::invokeMethod(this, "EmulatorStateChanged");
     });
@@ -20,6 +25,34 @@ UiController::UiController() : QObject() {
 //# Public Members
 //############################################################
 
+void UiController::EmulatorStateChanged()
+{
+    auto currentState = _emulvApi->getProgramState();
+    switch(currentState) {
+    case emulator::kDefault:
+        Q_EMIT emulatorDefaultState();
+        break;
+    case emulator::kReady:
+        Q_EMIT emulatorReadyState();
+        break;
+    case emulator::kRunning:
+        Q_EMIT emulatorRunningState();
+        break;
+    case emulator::kRunningDebug:
+        Q_EMIT emulatorRunningDebugState();
+        break;
+    case emulator::kDebugPaused:
+        Q_EMIT emulatorDebugPausedState();
+        refreshRegisters();
+        refreshMemory();
+        steppedTo(_emulvApi->getPc());
+        break;
+    case emulator::kTerminated:
+        Q_EMIT emulatorTerminatedState();
+        refreshRegisters();
+        break;
+    }
+}
 
 //############################################################
 //# Get / set
@@ -40,11 +73,6 @@ RegistersTableModel *UiController::getRegistersTableModel() const {
 CodeAreaModel *UiController::getCodeAreaModel() const
 {
     return _codeAreaModel.get();
-}
-
-void UiController::EmulatorStateChanged()
-{
-
 }
 
 //############################################################
@@ -83,6 +111,7 @@ void UiController::openFile(const QString &path) {
     }
     Q_EMIT disassemblyTextChanged({lineNumbers, disassembly});
 
+    EventsLib::globalEmit(emulator::State_Changed_Event_Description);
     //TODO
     //    memory_widget_->Clear();
     //    registers_widget_->SetRegisters({});
@@ -117,6 +146,9 @@ void UiController::debugProgram()
 void UiController::debugStep()
 {
     _emulvApi->debugStep();
+    refreshRegisters();
+    refreshMemory();
+    steppedTo(_emulvApi->getPc());
     //TODO PC, registers, memory
 }
 
@@ -131,5 +163,12 @@ void UiController::terminateProgram()
     //TODO Registers, memory
 }
 
+void UiController::refreshRegisters()
+{
+    Q_EMIT registersChanged(_emulvApi->getRegisters());
+}
 
-
+void UiController::refreshMemory()
+{
+    Q_EMIT memoryChanged(_emulvApi->getMemory(_emulvApi->getRamStartAddress(), _emulvApi->getRamEndAddress()), _emulvApi->getRamStartAddress());
+}

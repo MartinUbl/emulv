@@ -14,7 +14,7 @@ import QtCore
 BorderlessWindow {
     id: root
     title: qsTr("EMULV: RISC-V Emulator")
-    minimumWidth: 500
+    minimumWidth: 690
     minimumHeight: 360
 
     //#######################################################
@@ -233,7 +233,7 @@ BorderlessWindow {
                                 height: 30
                                 text: "Run"
                                 enabled: isFileLoaded
-                                onClicked: runProgram();
+                                //onClicked: runProgram();
                             }
 
                             ActionButton {
@@ -242,7 +242,7 @@ BorderlessWindow {
                                 height: 30
                                 text: "Debug"
                                 enabled: isFileLoaded
-                                onClicked: debugProgram();
+                                //onClicked: debugProgram();
                             }
                         }
 
@@ -258,7 +258,7 @@ BorderlessWindow {
                                 source: "qrc:///assets/stop_button.svg"
                                 height: 30
                                 text: "Terminate"
-                                onClicked: stopProgram();
+                                //onClicked: stopProgram();
                             }
                         }
 
@@ -274,7 +274,7 @@ BorderlessWindow {
                                 source: "qrc:///assets/stop_button.svg"
                                 height: 30
                                 text: "Terminate"
-                                onClicked: stopProgram();
+                                //onClicked: stopProgram();
                             }
 
                             ActionButton {
@@ -282,7 +282,7 @@ BorderlessWindow {
                                 source: "qrc:///assets/continue_button.svg"
                                 height: 30
                                 text: "Continue"
-                                onClicked: continueProgram();
+                                //onClicked: continueProgram();
                             }
 
                             ActionButton {
@@ -290,7 +290,7 @@ BorderlessWindow {
                                 source: "qrc:///assets/step_button.svg"
                                 height: 30
                                 text: "Step"
-                                onClicked: stepProgram();
+                                //onClicked: stepProgram();
                             }
                         }
 
@@ -465,6 +465,9 @@ BorderlessWindow {
                     id:statusBar
                     color: Colors.tertiaryPanel
                     anchors.fill: parent
+                    StatusBarPanel {
+                        id: statusBarPanel
+                    }
                 },
                 MultiEffect {
                     source: statusBar
@@ -491,6 +494,7 @@ BorderlessWindow {
     property var registersPanel;
 
     property bool isFileLoaded: false
+    property string lastOpenedFile: ""
 
     property list<QtObject> sidebarItemArray // Holds existing sidebarItem objects
     // The following properties store index of sidebarItemArray pointing to a displayed object
@@ -517,13 +521,33 @@ BorderlessWindow {
         // Dynamic construction of items should be delayed until the window is fully drawn
         Qt.callLater(()=>{
                          Qt.callLater(()=>{
-                                          // Connect button signals to controller slots
+                                          // Connect signals & slots from UiController
+
+                                          // Program control buttons
                                           runButton.clicked.connect(UiController.runProgram);
                                           terminateButton1.clicked.connect(UiController.terminateProgram);
                                           terminateButton2.clicked.connect(UiController.terminateProgram);
                                           debugButton.clicked.connect(UiController.debugProgram);
                                           continueButton.clicked.connect(UiController.debugContinue);
                                           stepButton.clicked.connect(UiController.debugStep);
+
+                                          // Emulator states
+                                          UiController.emulatorReadyState.connect(function() {
+                                              programReady();
+                                          })
+                                          UiController.emulatorRunningState.connect(function() {
+                                              runProgram();
+                                          })
+                                          UiController.emulatorRunningDebugState.connect(function() {
+                                              debugProgram();
+                                          })
+                                          UiController.emulatorDebugPausedState.connect(function() {
+                                              debugPauseProgram();
+                                          })
+                                          UiController.emulatorTerminatedState.connect(function() {
+                                              stopProgram();
+                                          })
+
                                       })
                          Qt.callLater(()=>{
                                           //Create File Explorer side bar item
@@ -568,8 +592,14 @@ BorderlessWindow {
     //#######################################################
 
     //###########################
-    //############# Button click callbacks
+    //############# State callbacks (only changing UI state) (btn signals are connected to Controller in Component.onCompleted)
     //###########################
+    function programReady() {
+        isFileLoaded = true;
+        statusBarPanel.rightSideModel = ["Ready"]
+        statusBarPanel.leftSideModel = [lastOpenedFile]
+    }
+
     function runProgram() {
         if(!isFileLoaded)
             return;
@@ -578,6 +608,8 @@ BorderlessWindow {
 
         //TODO: Change gradient color to YELLOW when stopped in debugging mode
         topBarGradient.color = "red"
+        statusBarPanel.leftSideModel = [statusBarPanel.leftSideModel[0]]
+        statusBarPanel.rightSideModel = ["Running"]
     }
 
     function debugProgram() {
@@ -586,39 +618,50 @@ BorderlessWindow {
 
         programControls.state = "DEBUGGING"
 
-        //TODO: Change gradient color to YELLOW when stopped in debugging mode
         topBarGradient.color = "red"
+        statusBarPanel.leftSideModel = [statusBarPanel.leftSideModel[0]]
+        statusBarPanel.rightSideModel = ["Debugging"]
     }
 
     function stopProgram() {
         programControls.state = "IDLE"
-        //TODO
 
         topBarGradient.color = Qt.binding(function () {return Colors.primaryPanel})
+        statusBarPanel.rightSideModel = ["Idle"]
+        statusBarPanel.leftSideModel = [statusBarPanel.leftSideModel[0],("Program exited at: " + Qt.formatTime(new Date(), "hh:mm:ss"))];
     }
 
     function continueProgram() {
-        //TODO
-
         topBarGradient.color = "red"
     }
 
-    function stepProgram() {
-        //TODO
+    function debugPauseProgram() {
+        programControls.state = "DEBUGGING"
+
+        topBarGradient.color = "orange"
+        statusBarPanel.rightSideModel = ["Paused"]
     }
 
     // Clicked a file in file explorer / file dialog
     function clickedFile(path) {
+        // Stop running program
+        if(programControls.state === "RUNNING" || programControls.state === "DEBUGGING") {
+            terminateButton1.clicked()
+        }
+        isFileLoaded = true;
+
         centerLoader.source = "../panels/CodeAreaPanel.qml"
 
         // Make sure path is of string type, and remove the "file:///" prefix, if it's present
         path = String(path).replace(/^file:\/\/\//, '')
         print(path)
 
+        lastOpenedFile = path
+
         //# 1) Save path into lastOpenedFiles
         //###################################
 
-        //Check if array already contains this item
+        // Check if lastOpenedFiles already contains this item
         var alreadyContains = false
         for (const arrayItem of lastOpenedFiles) {
             if(arrayItem.fullPath == path) {
@@ -626,6 +669,7 @@ BorderlessWindow {
             }
         }
 
+        // Add item to lastOpenedFiles
         if(!alreadyContains) {
             lastOpenedFiles.unshift({"name": path.replace(/^.*[\\/]/, ''), "fullPath": path})
             if(lastOpenedFiles.length > 30) {
@@ -633,11 +677,10 @@ BorderlessWindow {
             }
             lastOpenedPanel.itemsModel = lastOpenedFiles
         }
-        //# 2) Call the loadFile function
+
+        //# 2) Call the openFile function
         //############################
         UiController.openFile(path)
-
-        isFileLoaded = true
     }
 
     function clearRecentlyOpenedList() {

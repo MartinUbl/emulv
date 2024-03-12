@@ -132,10 +132,11 @@ std::string MemoryTableModel::intToMemoryByte(I w) const
     return "";
 }
 
-void MemoryTableModel::loadMemory(std::vector<uint8_t> &&memory, uint64_t startAddress)
+void MemoryTableModel::loadMemory(std::vector<uint8_t> memory, uint64_t startAddress)
 {
-    _memory = std::move(memory);
+    _memory = memory;
     _startAddress = startAddress;
+    refreshModel();
 }
 
 uint64_t MemoryTableModel::getMemoryStartAddress() const

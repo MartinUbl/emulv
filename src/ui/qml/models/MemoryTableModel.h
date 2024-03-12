@@ -8,12 +8,7 @@ class MemoryTableModel : public QAbstractTableModel
     Q_OBJECT
 
 public:
-    MemoryTableModel() {
-        for(int i = 0; i < 2998; i++) {
-            _memory.push_back(i%255);
-        }
-        _startAddress = 1;
-    }
+    MemoryTableModel() {}
 
     int rowCount(const QModelIndex & = QModelIndex()) const override;
 
@@ -34,13 +29,15 @@ public:
     Q_INVOKABLE void switchToDec();
     Q_INVOKABLE void switchToBin();
 
-    void loadMemory(std::vector<uint8_t>&& memory, uint64_t startAddress);
     uint64_t getMemoryStartAddress() const;
     uint64_t getMemoryEndAddress() const;
 
     Q_INVOKABLE void setMemoryCellColumns(int columnNumber);
     Q_INVOKABLE int getRowFromAddress(uint64_t address);
     Q_INVOKABLE void refreshModel();
+
+public Q_SLOTS:
+    void loadMemory(std::vector<uint8_t> memory, uint64_t startAddress);
 
 private:
     std::vector<uint8_t> _memory;

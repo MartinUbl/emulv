@@ -1,4 +1,5 @@
 #include "CodeAreaModel.h"
+#include <iostream>
 
 //###################################################################
 //# Override table model members
@@ -52,7 +53,7 @@ QHash<int, QByteArray> CodeAreaModel::roleNames() const
 void CodeAreaModel::removeAllBreakpoints()
 {
     for (const auto& row: breakpointIds) { emit
-        removeBreakpoint(_lineNumbers[row]);
+        emit removeBreakpoint(_lineNumbers[row]);
     }
 
     breakpointIds.clear();
@@ -81,7 +82,37 @@ void CodeAreaModel::updateDisassembly(std::tuple<QList<uint64_t>, QList<QString>
     beginResetModel();
     _lineNumbers = std::get<0>(disassembly);
     _textLines = std::get<1>(disassembly);
+    setHighlightedLine(-1);
     endResetModel();
+}
+
+void CodeAreaModel::stepTo(uint64_t pc)
+{
+    auto it = std::find(_lineNumbers.begin(), _lineNumbers.end(), pc);
+    if (it == _lineNumbers.end())
+    {
+        // pc not in vector
+        setHighlightedLine(-1);
+    } else
+    {
+        auto index = std::distance(_lineNumbers.begin(), it);
+        setHighlightedLine(index);
+    }
+
+    // Works without beginResetModel(), endResetModel()
+}
+
+size_t CodeAreaModel::highlightedLine() const
+{
+    return _highlightedLine;
+}
+
+void CodeAreaModel::setHighlightedLine(size_t newHighlightedLine)
+{
+    if (_highlightedLine == newHighlightedLine)
+        return;
+    _highlightedLine = newHighlightedLine;
+    emit highlightedLineChanged();
 }
 
 //###################################################################

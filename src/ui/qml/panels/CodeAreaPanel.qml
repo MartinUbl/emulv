@@ -103,7 +103,8 @@ Rectangle {
                     font.family: monospaceFont.family
                     font.bold: true
                     text: display
-                    color: Colors.primaryText
+                    // The entire line will be colored red when it is highlighed by debug step
+                    color: (codeAreaModel.highlightedLine === row) ? "red" : Colors.primaryText
                     verticalAlignment: Qt.AlignVCenter
                     horizontalAlignment: Qt.AlignLeft
                     readOnly: true
@@ -234,6 +235,15 @@ Rectangle {
             isErrored = true;
             errorLabel.text = error;
         });
+
+        // For aligning the table view on debug step
+        codeAreaModel.highlightedLineChanged.connect(function() {
+            // Is -1 when PC is out of range
+            print(codeAreaModel.highlightedLine);
+            if(codeAreaModel.highlightedLine >= 0) {
+                tableView.positionViewAtRow(codeAreaModel.highlightedLine, TableView.AlignVCenter)
+            }
+        })
     }
 
     //##############################################################

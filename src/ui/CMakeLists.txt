@@ -56,6 +56,7 @@ qt_add_qml_module(EMULV_Qt_GUI
         QML_FILES ./qml/panels/DebugInfoPanel.qml
         QML_FILES ./qml/panels/CodeAreaPanel.qml
         QML_FILES ./qml/views/About.qml
+        QML_FILES qml/panels/StatusBarPanel.qml
         SOURCES qml/models/FileSystemModel.cpp
         SOURCES qml/models/FileSystemModel.h
         SOURCES ./qml/models/RegistersTableModel.cpp
