@@ -54,14 +54,14 @@ BorderlessWindow {
                     text: qsTr("&Open...")
                     shortcut: "Ctrl+O"
                     onTriggered: {
-                       fileDialog.open()
+                        fileDialog.open()
                     }
                 }
                 MenuSeparator { }
                 MenuItem {
                     text: qsTr("Quit")
                     onTriggered: {
-                       Qt.quit();
+                        Qt.quit();
                     }
                 }
             }
@@ -228,16 +228,20 @@ BorderlessWindow {
                             id: idleProgramLayout
 
                             ActionButton {
+                                id: runButton
                                 source: "qrc:///assets/run_button.svg"
                                 height: 30
                                 text: "Run"
+                                enabled: isFileLoaded
                                 onClicked: runProgram();
                             }
 
                             ActionButton {
+                                id: debugButton
                                 source: "qrc:///assets/debug_button.svg"
                                 height: 30
                                 text: "Debug"
+                                enabled: isFileLoaded
                                 onClicked: debugProgram();
                             }
                         }
@@ -250,6 +254,7 @@ BorderlessWindow {
                             id: runningProgramLayout
 
                             ActionButton {
+                                id: terminateButton1
                                 source: "qrc:///assets/stop_button.svg"
                                 height: 30
                                 text: "Terminate"
@@ -265,6 +270,7 @@ BorderlessWindow {
                             id: debuggingProgramLayout
 
                             ActionButton {
+                                id: terminateButton2
                                 source: "qrc:///assets/stop_button.svg"
                                 height: 30
                                 text: "Terminate"
@@ -272,6 +278,7 @@ BorderlessWindow {
                             }
 
                             ActionButton {
+                                id: continueButton
                                 source: "qrc:///assets/continue_button.svg"
                                 height: 30
                                 text: "Continue"
@@ -279,6 +286,7 @@ BorderlessWindow {
                             }
 
                             ActionButton {
+                                id: stepButton
                                 source: "qrc:///assets/step_button.svg"
                                 height: 30
                                 text: "Step"
@@ -401,6 +409,7 @@ BorderlessWindow {
                             SplitView.fillWidth: true
                             SplitView.minimumWidth: 220
                             SplitView.minimumHeight: 220
+                            asynchronous: false
 
                             // By default an image with logo and text is shown
                             source: "../panels/CenterPlaceholderPanel.qml"
@@ -508,6 +517,15 @@ BorderlessWindow {
         // Dynamic construction of items should be delayed until the window is fully drawn
         Qt.callLater(()=>{
                          Qt.callLater(()=>{
+                                          // Connect button signals to controller slots
+                                          runButton.clicked.connect(UiController.runProgram);
+                                          terminateButton1.clicked.connect(UiController.terminateProgram);
+                                          terminateButton2.clicked.connect(UiController.terminateProgram);
+                                          debugButton.clicked.connect(UiController.debugProgram);
+                                          continueButton.clicked.connect(UiController.debugContinue);
+                                          stepButton.clicked.connect(UiController.debugStep);
+                                      })
+                         Qt.callLater(()=>{
                                           //Create File Explorer side bar item
                                           fileExplorerPanel = createSidePanel("../panels/FileExplorerPanel.qml", "File Explorer", "qrc:///assets/folder_yellow.svg", Main.SidePanelPositions.LEFT)
                                           fileExplorerPanel.fileClicked.connect(clickedFile);
@@ -591,6 +609,8 @@ BorderlessWindow {
 
     // Clicked a file in file explorer / file dialog
     function clickedFile(path) {
+        centerLoader.source = "../panels/CodeAreaPanel.qml"
+
         // Make sure path is of string type, and remove the "file:///" prefix, if it's present
         path = String(path).replace(/^file:\/\/\//, '')
         print(path)
@@ -613,10 +633,10 @@ BorderlessWindow {
             }
             lastOpenedPanel.itemsModel = lastOpenedFiles
         }
-        //# 2)
+        //# 2) Call the loadFile function
         //############################
+        UiController.openFile(path)
 
-        centerLoader.source = "../panels/CodeAreaPanel.qml"
         isFileLoaded = true
     }
 

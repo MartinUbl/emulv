@@ -24,8 +24,10 @@
 #include "spdlog/spdlog.h"
 
 namespace emulator {
-    //Number of CPU's "X-registers"
+    // Number of CPU's "X-registers"
     constexpr int X_REGISTER_COUNT = 32;
+    // 500 MB
+    constexpr int MAX_FILE_SIZE = 500 * 1024 * 1024;
 
     /**
      * States of the emulator. These are set internally using the SetState_() method.
@@ -164,9 +166,9 @@ namespace emulator {
 
         /**
          * Disassembles the loaded ELF file.
-         * @return A vector of tuples with addresses and instruction strings of the disassembled program
+         * @return A tuple of vector with addresses and instruction strings of the disassembled program
          */
-        std::vector<std::tuple<uint64_t, std::string>> Disassemble();
+        std::tuple<std::vector<uint64_t>, std::vector<std::string>> Disassemble();
 
         /**
          * Loads a map of peripheral devices into the peripheral_devices_ class attribute.

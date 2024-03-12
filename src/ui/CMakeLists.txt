@@ -64,6 +64,8 @@ qt_add_qml_module(EMULV_Qt_GUI
         SOURCES ./qml/models/MemoryTableModel.h
         SOURCES ./UiController.cpp
         SOURCES ./include/UiController.h
+        SOURCES qml/models/CodeAreaModel.cpp
+        SOURCES qml/models/CodeAreaModel.h
 )
 
 set_target_properties(EMULV_Qt_GUI PROPERTIES
@@ -91,4 +93,4 @@ target_link_libraries(EMULV_Qt_GUI PUBLIC config)
 ##########################################################
 # Other
 ##########################################################
-include(Install)
+#include(Install)

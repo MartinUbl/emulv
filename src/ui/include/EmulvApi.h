@@ -42,7 +42,7 @@ public:
 
     virtual std::vector<uint8_t> getMemory(uint64_t from, uint64_t to) = 0;
 
-    virtual std::vector<std::tuple<uint64_t, std::string>> getDisassembly() = 0;
+    virtual std::tuple<std::vector<uint64_t>, std::vector<std::string>> getDisassembly() = 0;
 
     virtual std::vector<std::tuple<std::string, uint32_t>> getRegisters() = 0;
 

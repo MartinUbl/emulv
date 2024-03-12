@@ -23,11 +23,6 @@ QString FileSystemModel::getCurrentRootPath() {
     return rootDirectory().path();
 }
 
-void FileSystemModel::readFile(const QString &filePath)
-{
-    std::cout << "READ FILE" << std::endl;
-}
-
 int FileSystemModel::columnCount(const QModelIndex &parent) const
 {
     Q_UNUSED(parent)

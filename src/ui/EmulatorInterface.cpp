@@ -120,7 +120,7 @@ void EmulatorInterface::sendUartMessage(std::string uartName, std::string messag
 }
 
 void EmulatorInterface::resetPeripherals() {
-    for (auto peripheral: activePeripherals_) {
+    for (const auto& peripheral: activePeripherals_) {
         peripheral.second->Reset();
     }
     spdlog::info("Active peripherals' state has been reset");

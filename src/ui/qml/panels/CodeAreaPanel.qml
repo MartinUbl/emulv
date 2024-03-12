@@ -6,106 +6,157 @@ import EmulvQt
 Rectangle {
     id: root
 
-    readonly property int breakpointAreaWidth: 25
-    readonly property int textAreaLeftPadding: lineNumPanelFlickable.width + breakpointAreaWidth
-    // Height of each row calculated from text area metrics
-    property int rowHeight: Math.ceil(fontMetrics.lineSpacing)
+    property var codeAreaModel: UiController.codeAreaModel
+
+    readonly property int breakpointClickAreaWidth: 25
+
+    // Set to true when error reading file happens, reset to false when TableView rows count is > 0
+    property bool isErrored: false;
 
     // Background color
-    color: "transparent"
-
+    color: Colors.primaryPanel
 
     Menu {
         id: contextMenu
         MenuItem {
             text: "Remove all breakpoints"
             onTriggered: {
-                removeAllBreakpoints()
+                codeAreaModel.removeAllBreakpoints();
             }
         }
     }
 
-    // Background of line numbers side panel
-    Rectangle {
-        id: lineNumBackgroundRect
-        color: Colors.primaryPanel
-        anchors.top: parent.top
-        anchors.bottom: parent.bottom
-        anchors.left: parent.left
-        width: textAreaLeftPadding + 2
-    }
-
-    // Separator line between numbers and editor
-    Rectangle {
-        width: 1
-        height: parent.height
-        color: Qt.darker(Colors.primaryText, 3)
-        anchors.right: lineNumBackgroundRect.right
-    }
-
-    // Layout for line numbers and text editor
-    RowLayout {
-        anchors.fill: parent
-        clip: true
-        //##############################################################
-        //# Line numbers side panel
-        //##############################################################
-        Flickable {
-            id: lineNumPanelFlickable
-
-            // Calculate width based on logarithmic scale
-            Layout.preferredWidth: fontMetrics.averageCharacterWidth * (Math.floor(Math.log10(textArea.lineCount)) + 1) + 10
-            Layout.fillHeight: true
-
-            interactive: false
-            contentY: textAreaFlickable.contentY
-            visible: textArea.text !== ""
-
-            Column {
+    // Displays errors
+    Item {
+        visible: isErrored
+        anchors.centerIn: parent
+        width: parent.width/2
+        height: parent.height/2
+        Rectangle {
+            color: Colors.secondaryPanel
+            anchors.fill: parent
+            border.color: Colors.borderColor
+            border.width: 1
+            ColumnLayout  {
                 anchors.fill: parent
+                Label {
+                    Layout.fillWidth: true
+                    font.bold: true
+                    text: "Could not load file."
+                    verticalAlignment: Qt.AlignVCenter
+                    horizontalAlignment: Qt.AlignHCenter
+                    wrapMode: "WordWrap"
+                }
+                Label {
+                    Layout.fillWidth: true
+                    id: errorLabel
+                    verticalAlignment: Qt.AlignVCenter
+                    horizontalAlignment: Qt.AlignHCenter
+                    wrapMode: "WordWrap"
+                }
+            }
+        }
+    }
 
-                // Repeat for each line
-                Repeater {
-                    model: 101 // Temporarily hardcoded, should be based on actual line count
+    // Contains table
+    Item {
+        anchors.fill: parent
+        visible: !isErrored
 
-                    // Delegate representing items of the panel in each line
-                    delegate: Row {
-                        id: delegateRow
+        TableView {
+            id: tableView
+            anchors.left: parent.left
+            anchors.right: parent.right
+            anchors.top: parent.top
+            anchors.bottom: parent.bottom
+            anchors.leftMargin: verticalHeader.implicitWidth
+            clip: true
 
-                        required property int index
-                        width: parent.width
-                        height: root.rowHeight
+            boundsBehavior: Flickable.StopAtBounds
+            boundsMovement: Flickable.StopAtBounds
 
-                        // Breakpoint area
-                        Item {
-                            id: breakpointArea
-                            width: breakpointAreaWidth
-                            height: parent.height
-                            MouseArea {
-                                anchors.fill: parent
-                                onClicked: {
-                                    toggleBreakpoint(parent, delegateRow.index)
-                                }
-                            }
-                        }
+            model: codeAreaModel
 
-                        // Line number
-                        Label {
-                            text: parent.index
-                            width: parent.width
-                            height: parent.height
-                            horizontalAlignment: Text.AlignRight
-                            verticalAlignment: Text.AlignVCenter
-                            rightPadding: 2
-                            leftPadding: 1
+            // Background
+            Rectangle {
+                anchors.top: parent.top
+                anchors.left: parent.left
+                anchors.bottom: parent.bottom
+                width: root.width
+                color: Colors.primaryWindowBackgroud
+            }
 
-                            color: Colors.primaryText
-                            font: textArea.font
-                        }
-                    }
+            delegate: Rectangle {
+                id: containerRect
+
+                color: (column == 0) ? Colors.primaryPanel : "transparent"
+                implicitWidth: (column == 0) ? itemText.implicitWidth : itemText.implicitWidth;
+                implicitHeight: itemText.height + 4
+
+                TextEdit {
+                    id: itemText
+                    anchors.fill: parent
+                    //anchors.leftMargin: 5
+                    leftPadding: 5
+                    rightPadding: 5
+
+                    font.family: monospaceFont.family
+                    font.bold: true
+                    text: display
+                    color: Colors.primaryText
+                    verticalAlignment: Qt.AlignVCenter
+                    horizontalAlignment: Qt.AlignLeft
+                    readOnly: true
+                    selectByMouse: true
+                }
+
+                Rectangle {
+                    visible: column == 0
+                    width: 1
+                    height: parent.height
+                    color: Qt.darker(Colors.primaryText, 3)
+                    anchors.right: parent.right
                 }
             }
 
+            // Reset the errored variable, makes tableview visible
+            onRowsChanged: {
+                if(tableView.rows > 0) {
+                    isErrored = false;
+                }
+            }
+
+            // Custom scroll indicators
+            ScrollBar.vertical: TextAreaScrollBar{}
+            ScrollBar.horizontal: TextAreaScrollBar{}
+
+        }
+        VerticalHeaderView {
+            id: verticalHeader
+            syncView: tableView
+            anchors.top: tableView.top
+            anchors.left: parent.left
+
+            interactive: false
+            resizableRows: false
+            clip: true
+            delegate: Rectangle {
+                color: Colors.primaryPanel
+                implicitWidth: breakpointClickAreaWidth
+                implicitHeight: 50
+                Breakpoint {
+                    visible: display
+                    id: bp
+                }
+                MouseArea {
+                    anchors.fill: parent
+                    onClicked: {
+                        print("clicked breakpoint " + row )
+                        codeAreaModel.toggleBreakpoint(row);
+                    }
+                }
+            }
+            // Remove breakpoint right click context menu
             TapHandler {
                 acceptedButtons: Qt.RightButton
                 onSingleTapped: (eventPoint, button) => {
@@ -118,57 +169,10 @@ Rectangle {
             }
         }
 
-        //##############################################################
-        //# Text area panel
-        //##############################################################
-        Flickable {
-            id: textAreaFlickable
-
-            Layout.fillHeight: true
-            Layout.fillWidth: true
-
-            boundsBehavior: Flickable.StopAtBounds
-
-            ScrollBar.horizontal: TextAreaScrollBar {}
-            ScrollBar.vertical: TextAreaScrollBar {}
-
-            // TextArea component
-            TextArea.flickable: TextArea {
-                id: textArea
-                anchors.fill: parent
-
-                readOnly: true // Make the TextArea read-only
-
-                // Load content here once from a model or a file
-                // For example, if you're loading from a file:
-                Component.onCompleted: {
-                    // Load content from file
-                    // textArea.text = FileSystem.loadContent("filename.txt");
-                }
-
-                topPadding: 0
-                leftPadding: textAreaLeftPadding // TODO?
-
-                text: "test"
-
-                // Text appearance properties
-                color: Colors.primaryText
-                selectedTextColor: Colors.primaryText
-                selectionColor: "blue"
-                textFormat: TextEdit.PlainText
-                renderType: Text.QtRendering
-                selectByMouse: true
-                antialiasing: true
-                background: null
-            }
-
-            // Font metrics for text area
-            FontMetrics {
-                id: fontMetrics
-                font: textArea.font
-            }
-        }
     }
+
+
+
 
     //##############################################################
     //# Custom scrollbar
@@ -202,60 +206,37 @@ Rectangle {
     //##############################################################
     //# Breakpoint component
     //##############################################################
-    Component{
-        id: breakpoint
+    component Breakpoint: Image {
+        anchors.bottom: parent.bottom
+        anchors.top: parent.top
+        anchors.right: parent.right
+        anchors.topMargin: 4
+        anchors.bottomMargin: 4
+        anchors.rightMargin: 4
 
-        Image {
-            anchors.bottom: parent.bottom
-            anchors.top: parent.top
-            anchors.right: parent.right
-            anchors.topMargin: 2
-            anchors.bottomMargin: 2
-            anchors.rightMargin: 2
+        source: "qrc:///assets/breakpoint.svg"
+        sourceSize.width: parent.height
+        sourceSize.height: parent.height
+        width: parent.width
+        height: parent.height
+        fillMode: Image.PreserveAspectFit
+        asynchronous: true
+        verticalAlignment: Image.AlignVCenter
+        horizontalAlignment: Image.AlignRight
+    }
 
-            sourceSize.width: parent.height
-            sourceSize.height: parent.height
-            width: parent.width
-            height: parent.height
-            fillMode: Image.PreserveAspectFit
-            asynchronous: true
-            verticalAlignment: Image.AlignVCenter
-            horizontalAlignment: Image.AlignRight
-        }
+    //##############################################################
+    //# Constructor
+    //##############################################################
+    Component.onCompleted: {
+        // Catch the error signal
+        UiController.errorLoadingFile.connect(function(error) {
+            isErrored = true;
+            errorLabel.text = error;
+        });
     }
 
     //##############################################################
     //# Javascript
     //##############################################################
-    property var breakpoints: []
-
-    function toggleBreakpoint(senderObject, index) {
-        print(index)
-
-        if(senderObject.data.length === 1) {
-            // Breakpoint is NOT inserted
-            var bp = breakpoint.createObject(senderObject, {source: "qrc:///assets/breakpoint.svg"})
-            breakpoints.push(bp)
-
-            //TODO: BP created at index
-
-        } else {
-            // Breakpoint IS inserted at index 1
-            senderObject.data[1].destroy()
-
-            //TODO: BP removed at index
-        }
-
-    }
-
-    function removeAllBreakpoints() {
-        for(var i = 0; i < breakpoints.length; i++) {
-            try {
-                breakpoints[i].destroy()
-                //TODO: BP removed at index
-            } catch(e) {}
-        }
-        breakpoints.length = 0
-    }
-
 }

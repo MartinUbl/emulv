@@ -1,6 +1,7 @@
 #include <fstream>
 #include <iostream>
 #include <limits>
+#include <filesystem>
 
 #include <libriscv/machine.hpp>
 #include "EmulatorUnit.h"
@@ -9,443 +10,452 @@
 #include "PeripheralDevice.h"
 
 namespace emulator {
-    //##################################################################################################################
-    //# Core control and initialisation methods
-    //##################################################################################################################
-    void EmulatorUnit::Execute(const std::vector<std::string> &machine_arguments) {
-        CreateNewMachine_(machine_arguments);
+//##################################################################################################################
+//# Core control and initialisation methods
+//##################################################################################################################
+void EmulatorUnit::Execute(const std::vector<std::string> &machine_arguments) {
+    CreateNewMachine_(machine_arguments);
 
-        SetState_(kRunning);
-        try {
-            spdlog::info("EmulatorUnit is RUNNING and executing a program");
+    SetState_(kRunning);
+    try {
+        spdlog::info("EmulatorUnit is RUNNING and executing a program");
 
-            while (!active_machine_->stopped()) {
-                active_machine_->cpu.step_one();
-            }
-        } catch (const std::exception &e) {
-            spdlog::error("A program error has occurred during it's execution: {0}", e.what());
-            SetState_(kTerminated);
-            return;
-        }
-
-        //This will save the last register values
-        GetRegisters();
-
-        SetState_(kTerminated);
-    }
-
-    void EmulatorUnit::Terminate() {
-        spdlog::info("Emulator terminate method has been called");
-
-        if (active_machine_ == nullptr) {
-            return;
-        }
-        active_machine_->stop();
-
-        SetState_(kTerminated);
-    }
-
-    void EmulatorUnit::LoadElfFile(const std::string &file_path) {
-        // Read the RISC-V program into a std::vector:
-        std::ifstream stream(file_path, std::ios::in | std::ios::binary);
-        if (!stream) {
-            throw std::runtime_error("EmulatorUnit::LoadElfFle: File not found or is inaccessible!");
-        }
-
-        auto binary = std::vector<uint8_t>(
-                (std::istreambuf_iterator<char>(stream)),
-                std::istreambuf_iterator<char>()
-        );
-        spdlog::info("ELF binary file has been loaded");
-
-
-        //Use this if ValidateElf_() stops working:
-        //auto *pMachine = new riscv::Machine<riscv::RISCV64>{binary};
-        //delete pMachine;
-        ValidateElf_(binary);
-
-        binary_ = binary;
-        SetState_(kReady);
-    }
-
-    void EmulatorUnit::SetState_(emulator::EmulatorState state) {
-        if (state != state_) {
-            state_ = state;
-            spdlog::info("Emulator unit's state has changed to: {0}", state);
-            EventsLib::globalEmit(emulator::State_Changed_Event_Description);
-        }
-    }
-
-    emulator::EmulatorState EmulatorUnit::GetState() {
-        return state_;
-    }
-
-    //##################################################################################################################
-    //# Debugger methods
-    //##################################################################################################################
-    void EmulatorUnit::Debug(const std::vector<std::string> &machine_arguments) {
-        spdlog::info("EmulatorUnit started a program in debug mode");
-        CreateNewMachine_(machine_arguments);
-
-        //Run until the first breakpoint is reached
-        DebugContinue();
-    }
-
-    void EmulatorUnit::DebugStep() {
-        if (active_machine_ == nullptr) {
-            throw std::runtime_error("EmulatorUnit::debugStep: active_machine_ is equal to null!");
-        }
-
-        if (!active_machine_->stopped()) {
+        while (!active_machine_->stopped()) {
             active_machine_->cpu.step_one();
-            spdlog::trace("Debug step has been performed");
-        } else {
-            SetState_(kTerminated);
         }
-
+    } catch (const std::exception &e) {
+        spdlog::error("A program error has occurred during it's execution: {0}", e.what());
+        SetState_(kTerminated);
+        return;
     }
 
-    void EmulatorUnit::DebugContinue() {
-        if (active_machine_ == nullptr) {
-            throw std::runtime_error("EmulatorUnit::debugStep: active_machine_ is equal to null!");
+    //This will save the last register values
+    GetRegisters();
+
+    SetState_(kTerminated);
+}
+
+void EmulatorUnit::Terminate() {
+    spdlog::info("Emulator terminate method has been called");
+
+    if (active_machine_ == nullptr) {
+        return;
+    }
+    active_machine_->stop();
+
+    SetState_(kTerminated);
+}
+
+void EmulatorUnit::LoadElfFile(const std::string &file_path) {
+    // Check the file size
+    // If bigger than MAX_FILE_SIZE then terminate
+    if(std::filesystem::file_size(file_path) > MAX_FILE_SIZE) {
+        const std::string& errMsg = std::string("EmulatorUnit::LoadElfFle: Error loading file! Exceeded max allowed size of ") + std::to_string(MAX_FILE_SIZE/ (1024 * 1024)) + " MB.";
+        throw std::runtime_error(errMsg);
+    }
+
+    // Read the RISC-V program into a std::vector:
+    std::ifstream stream(file_path, std::ios::in | std::ios::binary);
+    if (!stream) {
+        throw std::runtime_error("EmulatorUnit::LoadElfFle: File not found or is inaccessible!");
+    }
+
+    auto binary = std::vector<uint8_t>(
+        (std::istreambuf_iterator<char>(stream)),
+        std::istreambuf_iterator<char>()
+        );
+    spdlog::info("Potential binary ELF file has been loaded from filesystem");
+
+
+    //Use this if ValidateElf_() stops working:
+    //auto *pMachine = new riscv::Machine<riscv::RISCV64>{binary};
+    //delete pMachine;
+    ValidateElf_(binary);
+
+    binary_ = binary;
+    SetState_(kReady);
+}
+
+void EmulatorUnit::SetState_(emulator::EmulatorState state) {
+    if (state != state_) {
+        state_ = state;
+        spdlog::info("Emulator unit's state has changed to: {0}", static_cast<int>(state));
+        EventsLib::globalEmit(emulator::State_Changed_Event_Description);
+    }
+}
+
+emulator::EmulatorState EmulatorUnit::GetState() {
+    return state_;
+}
+
+//##################################################################################################################
+//# Debugger methods
+//##################################################################################################################
+void EmulatorUnit::Debug(const std::vector<std::string> &machine_arguments) {
+    spdlog::info("EmulatorUnit started a program in debug mode");
+    CreateNewMachine_(machine_arguments);
+
+    //Run until the first breakpoint is reached
+    DebugContinue();
+}
+
+void EmulatorUnit::DebugStep() {
+    if (active_machine_ == nullptr) {
+        throw std::runtime_error("EmulatorUnit::debugStep: active_machine_ is equal to null!");
+    }
+
+    if (!active_machine_->stopped()) {
+        active_machine_->cpu.step_one();
+        spdlog::trace("Debug step has been performed");
+    } else {
+        SetState_(kTerminated);
+    }
+
+}
+
+void EmulatorUnit::DebugContinue() {
+    if (active_machine_ == nullptr) {
+        throw std::runtime_error("EmulatorUnit::debugStep: active_machine_ is equal to null!");
+    }
+
+    try {
+        //Handle special case - First line of the program has a breakpoint
+        if (GetState() != kDebugPaused && breakpoints_.count(active_machine_->cpu.pc())) {
+            SetState_(kDebugPaused);
+            return;
         }
 
-        try {
-            //Handle special case - First line of the program has a breakpoint
-            if (GetState() != kDebugPaused && breakpoints_.count(active_machine_->cpu.pc())) {
+        //Run until the next breakpoint is reached
+        SetState_(kRunningDebug);
+        while (!active_machine_->stopped()) {
+            active_machine_->cpu.step_one();
+            if (breakpoints_.count(active_machine_->cpu.pc())) {
                 SetState_(kDebugPaused);
+                spdlog::trace("Debug continue has been performed");
+                return;
+            }
+        }
+    } catch (const std::exception &e) {
+        spdlog::error("A program error has occurred during the debug execution: {0}", e.what());
+        SetState_(kTerminated);
+        return;
+    }
+    //Continues here if the emulated program has exited
+
+    //This will save the last register values
+    GetRegisters();
+    SetState_(kTerminated);
+}
+
+void EmulatorUnit::AddBreakpoint(uint64_t address) {
+    spdlog::trace("Breakpoint has been inserted at address: {0}", address);
+    breakpoints_.insert(address);
+}
+
+void EmulatorUnit::RemoveBreakpoint(uint64_t address) {
+    spdlog::trace("Breakpoint has been removed at address: {0}", address);
+    breakpoints_.erase(address);
+}
+
+void EmulatorUnit::ClearBreakpoints() {
+    spdlog::trace("All breakpoints have been created");
+    breakpoints_.clear();
+}
+
+//##################################################################################################################
+//# Memory controller methods
+//##################################################################################################################
+
+void EmulatorUnit::RegisterPeripherals(std::map<std::string, peripherals::PeripheralDevice *> &devices) {
+    spdlog::info("Peripherals have been registered.");
+    peripheral_devices_ = &devices;
+}
+
+void EmulatorUnit::SetupMemoryTraps_(riscv::Machine<riscv::RISCV64> &machine) {
+    page_peripherals_.clear();
+
+    for (const auto &p: *peripheral_devices_) {
+        spdlog::info("Setting up memory trap for device with name: {0}", p.first);
+
+        peripherals::PeripheralDevice *pDevice = p.second;
+        MapDeviceToPage_(pDevice);
+
+        //Check if the address range isn't too big
+        if ((pDevice->GetStartAddress() + RISCV_PAGE_SIZE) < pDevice->GetEndAddress()) {
+            throw std::runtime_error(
+                "EmulatorUnit::RegisterPeripheral: The address range of this peripheral device is greater than the maximal supported page size of 4096 bytes.");
+        }
+
+        uint64_t TRAP_PAGE = pDevice->GetStartAddress();
+        //Create a trap page - the default size is 4096 bytes
+        auto const &trap_page = machine.memory.create_writable_pageno(
+            riscv::Memory<riscv::RISCV64>::page_number(TRAP_PAGE));
+
+        //Sets a callback on this trap page
+        trap_page.set_trap([pDevice, this](auto &page, uint32_t offset, int mode, int64_t value) {
+            //int mode --> a bitfield containing MODE and SIZE
+            //Page::trap_mode(mode) --> Extracts the MODE (read / write) from the mode bitfield's upper 4 bits
+            //Page::trap_size(mode) --> Extracts the SIZE from the mode bitfield's lower 12 bits
+            //SIZE --> in this context means the size of the read / write operation in bytes (4 bytes = 32bit processor / 8 bytes = 64bit processor)
+            //int64_t value --> is in case of write the value which is to be written to memory
+            //auto &page --> is the page object, on which this trap occurred
+
+            // Find the real device for which this callback was called for
+            uint64_t page_start = GetPageStart_(pDevice->GetStartAddress());
+            uint64_t real_address = page_start + offset;
+            peripherals::PeripheralDevice *real_device = GetRealDevice_(real_address);
+
+            if (!real_device) {
                 return;
             }
 
-            //Run until the next breakpoint is reached
-            SetState_(kRunningDebug);
-            while (!active_machine_->stopped()) {
-                active_machine_->cpu.step_one();
-                if (breakpoints_.count(active_machine_->cpu.pc())) {
-                    SetState_(kDebugPaused);
-                    spdlog::trace("Debug continue has been performed");
-                    return;
-                }
+            // Real offset relative to the devices start address
+            uint64_t real_offset = real_address - real_device->GetStartAddress();
+
+            const size_t size = riscv::Page::trap_size(mode);
+
+            switch (riscv::Page::trap_mode(mode)) {
+            case riscv::TRAP_WRITE:
+                if (size == 8)
+                    real_device->WriteDoubleword(real_offset, value);
+                else if (size == 4)
+                    real_device->WriteWord(real_offset, value);
+                break;
+            case riscv::TRAP_READ:
+                //Will always read DoubleWord
+                uint64_t mmio_value = real_device->ReadDoubleword(real_offset);
+
+                page.page().template aligned_write<uint64_t>(offset, mmio_value);
+                break;
             }
-        } catch (const std::exception &e) {
-            spdlog::error("A program error has occurred during the debug execution: {0}", e.what());
-            SetState_(kTerminated);
-            return;
-        }
-        //Continues here if the emulated program has exited
-
-        //This will save the last register values
-        GetRegisters();
-        SetState_(kTerminated);
+        });
     }
+}
 
-    void EmulatorUnit::AddBreakpoint(uint64_t address) {
-        spdlog::trace("Breakpoint has been inserted at address: {0}", address);
-        breakpoints_.insert(address);
+void EmulatorUnit::MapDeviceToPage_(peripherals::PeripheralDevice *device) {
+    uint64_t page_start = GetPageStart_(device->GetStartAddress());
+
+    auto entry = page_peripherals_.find(page_start);
+    if (entry != page_peripherals_.end()) {
+        entry->second.push_back(device);
+    } else {
+        auto peripherals = std::vector<peripherals::PeripheralDevice *>();
+        peripherals.push_back(device);
+        page_peripherals_[page_start] = peripherals;
     }
+}
 
-    void EmulatorUnit::RemoveBreakpoint(uint64_t address) {
-        spdlog::trace("Breakpoint has been removed at address: {0}", address);
-        breakpoints_.erase(address);
-    }
+peripherals::PeripheralDevice *EmulatorUnit::GetRealDevice_(uint64_t address) {
+    uint64_t page_start = GetPageStart_(address);
+    auto page_peripherals = this->page_peripherals_[page_start];
 
-    void EmulatorUnit::ClearBreakpoints() {
-        spdlog::trace("All breakpoints have been created");
-        breakpoints_.clear();
-    }
-
-    //##################################################################################################################
-    //# Memory controller methods
-    //##################################################################################################################
-
-    void EmulatorUnit::RegisterPeripherals(std::map<std::string, peripherals::PeripheralDevice *> &devices) {
-        spdlog::info("Peripherals have been registered.");
-        peripheral_devices_ = &devices;
-    }
-
-    void EmulatorUnit::SetupMemoryTraps_(riscv::Machine<riscv::RISCV64> &machine) {
-        page_peripherals_.clear();
-
-        for (const auto &p: *peripheral_devices_) {
-            spdlog::info("Setting up memory trap for device with name: {0}", p.first);
-
-            peripherals::PeripheralDevice *pDevice = p.second;
-            MapDeviceToPage_(pDevice);
-
-            //Check if the address range isn't too big
-            if ((pDevice->GetStartAddress() + RISCV_PAGE_SIZE) < pDevice->GetEndAddress()) {
-                throw std::runtime_error(
-                        "EmulatorUnit::RegisterPeripheral: The address range of this peripheral device is greater than the maximal supported page size of 4096 bytes.");
-            }
-
-            uint64_t TRAP_PAGE = pDevice->GetStartAddress();
-            //Create a trap page - the default size is 4096 bytes
-            auto const &trap_page = machine.memory.create_writable_pageno(
-                    riscv::Memory<riscv::RISCV64>::page_number(TRAP_PAGE));
-
-            //Sets a callback on this trap page
-            trap_page.set_trap([pDevice, this](auto &page, uint32_t offset, int mode, int64_t value) {
-                //int mode --> a bitfield containing MODE and SIZE
-                //Page::trap_mode(mode) --> Extracts the MODE (read / write) from the mode bitfield's upper 4 bits
-                //Page::trap_size(mode) --> Extracts the SIZE from the mode bitfield's lower 12 bits
-                //SIZE --> in this context means the size of the read / write operation in bytes (4 bytes = 32bit processor / 8 bytes = 64bit processor)
-                //int64_t value --> is in case of write the value which is to be written to memory
-                //auto &page --> is the page object, on which this trap occurred
-
-                // Find the real device for which this callback was called for
-                uint64_t page_start = GetPageStart_(pDevice->GetStartAddress());
-                uint64_t real_address = page_start + offset;
-                peripherals::PeripheralDevice *real_device = GetRealDevice_(real_address);
-
-                if (!real_device) {
-                    return;
-                }
-
-                // Real offset relative to the devices start address
-                uint64_t real_offset = real_address - real_device->GetStartAddress();
-
-                const size_t size = riscv::Page::trap_size(mode);
-
-                switch (riscv::Page::trap_mode(mode)) {
-                    case riscv::TRAP_WRITE:
-                        if (size == 8)
-                            real_device->WriteDoubleword(real_offset, value);
-                        else if (size == 4)
-                            real_device->WriteWord(real_offset, value);
-                        break;
-                    case riscv::TRAP_READ:
-                        //Will always read DoubleWord
-                        uint64_t mmio_value = real_device->ReadDoubleword(real_offset);
-
-                        page.page().template aligned_write<uint64_t>(offset, mmio_value);
-                        break;
-                }
-            });
+    for (auto p: page_peripherals) {
+        if (p->GetStartAddress() <= address && address <= p->GetEndAddress()) {
+            return p;
         }
     }
+    return nullptr;
+}
 
-    void EmulatorUnit::MapDeviceToPage_(peripherals::PeripheralDevice *device) {
-        uint64_t page_start = GetPageStart_(device->GetStartAddress());
+uint64_t EmulatorUnit::GetPageStart_(uint64_t address) {
+    return address & 0xFFFFFFFFFFFFF000;
+}
 
-        auto entry = page_peripherals_.find(page_start);
-        if (entry != page_peripherals_.end()) {
-            entry->second.push_back(device);
-        } else {
-            auto peripherals = std::vector<peripherals::PeripheralDevice *>();
-            peripherals.push_back(device);
-            page_peripherals_[page_start] = peripherals;
-        }
+uint64_t EmulatorUnit::GetMemoryStartAddress() {
+    if (active_machine_ == nullptr) {
+        throw std::runtime_error("EmulatorUnit::getMemoryStartAddress: active_machine_ is equal to null!");
+    }
+    return active_machine_->memory.start_address();
+}
+
+uint64_t EmulatorUnit::GetMemoryEndAddress() {
+    if (active_machine_ == nullptr) {
+        throw std::runtime_error("EmulatorUnit::getMemoryEndAddress: active_machine_ is equal to null!");
     }
 
-    peripherals::PeripheralDevice *EmulatorUnit::GetRealDevice_(uint64_t address) {
-        uint64_t page_start = GetPageStart_(address);
-        auto page_peripherals = this->page_peripherals_[page_start];
+    return active_machine_->memory.exit_address();
+}
 
-        for (auto p: page_peripherals) {
-            if (p->GetStartAddress() <= address && address <= p->GetEndAddress()) {
-                return p;
-            }
-        }
-        return nullptr;
-    }
+std::vector<uint8_t> EmulatorUnit::GetMemory(uint64_t from, uint64_t to) {
+    std::vector<uint8_t> memory;
 
-    uint64_t EmulatorUnit::GetPageStart_(uint64_t address) {
-        return address & 0xFFFFFFFFFFFFF000;
-    }
-
-    uint64_t EmulatorUnit::GetMemoryStartAddress() {
-        if (active_machine_ == nullptr) {
-            throw std::runtime_error("EmulatorUnit::getMemoryStartAddress: active_machine_ is equal to null!");
-        }
-        return active_machine_->memory.start_address();
-    }
-
-    uint64_t EmulatorUnit::GetMemoryEndAddress() {
-        if (active_machine_ == nullptr) {
-            throw std::runtime_error("EmulatorUnit::getMemoryEndAddress: active_machine_ is equal to null!");
-        }
-
-        return active_machine_->memory.exit_address();
-    }
-
-    std::vector<uint8_t> EmulatorUnit::GetMemory(uint64_t from, uint64_t to) {
-        std::vector<uint8_t> memory;
-
-        if (active_machine_ == nullptr) {
-            //Machine is inactive. Return empty memory.
-            return memory;
-        }
-
-        //Get memory content from machine.
-        for (uint64_t i = from; i <= to; ++i) {
-            memory.push_back(active_machine_->memory.read<uint8_t>(i));
-        }
-
+    if (active_machine_ == nullptr) {
+        //Machine is inactive. Return empty memory.
         return memory;
     }
 
-    //##################################################################################################################
-    //# Utility methods
-    //##################################################################################################################
-    std::vector<std::tuple<uint64_t, std::string>> EmulatorUnit::Disassemble() {
-        riscv::Machine<riscv::RISCV64> disassembly_machine{binary_};
-
-        disassembly_machine.setup_linux(
-                {"myprogram"},
-                {"LC_TYPE=C", "LC_ALL=C", "USER=root"});
-        disassembly_machine.setup_linux_syscalls();
-
-        // Instruction limit is used to keep running
-        disassembly_machine.set_max_instructions(1'000'000UL);
-
-        std::vector<std::tuple<uint64_t, std::string>> output;
-
-        while (!disassembly_machine.stopped()) {
-            auto &cpu = disassembly_machine.cpu;
-
-            //Stop the machine when end of executable segment is reached
-            if (cpu.pc() == cpu.current_execute_segment()->exec_end()) {
-                break;
-            }
-
-            // Read next instruction
-            const auto instruction = cpu.read_next_instruction();
-
-            // Store the disassembled instruction
-            output.emplace_back(cpu.pc(), InstructonToString_(cpu.pc(), instruction));
-
-            // Increment PC to next instruction, and increment instruction counter
-            cpu.increment_pc(instruction.length());
-            disassembly_machine.increment_counter(1);
-        }
-
-        spdlog::info("Loaded ELF has been disassembled successfully");
-        return output;
+    //Get memory content from machine.
+    for (uint64_t i = from; i <= to; ++i) {
+        memory.push_back(active_machine_->memory.read<uint8_t>(i));
     }
 
-    std::string EmulatorUnit::InstructonToString_(uint64_t pc_value, riscv::instruction_format format) {
-        char buf[256] = {0};
-        disasm_inst(buf, sizeof(buf), rv32, pc_value, (uint16_t) format.whole);
+    return memory;
+}
 
-        auto result = std::string(buf);
-        return result;
+//##################################################################################################################
+//# Utility methods
+//##################################################################################################################
+std::tuple<std::vector<uint64_t>, std::vector<std::string>> EmulatorUnit::Disassemble() {
+    riscv::Machine<riscv::RISCV64> disassembly_machine{binary_};
+
+    disassembly_machine.setup_linux(
+        {"myprogram"},
+        {"LC_TYPE=C", "LC_ALL=C", "USER=root"});
+    disassembly_machine.setup_linux_syscalls();
+
+    // Instruction limit is used to keep running
+    disassembly_machine.set_max_instructions(1'000'000UL);
+
+    std::vector<uint64_t> outputAddresses;
+    std::vector<std::string> outputText;
+
+    while (!disassembly_machine.stopped()) {
+        auto &cpu = disassembly_machine.cpu;
+
+        //Stop the machine when end of executable segment is reached
+        if (cpu.pc() == cpu.current_execute_segment()->exec_end()) {
+            break;
+        }
+
+        // Read next instruction
+        const auto instruction = cpu.read_next_instruction();
+
+        // Store the disassembled instruction
+        outputAddresses.emplace_back(cpu.pc());
+        outputText.emplace_back(InstructonToString_(cpu.pc(), instruction));
+
+        // Increment PC to next instruction, and increment instruction counter
+        cpu.increment_pc(instruction.length());
+        disassembly_machine.increment_counter(1);
     }
 
-    //##################################################################################################################
-    //# Internal helper methods
-    //##################################################################################################################
-    void EmulatorUnit::CreateNewMachine_(const std::vector<std::string> &machine_arguments) {
-        //Delete old machine
-        if (active_machine_ != nullptr) {
-            delete active_machine_;
-        }
+    spdlog::info("Loaded ELF has been disassembled successfully");
+    return {outputAddresses, outputText};
+}
 
-        // Create a new 64-bit RISC-V machine
-        active_machine_ = new riscv::Machine<riscv::RISCV64>{binary_};
-        // Use string vector as arguments to the RISC-V program
-        active_machine_->setup_linux(machine_arguments, {"LC_TYPE=C", "LC_ALL=C", "USER=root"});
-        active_machine_->setup_linux_syscalls();
-        active_machine_->set_max_instructions(std::numeric_limits<uint64_t>::max());
+std::string EmulatorUnit::InstructonToString_(uint64_t pc_value, riscv::instruction_format format) {
+    char buf[256] = {0};
+    disasm_inst(buf, sizeof(buf), rv32, pc_value, (uint16_t) format.whole);
 
-        // Setup memory traps for peripherals
-        if (peripheral_devices_ != nullptr)
-            SetupMemoryTraps_(*active_machine_);
+    auto result = std::string(buf);
+    return result;
+}
 
-        spdlog::trace("A new machine has been created");
+//##################################################################################################################
+//# Internal helper methods
+//##################################################################################################################
+void EmulatorUnit::CreateNewMachine_(const std::vector<std::string> &machine_arguments) {
+    //Delete old machine
+    if (active_machine_ != nullptr) {
+        delete active_machine_;
     }
 
-    void EmulatorUnit::ValidateElf_(std::vector<uint8_t> &binary) {
-        std::basic_string_view<char> m_binary(reinterpret_cast<char *>(binary.data()), binary.size());
+    // Create a new 64-bit RISC-V machine
+    active_machine_ = new riscv::Machine<riscv::RISCV64>{binary_};
+    // Use string vector as arguments to the RISC-V program
+    active_machine_->setup_linux(machine_arguments, {"LC_TYPE=C", "LC_ALL=C", "USER=root"});
+    active_machine_->setup_linux_syscalls();
+    active_machine_->set_max_instructions(std::numeric_limits<uint64_t>::max());
 
-        // Taken from libriscv-src\lib\libriscv\memory.cpp - binary_loader()
-        if (m_binary.size() < sizeof(riscv::Elf<8>::Ehdr)) {
-            throw std::runtime_error("ELF program too short");
-        }
-        auto const *elf = (riscv::Elf<8>::Ehdr *) m_binary.data();
-        if (!riscv::validate_header<riscv::Elf<8>::Ehdr>(elf)) {
-            throw std::runtime_error("Invalid ELF header! Mixup between 32- and 64-bit?");
-        }
-        if (elf->e_type != ET_EXEC) {
-            throw std::runtime_error("ELF program is not an executable type. Trying to load a dynamic library?");
-        }
-        if (elf->e_machine != EM_RISCV) {
-            throw std::runtime_error("ELF program is not a RISC-V executable. Wrong architecture.");
-        }
+    // Setup memory traps for peripherals
+    if (peripheral_devices_ != nullptr)
+        SetupMemoryTraps_(*active_machine_);
 
-        // Enumerate & validate loadable segments
-        const auto program_headers = elf->e_phnum;
-        if (program_headers <= 0) {
-            throw std::runtime_error("ELF with no program-headers");
-        }
-        if (program_headers >= 16) {
-            throw std::runtime_error("ELF with too many program-headers");
-        }
-        if (elf->e_phoff > 0x4000) {
-            throw std::runtime_error("ELF program-headers have bogus offset");
-        }
-        if (elf->e_phoff + program_headers * sizeof(riscv::Elf<8>::Phdr) > m_binary.size()) {
-            throw std::runtime_error("ELF program-headers are outside the binary");
-        }
+    spdlog::trace("A new machine has been created");
+}
 
-        spdlog::info("ELF file has been validated successfully, no defects were found");
+void EmulatorUnit::ValidateElf_(std::vector<uint8_t> &binary) {
+    std::basic_string_view<char> m_binary(reinterpret_cast<char *>(binary.data()), binary.size());
+
+    // Taken from libriscv-src\lib\libriscv\memory.cpp - binary_loader()
+    if (m_binary.size() < sizeof(riscv::Elf<8>::Ehdr)) {
+        throw std::runtime_error("ELF program too short");
+    }
+    auto const *elf = (riscv::Elf<8>::Ehdr *) m_binary.data();
+    if (!riscv::validate_header<riscv::Elf<8>::Ehdr>(elf)) {
+        throw std::runtime_error("Invalid ELF header! Mixup between 32- and 64-bit?");
+    }
+    if (elf->e_type != ET_EXEC) {
+        throw std::runtime_error("ELF program is not an executable type. Trying to load a dynamic library?");
+    }
+    if (elf->e_machine != EM_RISCV) {
+        throw std::runtime_error("ELF program is not a RISC-V executable. Wrong architecture.");
     }
 
-    //##################################################################################################################
-    //# Remaining set + get
-    //##################################################################################################################
-
-    std::vector<std::tuple<std::string, uint32_t>> EmulatorUnit::GetRegisters() {
-        if (active_machine_ == nullptr) {
-            //Machine is inactive. Return the last saved register values.
-            return latest_register_values_;
-        }
-
-        std::vector<std::tuple<std::string, uint32_t>> registers;
-        latest_register_values_.clear();
-
-        for (int reg_num = 0; reg_num < X_REGISTER_COUNT; reg_num++) {
-            std::string reg_prefix = "x";
-            registers.emplace_back(reg_prefix + std::to_string(reg_num), active_machine_->cpu.reg(reg_num));
-        }
-        registers.emplace_back("pc", active_machine_->cpu.pc());
-
-        latest_register_values_ = registers;
-        return registers;
+    // Enumerate & validate loadable segments
+    const auto program_headers = elf->e_phnum;
+    if (program_headers <= 0) {
+        throw std::runtime_error("ELF with no program-headers");
+    }
+    if (program_headers >= 16) {
+        throw std::runtime_error("ELF with too many program-headers");
+    }
+    if (elf->e_phoff > 0x4000) {
+        throw std::runtime_error("ELF program-headers have bogus offset");
+    }
+    if (elf->e_phoff + program_headers * sizeof(riscv::Elf<8>::Phdr) > m_binary.size()) {
+        throw std::runtime_error("ELF program-headers are outside the binary");
     }
 
-    uint64_t EmulatorUnit::GetPc() {
-        if (active_machine_ == nullptr) {
-            throw std::runtime_error("EmulatorUnit::getPc: active_machine_ is equal to null!");
-        }
+    spdlog::info("ELF file has been validated successfully, no defects were found");
+}
 
-        return active_machine_->cpu.pc();
+//##################################################################################################################
+//# Remaining set + get
+//##################################################################################################################
+
+std::vector<std::tuple<std::string, uint32_t>> EmulatorUnit::GetRegisters() {
+    if (active_machine_ == nullptr) {
+        //Machine is inactive. Return the last saved register values.
+        return latest_register_values_;
     }
 
-    int EmulatorUnit::GetReturnValue() {
-        if (active_machine_ == nullptr) {
-            return -1;
-        }
+    std::vector<std::tuple<std::string, uint32_t>> registers;
+    latest_register_values_.clear();
 
-        return active_machine_->return_value<long>();
+    for (int reg_num = 0; reg_num < X_REGISTER_COUNT; reg_num++) {
+        std::string reg_prefix = "x";
+        registers.emplace_back(reg_prefix + std::to_string(reg_num), active_machine_->cpu.reg(reg_num));
+    }
+    registers.emplace_back("pc", active_machine_->cpu.pc());
+
+    latest_register_values_ = registers;
+    return registers;
+}
+
+uint64_t EmulatorUnit::GetPc() {
+    if (active_machine_ == nullptr) {
+        throw std::runtime_error("EmulatorUnit::getPc: active_machine_ is equal to null!");
     }
 
-    void EmulatorUnit::SetRamStartAddress(uint64_t ramStartAddress) {
-        ramStartAddress_ = ramStartAddress;
+    return active_machine_->cpu.pc();
+}
+
+int EmulatorUnit::GetReturnValue() {
+    if (active_machine_ == nullptr) {
+        return -1;
     }
 
-    void EmulatorUnit::SetRamSize(uint64_t size) {
-        ramSize_ = size;
-    }
+    return active_machine_->return_value<long>();
+}
 
-    uint64_t EmulatorUnit::GetRamStartAddress() {
-        return ramStartAddress_;
-    }
+void EmulatorUnit::SetRamStartAddress(uint64_t ramStartAddress) {
+    ramStartAddress_ = ramStartAddress;
+}
 
-    uint64_t EmulatorUnit::GetRamSize() {
-        return ramSize_;
-    }
+void EmulatorUnit::SetRamSize(uint64_t size) {
+    ramSize_ = size;
+}
 
-    uint64_t EmulatorUnit::GetRamEndAddress() {
-        return ramStartAddress_ + ramSize_ - 1;
-    }
+uint64_t EmulatorUnit::GetRamStartAddress() {
+    return ramStartAddress_;
+}
+
+uint64_t EmulatorUnit::GetRamSize() {
+    return ramSize_;
+}
+
+uint64_t EmulatorUnit::GetRamEndAddress() {
+    return ramStartAddress_ + ramSize_ - 1;
+}
 }
