@@ -21,6 +21,11 @@ UiController::UiController() : QObject() {
     });
 }
 
+UiController::~UiController()
+{
+    terminateProgram();
+}
+
 //############################################################
 //# Public Members
 //############################################################
@@ -45,11 +50,13 @@ void UiController::EmulatorStateChanged()
         Q_EMIT emulatorDebugPausedState();
         refreshRegisters();
         refreshMemory();
-        steppedTo(_emulvApi->getPc());
+        Q_EMIT steppedTo(_emulvApi->getPc());
         break;
     case emulator::kTerminated:
         Q_EMIT emulatorTerminatedState();
         refreshRegisters();
+        // Reset the line highlighting
+        Q_EMIT steppedTo(-1);
         break;
     }
 }
@@ -81,6 +88,8 @@ CodeAreaModel *UiController::getCodeAreaModel() const
 
 void UiController::openFile(const QString &path) {
     spdlog::info("User is trying to open file {0}", path.toStdString());
+
+    terminateProgram();
 
     std::string filePath = path.toStdString();
     QList<QString> disassembly;
@@ -133,34 +142,49 @@ void UiController::addBreakpoint(uint64_t address)
 
 void UiController::runProgram()
 {
-    if(_emulvApi->getProgramState() == emulator::kReady || _emulvApi->getProgramState() == emulator::kTerminated)
-        _emulvApi->runProgram();
+    if(_emulvApi->getProgramState() == emulator::kReady || _emulvApi->getProgramState() == emulator::kTerminated) {
+        _joinBackendThread();
+        _backendThread = std::make_unique<std::thread>(&EmulvApi::runProgram, _emulvApi.get());
+    }
 }
 
 void UiController::debugProgram()
 {
-    if(_emulvApi->getProgramState() == emulator::kReady || _emulvApi->getProgramState() == emulator::kTerminated)
-        _emulvApi->debugProgram();
+    if(_emulvApi->getProgramState() == emulator::kReady || _emulvApi->getProgramState() == emulator::kTerminated) {
+        _joinBackendThread();
+        _backendThread = std::make_unique<std::thread>(&EmulvApi::debugProgram, _emulvApi.get());
+    }
 }
 
 void UiController::debugStep()
 {
-    _emulvApi->debugStep();
-    refreshRegisters();
-    refreshMemory();
-    steppedTo(_emulvApi->getPc());
-    //TODO PC, registers, memory
+    if(_emulvApi->getProgramState() == emulator::kDebugPaused) {
+        _emulvApi->debugStep();
+        refreshRegisters();
+        refreshMemory();
+        Q_EMIT steppedTo(_emulvApi->getPc());
+    }
 }
 
 void UiController::debugContinue()
 {
-    _emulvApi->debugContinue();
+    if(_emulvApi->getProgramState() == emulator::kDebugPaused) {
+        _joinBackendThread();
+        // Reset the line highlighting
+        Q_EMIT steppedTo(-1);
+        _backendThread = std::make_unique<std::thread>(&EmulvApi::debugContinue, _emulvApi.get());
+    }
 }
 
 void UiController::terminateProgram()
 {
-    _emulvApi->terminateProgram();
-    //TODO Registers, memory
+    auto state = _emulvApi->getProgramState();
+
+    if(state != emulator::kTerminated || state == emulator::kReady || state == emulator::kDefault) {
+        _emulvApi->terminateProgram();
+    }
+
+    _joinBackendThread();
 }
 
 void UiController::refreshRegisters()

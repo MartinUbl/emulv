@@ -22,6 +22,7 @@ class UiController : public QObject {
 
 public:
     explicit UiController();
+    ~UiController();
 
     FileSystemModel *getFileSystemModel() const;
 
@@ -75,4 +76,15 @@ private:
     const std::unique_ptr<RegistersTableModel> _registersTableModel{std::make_unique<RegistersTableModel>()};
     const std::unique_ptr<CodeAreaModel> _codeAreaModel{std::make_unique<CodeAreaModel>()};
 
+    // Threading - using std::thread instead of Qt threading for simplicity
+    std::unique_ptr<std::thread> _backendThread;
+    void _joinBackendThread();
+
 };
+
+inline void UiController::_joinBackendThread()
+{
+    if (_backendThread && _backendThread->joinable()) {
+        _backendThread->join();
+    }
+}

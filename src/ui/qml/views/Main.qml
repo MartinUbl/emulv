@@ -644,11 +644,7 @@ BorderlessWindow {
 
     // Clicked a file in file explorer / file dialog
     function clickedFile(path) {
-        // Stop running program
-        if(programControls.state === "RUNNING" || programControls.state === "DEBUGGING") {
-            terminateButton1.clicked()
-        }
-        isFileLoaded = true;
+        isFileLoaded = false;
 
         centerLoader.source = "../panels/CodeAreaPanel.qml"
 
