@@ -52,7 +52,7 @@ Bakalářská práce v oborech Informatika (Bc), Výpočetní technika (Bc), Inf
 | Název              | Účel                    |
 |--------------------|-------------------------|
 | Doxygen + GraphViz | Generování dokumentace  |
-| Qt6                | Knihovna pro tvorbu GUI |
+| Qt6.6              | Knihovna pro tvorbu GUI |
 
 ### Následující knihovny jsou automaticky staženy pomocí CMake:
 

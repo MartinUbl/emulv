@@ -14,7 +14,6 @@
 #include "PeripheralDevice.h"
 #include "Events.h"
 
-
 namespace peripherals {
 
     enum class GPIO_Pin_Mode {
