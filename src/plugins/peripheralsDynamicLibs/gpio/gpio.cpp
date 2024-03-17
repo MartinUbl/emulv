@@ -9,7 +9,7 @@
 #include <stdexcept>
 #include <limits>
 #include "gpio.h"
-#include "spdlog/spdlog.h"
+//#include "spdlog/spdlog.h"
 
 
 namespace peripherals {
@@ -21,17 +21,17 @@ namespace peripherals {
     }
 
     void GPIO_Port::WriteByte(uint64_t address, uint8_t value) {
-        spdlog::info("Called the WRITE BYTE method of GPIO port to address {0} with value {1}", address, value);
+        //spdlog::info("Called the WRITE BYTE method of GPIO port to address {0} with value {1}", address, value);
         WriteWord(address, value);
     }
 
     void GPIO_Port::WriteHalfword(uint64_t address, uint16_t value) {
-        spdlog::info("Called the WRITE HALFWORD method of GPIO port to address {0} with value {1}", address, value);
+//        spdlog::info("Called the WRITE HALFWORD method of GPIO port to address {0} with value {1}", address, value);
         WriteWord(address, value);
     }
 
     void GPIO_Port::WriteDoubleword(uint64_t address, uint64_t value) {
-        spdlog::info("Called the WRITE DOUBLEWORD method of GPIO port to address {0} with value {1}", address, value);
+//        spdlog::info("Called the WRITE DOUBLEWORD method of GPIO port to address {0} with value {1}", address, value);
         if (value > std::numeric_limits<uint32_t>::max())
             throw std::runtime_error("GPIO: Cannot write 64 bit value! Only writes up to 32 bits are supported.");
 
@@ -39,25 +39,25 @@ namespace peripherals {
     }
 
     uint8_t GPIO_Port::ReadByte(uint64_t address) {
-        spdlog::info("Called the READ BYTE method of GPIO port with address {0}", address);
+//        spdlog::info("Called the READ BYTE method of GPIO port with address {0}", address);
         //GPIO doesn't support reading 8 bits at a time
         throw std::runtime_error("GPIO: Reading a byte is not supported. Only >32 bit read is supported.");
     }
 
     uint16_t GPIO_Port::ReadHalfword(uint64_t address) {
-        spdlog::info("Called the READ HALFWORD method of GPIO port with address {0}", address);
+//        spdlog::info("Called the READ HALFWORD method of GPIO port with address {0}", address);
         //GPIO doesn't support reading 16 bits at a time
         throw std::runtime_error("GPIO: Reading a halfword is not supported. Only >32 bit read is supported.");
     }
 
     uint64_t GPIO_Port::ReadDoubleword(uint64_t address) {
-        spdlog::info("Called the READ DOUBLEWORD method of GPIO port with address {0}", address);
+//        spdlog::info("Called the READ DOUBLEWORD method of GPIO port with address {0}", address);
         //Will read 32 bit value and return it as a 64 bit value.
         return ReadWord(address);
     }
 
     void GPIO_Port::WriteWord(uint64_t address, uint32_t value) {
-        spdlog::info("Called the WRITE WORD method of GPIO port to address {0} with value {1}", address, value);
+//        spdlog::info("Called the WRITE WORD method of GPIO port to address {0} with value {1}", address, value);
 
         switch (address) {
             case GPIO_Port_Reg_Offset::CTL0:
@@ -121,7 +121,7 @@ namespace peripherals {
     }
 
     uint32_t GPIO_Port::ReadWord(uint64_t address) {
-        spdlog::info("Called the READ WORD method of GPIO port with address {0}", address);
+//        spdlog::info("Called the READ WORD method of GPIO port with address {0}", address);
 
         std::bitset<kReg_Size> reg;
         switch (address) {
@@ -149,7 +149,7 @@ namespace peripherals {
     }
 
     void GPIO_Port::Reset() {
-        spdlog::info("Resetting registers of GPIO port to default values...");
+//        spdlog::info("Resetting registers of GPIO port to default values...");
 
         Reg_CTL0 = std::bitset<kReg_Size>{kReg_CTL_RESET_VALUE};
         Reg_CTL1 = std::bitset<kReg_Size>{kReg_CTL_RESET_VALUE};
@@ -192,7 +192,7 @@ namespace peripherals {
     }
 
     void GPIO_Port::Set_Pin_Level(const size_t pinNo, GPIO_Pin_Level level) {
-        spdlog::info("Setting GPIO pin {0} to level {1}", pinNo, level);
+//        spdlog::info("Setting GPIO pin {0} to level {1}", pinNo, level);
 
         if (Get_Pin_Mode(pinNo) == GPIO_Pin_Mode::OUTPUT) {
             return; // cannot set pin output value through interface
@@ -220,11 +220,11 @@ namespace peripherals {
             return;
         }
 
-        EventsLib::globalEmit("gpio-pin-level-changed", EventsLib::EventData{
-                {"gpioPort",      *this},
-                {"pinNo",         pinNo},
-                {"previousLevel", previousLevel},
-                {"currentLevel",  currentLevel}});
+//        EventsLib::globalEmit("gpio-pin-level-changed", EventsLib::EventData{
+//                {"gpioPort",      *this},
+//                {"pinNo",         pinNo},
+//                {"previousLevel", previousLevel},
+//                {"currentLevel",  currentLevel}});
     }
 
     void GPIO_Port::Announce_Pin_Mode_Change(const size_t pinNo, const GPIO_Pin_Mode previousMode,
@@ -233,10 +233,10 @@ namespace peripherals {
             return;
         }
 
-        EventsLib::globalEmit("gpio-pin-mode-changed", EventsLib::EventData{
-                {"gpioPort",     *this},
-                {"pinNo",        pinNo},
-                {"previousMode", previousMode},
-                {"currentMode",  currentMode}});
+//        EventsLib::globalEmit("gpio-pin-mode-changed", EventsLib::EventData{
+//                {"gpioPort",     *this},
+//                {"pinNo",        pinNo},
+//                {"previousMode", previousMode},
+//                {"currentMode",  currentMode}});
     }
 }

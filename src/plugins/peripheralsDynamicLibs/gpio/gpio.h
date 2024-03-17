@@ -12,7 +12,6 @@
 #include <bitset>
 
 #include "PeripheralDevice.h"
-#include "Events.h"
 
 namespace peripherals {
 

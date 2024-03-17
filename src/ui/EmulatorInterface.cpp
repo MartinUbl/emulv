@@ -3,7 +3,7 @@
 #include "spdlog/spdlog.h"
 
 #include "ConfigLoader.h"
-#include "uart.h"
+
 
 //###############################################################
 //# Constructor / destructor
@@ -114,9 +114,9 @@ void EmulatorInterface::setPinStatus(std::string moduleName, int pin, bool statu
 }
 
 void EmulatorInterface::sendUartMessage(std::string uartName, std::string message) {
-    auto uart = dynamic_cast<peripherals::UART_Device *>(activePeripherals_[uartName]);
-    uart->TransmitToDevice(message);
-    spdlog::trace("A UART message {0} was transmitted to device {1}", uartName, message);
+//    auto uart = dynamic_cast<peripherals::UART_Device *>(activePeripherals_[uartName]);
+//    uart->TransmitToDevice(message);
+//    spdlog::trace("A UART message {0} was transmitted to device {1}", uartName, message);
 }
 
 void EmulatorInterface::resetPeripherals() {

@@ -8,6 +8,7 @@
 #include "libriscv/rv32i_instr.hpp"
 #include "riscv-disas.h"
 #include "PeripheralDevice.h"
+#include <libriscv/elf.hpp>
 
 namespace emulator {
 //##################################################################################################################
@@ -313,7 +314,7 @@ std::tuple<std::vector<uint64_t>, std::vector<std::string>> EmulatorUnit::Disass
         auto &cpu = disassembly_machine.cpu;
 
         //Stop the machine when end of executable segment is reached
-        if (cpu.pc() == cpu.current_execute_segment()->exec_end()) {
+        if (cpu.pc() == cpu.current_execute_segment().exec_end()) {
             break;
         }
 
@@ -368,18 +369,31 @@ void EmulatorUnit::ValidateElf_(std::vector<uint8_t> &binary) {
     std::basic_string_view<char> m_binary(reinterpret_cast<char *>(binary.data()), binary.size());
 
     // Taken from libriscv-src\lib\libriscv\memory.cpp - binary_loader()
-    if (m_binary.size() < sizeof(riscv::Elf<8>::Ehdr)) {
+    //##################################################################
+    if (m_binary.size() < sizeof(typename riscv::Elf<8>::Header)) {
         throw std::runtime_error("ELF program too short");
     }
-    auto const *elf = (riscv::Elf<8>::Ehdr *) m_binary.data();
-    if (!riscv::validate_header<riscv::Elf<8>::Ehdr>(elf)) {
-        throw std::runtime_error("Invalid ELF header! Mixup between 32- and 64-bit?");
+    if (!riscv::Elf<8>::validate(m_binary)) {
+        throw std::runtime_error("Invalid ELF header! Expected a RISC-V ELF binary");
     }
-    if (elf->e_type != ET_EXEC) {
-        throw std::runtime_error("ELF program is not an executable type. Trying to load a dynamic library?");
+
+    const auto* elf = (typename riscv::Elf<8>::Header*) m_binary.data();
+
+    static constexpr uint32_t ELFHDR_FLAGS_RVC = 0x1;
+    static constexpr uint32_t ELFHDR_FLAGS_RVE = 0x8;
+    const bool is_static = elf->e_type == riscv::Elf<8>::Header::ET_EXEC;
+    const bool m_is_dynamic = elf->e_type == riscv::Elf<8>::Header::ET_DYN;
+    if (!is_static && !m_is_dynamic) {
+        throw std::runtime_error("ELF program is not an executable type. Trying to load an object file?");
     }
-    if (elf->e_machine != EM_RISCV) {
+    if (elf->e_machine != riscv::Elf<8>::Header::EM_RISCV) {
         throw std::runtime_error("ELF program is not a RISC-V executable. Wrong architecture.");
+    }
+    if ((elf->e_flags & ELFHDR_FLAGS_RVC) != 0 && !riscv::compressed_enabled) {
+        throw std::runtime_error("ELF is a RISC-V RVC executable, however C-extension is not enabled.");
+    }
+    if ((elf->e_flags & ELFHDR_FLAGS_RVE) != 0) {
+        throw std::runtime_error("ELF is a RISC-V RVE executable, however E-extension is not supported.");
     }
 
     // Enumerate & validate loadable segments
@@ -393,7 +407,7 @@ void EmulatorUnit::ValidateElf_(std::vector<uint8_t> &binary) {
     if (elf->e_phoff > 0x4000) {
         throw std::runtime_error("ELF program-headers have bogus offset");
     }
-    if (elf->e_phoff + program_headers * sizeof(riscv::Elf<8>::Phdr) > m_binary.size()) {
+    if (elf->e_phoff + program_headers * sizeof(typename riscv::Elf<8>::ProgramHeader) > m_binary.size()) {
         throw std::runtime_error("ELF program-headers are outside the binary");
     }
 

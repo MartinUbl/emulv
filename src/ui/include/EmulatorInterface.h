@@ -2,6 +2,7 @@
 
 #include "EmulatorUnit.h"
 #include "EmulvApi.h"
+#include "PeripheralDevice.h"
 
 class EmulatorInterface : public EmulvApi {
 private:

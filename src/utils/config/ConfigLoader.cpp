@@ -5,8 +5,6 @@
 #include <string>
 #include "ConfigLoader.h"
 #include "spdlog/spdlog.h"
-#include "uart.h"
-#include "gpio.h"
 #include <fstream>
 #include <nlohmann/json.hpp>
 
@@ -61,15 +59,18 @@ namespace configLoader {
                     spdlog::info("Found a peripheral of type: {0} name: {1} startAddress: {2} endAddress: {3}", type,
                                  name,
                                  startAddress, endAddress);
-                    //A GPIO_Port element
-                    if (type == "GPIO_Port") {
-                        data.peripheralDevices[name] = new peripherals::GPIO_Port(name, startAddress, endAddress);
-                    }
 
-                    //An UART_Device element
-                    if (type == "UART_Device") {
-                        data.peripheralDevices[name] = new peripherals::UART_Device(name, startAddress, endAddress);
-                    }
+                    // TODO
+
+//                    //A GPIO_Port element
+//                    if (type == "GPIO_Port") {
+//                        data.peripheralDevices[name] = new peripherals::GPIO_Port(name, startAddress, endAddress);
+//                    }
+//
+//                    //An UART_Device element
+//                    if (type == "UART_Device") {
+//                        data.peripheralDevices[name] = new peripherals::UART_Device(name, startAddress, endAddress);
+//                    }
                 }
             }
         }

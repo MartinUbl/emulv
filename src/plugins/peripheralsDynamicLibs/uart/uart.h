@@ -6,7 +6,7 @@
 
 #include <bitset>
 #include <queue>
-#include "PeripheralDevice.h" // TODO: WTF?
+#include "PeripheralDevice.h"
 
 namespace peripherals {
 

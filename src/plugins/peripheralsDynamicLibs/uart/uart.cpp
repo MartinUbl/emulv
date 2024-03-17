@@ -6,8 +6,7 @@
 #include <stdexcept>
 #include <iostream>
 #include "uart.h"
-#include "spdlog/spdlog.h"
-#include "Events.h"
+//#include "spdlog/spdlog.h"
 
 namespace peripherals {
 
@@ -17,7 +16,7 @@ namespace peripherals {
     }
 
     void UART_Device::WriteWord(uint64_t address, uint32_t value) {
-        spdlog::info("Called the WRITE WORD method of UART to address {0} with value {1}", address, value);
+//        spdlog::info("Called the WRITE WORD method of UART to address {0} with value {1}", address, value);
 
         switch (address) {
             case uSTAT:
@@ -59,7 +58,7 @@ namespace peripherals {
     }
 
     uint32_t UART_Device::ReadWord(uint64_t address) {
-        spdlog::info("Called the READ WORD method of UART with address {0}", address);
+//        spdlog::info("Called the READ WORD method of UART with address {0}", address);
 
         std::bitset<kReg_Size> reg;
         switch (address) {
@@ -123,25 +122,25 @@ namespace peripherals {
     }
 
     uint8_t UART_Device::ReadByte(uint64_t address) {
-        spdlog::info("Called the READ BYTE method of UART with address {0}", address);
+//        spdlog::info("Called the READ BYTE method of UART with address {0}", address);
         //UART doesn't support reading 8 bits at a time
         throw std::runtime_error("UART: Reading a byte is not supported. Only >32 bit read is supported.");
     }
 
     uint16_t UART_Device::ReadHalfword(uint64_t address) {
-        spdlog::info("Called the READ HALFWORD method of UART with address {0}", address);
+//        spdlog::info("Called the READ HALFWORD method of UART with address {0}", address);
         //UART doesn't support reading 16 bits at a time
         throw std::runtime_error("UART: Reading a halfword is not supported. Only >32 bit read is supported.");
     }
 
     uint64_t UART_Device::ReadDoubleword(uint64_t address) {
-        spdlog::info("Called the READ DOUBLEWORD method of UART with address {0}", address);
+//        spdlog::info("Called the READ DOUBLEWORD method of UART with address {0}", address);
         //Will read 32 bit value and return it as a 64 bit value.
         return ReadWord(address);
     }
 
     void UART_Device::Reset() {
-        spdlog::info("Resetting registers of UART to default values...");
+//        spdlog::info("Resetting registers of UART to default values...");
 
         Reg_STAT = std::bitset<kReg_Size>{kReset_Value_STAT};
         Reg_DATA = std::bitset<kReg_Size>{kReset_Value_OTHER};
@@ -199,15 +198,16 @@ namespace peripherals {
     }
 
     void UART_Device::DeviceReceivedFrame(unsigned long frame_data) {
-        spdlog::info("UART has received (from user input) a new frame {0}", frame_data);
+//        spdlog::info("UART has received (from user input) a new frame {0}", frame_data);
         //frame_data can contain either 8 bits of data, or 9 bits of data.
-        EventsLib::globalEmit("uart_message_received", EventsLib::EventData{
-                {"uartDevice", *this},
-                {"frameData",  frame_data}});
+
+//        EventsLib::globalEmit("uart_message_received", EventsLib::EventData{
+//                {"uartDevice", *this},
+//                {"frameData",  frame_data}});
     }
 
     void UART_Device::TransmitFrameToDevice(uint8_t frame_data) {
-        spdlog::info("UART transmitting (writing to emulator memory) a frame {0}", frame_data);
+//        spdlog::info("UART transmitting (writing to emulator memory) a frame {0}", frame_data);
         WriteWord(uDATA, frame_data);
     }
 
