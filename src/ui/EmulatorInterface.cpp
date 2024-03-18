@@ -102,23 +102,6 @@ void EmulatorInterface::removeBreakpoint(uint64_t address) {
     spdlog::trace("A breakpoint was removed at address {0}", address);
 }
 
-void EmulatorInterface::setPinStatus(std::string moduleName, int pin, bool status) {
-    // Try to get GPIO module by name
-//    auto port = dynamic_cast<peripherals::GPIO_Port *>(activePeripherals_[moduleName]);
-//    if (port == nullptr) {
-//        return;
-//    }
-//
-//    port->Set_Pin_Level(pin, status ? peripherals::GPIO_Pin_Level::HIGH : peripherals::GPIO_Pin_Level::LOW);
-//    spdlog::trace("The pin {0} for module {1} was set to {2}", pin, moduleName, status);
-}
-
-void EmulatorInterface::sendUartMessage(std::string uartName, std::string message) {
-//    auto uart = dynamic_cast<peripherals::UART_Device *>(activePeripherals_[uartName]);
-//    uart->TransmitToDevice(message);
-//    spdlog::trace("A UART message {0} was transmitted to device {1}", uartName, message);
-}
-
 void EmulatorInterface::resetPeripherals() {
     for (const auto& peripheral: activePeripherals_) {
         peripheral.second->Reset();

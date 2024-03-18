@@ -5,7 +5,7 @@
 #pragma once
 
 #include "nlohmann/json.hpp"
-#include "PeripheralDevice.h"
+#include "PeripheralsApi.h"
 
 namespace configLoader {
     /**
@@ -15,7 +15,7 @@ namespace configLoader {
         uint64_t ramSize;
         uint64_t ramStartAddress;
         std::vector<std::basic_string<char>> programArgs;
-        std::map<std::basic_string<char>, peripherals::PeripheralDevice *> peripheralDevices;
+        std::map<std::basic_string<char>, peripherals::PeripheralsApi *> peripheralDevices;
     };
 
     /**

@@ -20,7 +20,7 @@
  * @tparam T The class contained in this library.
  */
 template<class T>
-class libraryLoader {
+class LibLoader {
 private:
 
 #ifdef WIN32
@@ -35,13 +35,13 @@ private:
     std::string _deleteClassSymbol;
 
 public:
-    explicit libraryLoader(std::string pathToLib,
+    explicit LibLoader(std::string pathToLib,
                        std::string allocClassSymbol = "allocator",
                        std::string deleteClassSymbol = "deleter") :
             _handle(nullptr), _pathToLib(std::move(pathToLib)),
             _allocClassSymbol(std::move(allocClassSymbol)), _deleteClassSymbol(std::move(deleteClassSymbol)) {}
 
-    virtual ~libraryLoader() {
+    virtual ~LibLoader() {
         closeLib();
     }
 

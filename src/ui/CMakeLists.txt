@@ -87,7 +87,7 @@ target_link_libraries(EMULV_Qt_GUI PRIVATE QWindowKit::Quick)
 # In-project modules
 target_link_libraries(EMULV_Qt_GUI PUBLIC riscv)
 target_link_libraries(EMULV_Qt_GUI PUBLIC emulator)
-target_link_libraries(EMULV_Qt_GUI PUBLIC peripherals)
+target_link_libraries(EMULV_Qt_GUI PUBLIC peripheralsApi)
 target_link_libraries(EMULV_Qt_GUI PUBLIC events)
 target_link_libraries(EMULV_Qt_GUI PUBLIC config)
 

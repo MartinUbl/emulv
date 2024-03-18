@@ -10,32 +10,16 @@
   },
   "peripherals": [
     {
-      "type": "GPIO_Port",
-      "name": "GPIOA",
+      "name": "gpio",
+      "dll-path": "libgpio.dll",
       "mapping": {
         "start-address": "0x40010800",
-        "end-address": "0x40010BFF"
-      }
-    },
-    {
-      "type": "GPIO_Port",
-      "name": "GPIOB",
-      "mapping": {
-        "start-address": "0x40010C00",
-        "end-address": "0x40010FFF"
-      }
-    },
-    {
-      "type": "GPIO_Port",
-      "name": "GPIOC",
-      "mapping": {
-        "start-address": "0x40011000",
         "end-address": "0x400113FF"
       }
     },
     {
-      "type": "UART_Device",
-      "name": "UART1",
+      "name": "uart",
+      "dll-path": "libuart.dll",
       "mapping": {
         "start-address": "0x40013800",
         "end-address": "0x40013BFF"

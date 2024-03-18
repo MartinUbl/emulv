@@ -4,7 +4,7 @@
 #include <unordered_set>
 #include "libriscv/types.hpp"
 #include "Events.h"
-#include "PeripheralDevice.h"
+#include "PeripheralsApi.h"
 
 //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 //! IMPORTANT
@@ -69,10 +69,10 @@ namespace emulator {
         std::unordered_set<uint64_t> breakpoints_;
 
         //Pointer to the peripheral devices map, is passed from controller using the RegisterPeripherals() method
-        std::map<std::string, peripherals::PeripheralDevice *> *peripheral_devices_ = nullptr;
+        std::map<std::string, peripherals::PeripheralsApi *> *peripheral_devices_ = nullptr;
 
         //A map assigning peripheral devices to memory page start addresses
-        std::map<uint64_t, std::vector<peripherals::PeripheralDevice *>> page_peripherals_;
+        std::map<uint64_t, std::vector<peripherals::PeripheralsApi *>> page_peripherals_;
 
         /**
          * Converts a single instruction to string using the disassembler library.
@@ -93,14 +93,14 @@ namespace emulator {
          * Assigns a peripheral device to the memory page which contains it's start address, results are saved into page_peripherals_.
          * @param device A peripheral device object
          */
-        void MapDeviceToPage_(peripherals::PeripheralDevice *device);
+        void MapDeviceToPage_(peripherals::PeripheralsApi *device);
 
         /**
          * Gets a peripheral device which is mapped to this address. Uses the page_peripherals_ map to find the device.
          * @param address A memory address
          * @return A peripheral device assigned to this address. Returns nullptr if no device is found.
          */
-        peripherals::PeripheralDevice *GetRealDevice_(uint64_t address);
+        peripherals::PeripheralsApi *GetRealDevice_(uint64_t address);
 
         /**
          * Setups the required memory traps of peripheral devices on this machine instance.
@@ -175,7 +175,7 @@ namespace emulator {
          * Key of the map is a name of the peripheral, value is an instance of the PeripheralDevice class.
          * @param devices A map of peripheral devices
          */
-        void RegisterPeripherals(std::map<std::string, peripherals::PeripheralDevice *> &devices);
+        void RegisterPeripherals(std::map<std::string, peripherals::PeripheralsApi *> &devices);
 
         /**
          * Gets values of the currently active machine's registers. Or gets the last known register values if machine is inactive.

@@ -99,7 +99,7 @@ void UiController::openFile(const QString &path) {
         return;
     }
 
-    //TODO
+    // TODO?
     //    emulvApi_->terminateProgram();
     //    JoinThread();
 
@@ -121,7 +121,8 @@ void UiController::openFile(const QString &path) {
     Q_EMIT disassemblyTextChanged({lineNumbers, disassembly});
 
     EventsLib::globalEmit(emulator::State_Changed_Event_Description);
-    //TODO
+
+    // TODO?
     //    memory_widget_->Clear();
     //    registers_widget_->SetRegisters({});
     //    emulvApi_->resetPeripherals();

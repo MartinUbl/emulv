@@ -1,37 +1,83 @@
-/**
- * Represents implementation of declarations in gpio.h header file related to GPIO peripheral device.
- * 
- * @author Stanislav Kafara
- * @version 2023-04-27
- */
-
-
 #include <stdexcept>
 #include <limits>
 #include "gpio.h"
 //#include "spdlog/spdlog.h"
 
+//##################################################################################################################
+//# Dynamic library allocator + deleter
+//##################################################################################################################
 
+#if defined(__linux__) || defined(__APPLE__)
+extern "C"
+{
+peripherals::GPIO_Port *allocator()
+{
+    return new peripherals::GPIO_Port();
+}
+
+void deleter(peripherals::GPIO_Port *ptr)
+{
+    delete ptr;
+}
+}
+#endif
+
+#ifdef WIN32
+extern "C"
+{
+__declspec (dllexport) peripherals::GPIO_Port *allocator() {
+    return new peripherals::GPIO_Port();
+}
+
+__declspec (dllexport) void deleter(peripherals::GPIO_Port *ptr) {
+    delete ptr;
+}
+}
+#endif
+
+//##################################################################################################################
+//# GPIO_Port
+//##################################################################################################################
 namespace peripherals {
 
-    GPIO_Port::GPIO_Port(const std::string &name, uint64_t start_address,
-                         uint64_t end_address) :
-            PeripheralDevice(name, start_address, end_address) {
-        Reset();
+    //##################################################################################################################
+    //# Constructors
+    //##################################################################################################################
+
+    GPIO_Port::GPIO_Port() {
+        Name = "gpio";
     }
+
+    //##################################################################################################################
+    //# QML and GUI related members
+    //##################################################################################################################
+
+    QByteArray GPIO_Port::getQML() {
+        QFile file(":/gpio/resources/panel.qml");
+        if (!file.open(QIODevice::ReadOnly | QIODevice::Text))
+            return QByteArray();
+        return file.readAll();
+    }
+
+    //##################################################################################################################
+    //# GPIO state members (PUBLIC)
+    //##################################################################################################################
 
     void GPIO_Port::WriteByte(uint64_t address, uint8_t value) {
         //spdlog::info("Called the WRITE BYTE method of GPIO port to address {0} with value {1}", address, value);
+
         WriteWord(address, value);
     }
 
     void GPIO_Port::WriteHalfword(uint64_t address, uint16_t value) {
-//        spdlog::info("Called the WRITE HALFWORD method of GPIO port to address {0} with value {1}", address, value);
+        //spdlog::info("Called the WRITE HALFWORD method of GPIO port to address {0} with value {1}", address, value);
+
         WriteWord(address, value);
     }
 
     void GPIO_Port::WriteDoubleword(uint64_t address, uint64_t value) {
-//        spdlog::info("Called the WRITE DOUBLEWORD method of GPIO port to address {0} with value {1}", address, value);
+        //spdlog::info("Called the WRITE DOUBLEWORD method of GPIO port to address {0} with value {1}", address, value);
+
         if (value > std::numeric_limits<uint32_t>::max())
             throw std::runtime_error("GPIO: Cannot write 64 bit value! Only writes up to 32 bits are supported.");
 
@@ -39,25 +85,28 @@ namespace peripherals {
     }
 
     uint8_t GPIO_Port::ReadByte(uint64_t address) {
-//        spdlog::info("Called the READ BYTE method of GPIO port with address {0}", address);
+        //spdlog::info("Called the READ BYTE method of GPIO port with address {0}", address);
+
         //GPIO doesn't support reading 8 bits at a time
         throw std::runtime_error("GPIO: Reading a byte is not supported. Only >32 bit read is supported.");
     }
 
     uint16_t GPIO_Port::ReadHalfword(uint64_t address) {
-//        spdlog::info("Called the READ HALFWORD method of GPIO port with address {0}", address);
+        //spdlog::info("Called the READ HALFWORD method of GPIO port with address {0}", address);
+
         //GPIO doesn't support reading 16 bits at a time
         throw std::runtime_error("GPIO: Reading a halfword is not supported. Only >32 bit read is supported.");
     }
 
     uint64_t GPIO_Port::ReadDoubleword(uint64_t address) {
-//        spdlog::info("Called the READ DOUBLEWORD method of GPIO port with address {0}", address);
+        //spdlog::info("Called the READ DOUBLEWORD method of GPIO port with address {0}", address);
+
         //Will read 32 bit value and return it as a 64 bit value.
         return ReadWord(address);
     }
 
     void GPIO_Port::WriteWord(uint64_t address, uint32_t value) {
-//        spdlog::info("Called the WRITE WORD method of GPIO port to address {0} with value {1}", address, value);
+        //spdlog::info("Called the WRITE WORD method of GPIO port to address {0} with value {1}", address, value);
 
         switch (address) {
             case GPIO_Port_Reg_Offset::CTL0:
@@ -121,7 +170,7 @@ namespace peripherals {
     }
 
     uint32_t GPIO_Port::ReadWord(uint64_t address) {
-//        spdlog::info("Called the READ WORD method of GPIO port with address {0}", address);
+        //spdlog::info("Called the READ WORD method of GPIO port with address {0}", address);
 
         std::bitset<kReg_Size> reg;
         switch (address) {
@@ -149,7 +198,7 @@ namespace peripherals {
     }
 
     void GPIO_Port::Reset() {
-//        spdlog::info("Resetting registers of GPIO port to default values...");
+        //spdlog::info("Resetting registers of GPIO port to default values...");
 
         Reg_CTL0 = std::bitset<kReg_Size>{kReg_CTL_RESET_VALUE};
         Reg_CTL1 = std::bitset<kReg_Size>{kReg_CTL_RESET_VALUE};
@@ -157,49 +206,9 @@ namespace peripherals {
         Reg_OCTL = std::bitset<kReg_Size>{};
     }
 
-    GPIO_Pin_Mode GPIO_Port::Get_Pin_Mode(const size_t pinNo) const {
-        // pin control reg CTL0 or CTL1
-        // first half of the pins controlled by CTL0, second by CTL1
-        const auto regCtl = (pinNo < kReg_CTL_Pin_Count) ? Reg_CTL0 : Reg_CTL1;
-        // bit offset to MDi
-        // CTL(0,1) - CTLz[1:0] MDz[1:0] CTLy[1:0] MDy[1:0] ... CTLx[1:0] MDx[1:0]
-        const size_t bitOff = (pinNo % kReg_CTL_Pin_Count) * 4;
-
-        // MDi[1:0] == 00 => INPUT
-        if (!regCtl[bitOff] && !regCtl[bitOff + 1]) {
-            return GPIO_Pin_Mode::INPUT;
-        }
-            // MDi[1:0] == 01|10|11 => OUTPUT
-        else {
-            return GPIO_Pin_Mode::OUTPUT;
-        }
-    }
-
-    GPIO_Pin_Level GPIO_Port::Get_Pin_Level(const size_t pinNo) const {
-        if (Get_Pin_Mode(pinNo) == GPIO_Pin_Mode::INPUT) {
-            if (Reg_ISTAT[pinNo]) {
-                return GPIO_Pin_Level::HIGH;
-            } else {
-                return GPIO_Pin_Level::LOW;
-            }
-        } else {
-            if (Reg_OCTL[pinNo]) {
-                return GPIO_Pin_Level::HIGH;
-            } else {
-                return GPIO_Pin_Level::LOW;
-            }
-        }
-    }
-
-    void GPIO_Port::Set_Pin_Level(const size_t pinNo, GPIO_Pin_Level level) {
-//        spdlog::info("Setting GPIO pin {0} to level {1}", pinNo, level);
-
-        if (Get_Pin_Mode(pinNo) == GPIO_Pin_Mode::OUTPUT) {
-            return; // cannot set pin output value through interface
-        }
-
-        Reg_ISTAT.set(pinNo, level);
-    }
+    //##################################################################################################################
+    //# GPIO internal state members (PRIVATE)
+    //##################################################################################################################
 
     void GPIO_Port::Handle_Reg_CTL_Write(std::bitset<kReg_Size> &reg, const size_t regIndex, const uint32_t value) {
         const size_t pinNoOffset = regIndex * kReg_CTL_Pin_Count;
@@ -239,4 +248,53 @@ namespace peripherals {
 //                {"previousMode", previousMode},
 //                {"currentMode",  currentMode}});
     }
+
+    //##################################################################################################################
+    //# Get + Set
+    //##################################################################################################################
+
+    GPIO_Pin_Mode GPIO_Port::Get_Pin_Mode(const size_t pinNo) const {
+        // pin control reg CTL0 or CTL1
+        // first half of the pins controlled by CTL0, second by CTL1
+        const auto regCtl = (pinNo < kReg_CTL_Pin_Count) ? Reg_CTL0 : Reg_CTL1;
+        // bit offset to MDi
+        // CTL(0,1) - CTLz[1:0] MDz[1:0] CTLy[1:0] MDy[1:0] ... CTLx[1:0] MDx[1:0]
+        const size_t bitOff = (pinNo % kReg_CTL_Pin_Count) * 4;
+
+        // MDi[1:0] == 00 => INPUT
+        if (!regCtl[bitOff] && !regCtl[bitOff + 1]) {
+            return GPIO_Pin_Mode::INPUT;
+        }
+            // MDi[1:0] == 01|10|11 => OUTPUT
+        else {
+            return GPIO_Pin_Mode::OUTPUT;
+        }
+    }
+
+    GPIO_Pin_Level GPIO_Port::Get_Pin_Level(const size_t pinNo) const {
+        if (Get_Pin_Mode(pinNo) == GPIO_Pin_Mode::INPUT) {
+            if (Reg_ISTAT[pinNo]) {
+                return GPIO_Pin_Level::HIGH;
+            } else {
+                return GPIO_Pin_Level::LOW;
+            }
+        } else {
+            if (Reg_OCTL[pinNo]) {
+                return GPIO_Pin_Level::HIGH;
+            } else {
+                return GPIO_Pin_Level::LOW;
+            }
+        }
+    }
+
+    void GPIO_Port::Set_Pin_Level(const size_t pinNo, GPIO_Pin_Level level) {
+        //spdlog::info("Setting GPIO pin {0} to level {1}", pinNo, level);
+
+        if (Get_Pin_Mode(pinNo) == GPIO_Pin_Mode::OUTPUT) {
+            return; // cannot set pin output value through interface
+        }
+
+        Reg_ISTAT.set(pinNo, level);
+    }
+
 }

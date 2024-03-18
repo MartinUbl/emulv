@@ -2,7 +2,7 @@
 
 #include "EmulatorUnit.h"
 #include "EmulvApi.h"
-#include "PeripheralDevice.h"
+#include "PeripheralsApi.h"
 
 class EmulatorInterface : public EmulvApi {
 private:
@@ -19,7 +19,7 @@ private:
     /**
      * A map containing all active peripherals, loaded from the configuration file
      */
-    std::map<std::string, peripherals::PeripheralDevice *> activePeripherals_;
+    std::map<std::string, peripherals::PeripheralsApi *> activePeripherals_;
 
     void registerPeripherals_();
 
@@ -68,7 +68,7 @@ public:
 
     std::vector<std::tuple<std::string, uint32_t>> getRegisters() override { return emulatorUnit_->GetRegisters(); }
 
-    std::map<std::string, peripherals::PeripheralDevice *> getPeripherals() override { return activePeripherals_; }
+    std::map<std::string, peripherals::PeripheralsApi *> getPeripherals() override { return activePeripherals_; }
 
     uint64_t getMemoryStartAddress() override { return emulatorUnit_->GetMemoryStartAddress(); }
 

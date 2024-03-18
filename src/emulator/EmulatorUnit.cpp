@@ -7,7 +7,7 @@
 #include "EmulatorUnit.h"
 #include "libriscv/rv32i_instr.hpp"
 #include "riscv-disas.h"
-#include "PeripheralDevice.h"
+#include "PeripheralsApi.h"
 #include <libriscv/elf.hpp>
 
 namespace emulator {
@@ -167,7 +167,7 @@ void EmulatorUnit::ClearBreakpoints() {
 //# Memory controller methods
 //##################################################################################################################
 
-void EmulatorUnit::RegisterPeripherals(std::map<std::string, peripherals::PeripheralDevice *> &devices) {
+void EmulatorUnit::RegisterPeripherals(std::map<std::string, peripherals::PeripheralsApi *> &devices) {
     spdlog::info("Peripherals have been registered.");
     peripheral_devices_ = &devices;
 }
@@ -178,7 +178,7 @@ void EmulatorUnit::SetupMemoryTraps_(riscv::Machine<riscv::RISCV64> &machine) {
     for (const auto &p: *peripheral_devices_) {
         spdlog::info("Setting up memory trap for device with name: {0}", p.first);
 
-        peripherals::PeripheralDevice *pDevice = p.second;
+        peripherals::PeripheralsApi *pDevice = p.second;
         MapDeviceToPage_(pDevice);
 
         //Check if the address range isn't too big
@@ -204,7 +204,7 @@ void EmulatorUnit::SetupMemoryTraps_(riscv::Machine<riscv::RISCV64> &machine) {
             // Find the real device for which this callback was called for
             uint64_t page_start = GetPageStart_(pDevice->GetStartAddress());
             uint64_t real_address = page_start + offset;
-            peripherals::PeripheralDevice *real_device = GetRealDevice_(real_address);
+            peripherals::PeripheralsApi *real_device = GetRealDevice_(real_address);
 
             if (!real_device) {
                 return;
@@ -233,20 +233,20 @@ void EmulatorUnit::SetupMemoryTraps_(riscv::Machine<riscv::RISCV64> &machine) {
     }
 }
 
-void EmulatorUnit::MapDeviceToPage_(peripherals::PeripheralDevice *device) {
+void EmulatorUnit::MapDeviceToPage_(peripherals::PeripheralsApi *device) {
     uint64_t page_start = GetPageStart_(device->GetStartAddress());
 
     auto entry = page_peripherals_.find(page_start);
     if (entry != page_peripherals_.end()) {
         entry->second.push_back(device);
     } else {
-        auto peripherals = std::vector<peripherals::PeripheralDevice *>();
+        auto peripherals = std::vector<peripherals::PeripheralsApi *>();
         peripherals.push_back(device);
         page_peripherals_[page_start] = peripherals;
     }
 }
 
-peripherals::PeripheralDevice *EmulatorUnit::GetRealDevice_(uint64_t address) {
+peripherals::PeripheralsApi *EmulatorUnit::GetRealDevice_(uint64_t address) {
     uint64_t page_start = GetPageStart_(address);
     auto page_peripherals = this->page_peripherals_[page_start];
 
