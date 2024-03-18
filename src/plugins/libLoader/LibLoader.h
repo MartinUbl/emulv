@@ -1,19 +1,10 @@
 #pragma once
 
 #include <memory>
-#include <iostream>
 #include <utility>
-
-#ifdef WIN32
-
-#include "Windows.h"
-
-#endif
-#ifdef __linux__
-
-#include <dlfcn.h>
-
-#endif
+#include <string>
+#include <stdexcept>
+#include "defines.h"
 
 /**
  * Dynamic library loader providing a linux / windows interface for loading a C++ dynamic library.
@@ -22,14 +13,7 @@
 template<class T>
 class LibLoader {
 private:
-
-#ifdef WIN32
-    HMODULE _handle;
-#endif
-#ifdef __linux__
-    void *_handle;
-#endif
-
+    HANDLE_TYPE _handle;
     std::string _pathToLib;
     std::string _allocClassSymbol;
     std::string _deleteClassSymbol;
@@ -49,16 +33,9 @@ public:
      * Opens the dynamic library (specified by pathToLib in the constructor)
      */
     void openLib() {
-#ifdef WIN32
-        if (!(_handle = LoadLibrary(_pathToLib.c_str()))) {
-            throw std::runtime_error("Can't open and load " + _pathToLib);
+        if (!(_handle = my_dlopen(_pathToLib.c_str()))) {
+            throw std::runtime_error(error_msg);
         }
-#endif
-#ifdef __linux__
-        if (!(_handle = dlopen(_pathToLib.c_str(), RTLD_NOW | RTLD_LAZY))) {
-                throw std::runtime_error(dlerror());
-        }
-#endif
     }
 
     /**
@@ -69,14 +46,8 @@ public:
         using allocClass = T *(*)();
         using deleteClass = void (*)(T *);
 
-#ifdef WIN32
-        auto allocFunc = reinterpret_cast<allocClass>(GetProcAddress(_handle, _allocClassSymbol.c_str()));
-        auto deleteFunc = reinterpret_cast<deleteClass>(GetProcAddress(_handle, _deleteClassSymbol.c_str()));
-#endif
-#ifdef __linux__
-        auto allocFunc = reinterpret_cast<allocClass>(dlsym(_handle, _allocClassSymbol.c_str()));
-        auto deleteFunc = reinterpret_cast<deleteClass>(dlsym(_handle, _deleteClassSymbol.c_str()));
-#endif
+        auto allocFunc = reinterpret_cast<allocClass>(my_dlsym(_handle, _allocClassSymbol.c_str()));
+        auto deleteFunc = reinterpret_cast<deleteClass>(my_dlsym(_handle, _deleteClassSymbol.c_str()));
 
         if (!allocFunc || !deleteFunc) {
             closeLib();
@@ -92,15 +63,13 @@ public:
      * Closes the dynamically loaded library.
      */
     void closeLib() {
-#ifdef WIN32
-        if (FreeLibrary(_handle) == 0) {
-            throw std::runtime_error("Can't close " + _pathToLib);
+        if(!_handle)
+            return;
+
+        if(has_dlclose_failed(my_dlclose(_handle))) {
+            throw std::runtime_error(error_msg);
         }
-#endif
-#ifdef __linux__
-        if (dlclose(_handle) != 0) {
-            throw std::runtime_error(std::string(dlerror()));
-        }
-#endif
+
+        _handle = nullptr;
     }
 };

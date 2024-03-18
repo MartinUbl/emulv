@@ -80,8 +80,4 @@ public:
 
     uint64_t getRamSize() override { return emulatorUnit_->GetRamSize(); }
 
-    void setPinStatus(std::string moduleName, int pin, bool status) override;
-
-    void sendUartMessage(std::string uartName, std::string message) override;
-
 };

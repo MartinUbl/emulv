@@ -8,33 +8,22 @@
 //# Dynamic library allocator + deleter
 //##################################################################################################################
 
-#if defined(__linux__) || defined(__APPLE__)
-extern "C"
-{
-peripherals::UART_Device *allocator()
-{
-    return new peripherals::UART_Device();
-}
-
-void deleter(peripherals::UART_Device *ptr)
-{
-    delete ptr;
-}
-}
-#endif
-
 #ifdef WIN32
+#define DLLEXPORT __declspec(dllexport)
+#else
+#define DLLEXPORT
+#endif
+
 extern "C"
 {
-__declspec (dllexport) peripherals::UART_Device *allocator() {
+DLLEXPORT peripherals::UART_Device *allocator() {
     return new peripherals::UART_Device();
 }
 
-__declspec (dllexport) void deleter(peripherals::UART_Device *ptr) {
+DLLEXPORT void deleter(peripherals::UART_Device *ptr) {
     delete ptr;
 }
 }
-#endif
 
 //##################################################################################################################
 //# UART_Device

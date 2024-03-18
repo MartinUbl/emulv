@@ -1,17 +1,18 @@
 import QtQuick
 Item {
+    // POINTER TO C++ OBJECT CONTAINING SIGNALS (initialized on construction)
     property var gpio
+    Connections {
+        target: gpio
+        // CONNECT TO C++ SIGNALS HERE
+        function onDataUpdated(data) {resultDisplay.text = data}
+    }
 
     anchors.fill: parent
 
     Column {
         spacing: 10
         Text {
-
-            Component.onCompleted: {
-                gpio.dataUpdated.connect(function(data) {resultDisplay.text = data})
-            }
-
             id: resultDisplay
             color: "blue"
             text: "No input data."

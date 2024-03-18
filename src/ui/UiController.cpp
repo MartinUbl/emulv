@@ -197,3 +197,8 @@ void UiController::refreshMemory()
 {
     Q_EMIT memoryChanged(_emulvApi->getMemory(_emulvApi->getRamStartAddress(), _emulvApi->getRamEndAddress()), _emulvApi->getRamStartAddress());
 }
+
+void UiController::openConfigurationJson(const QString &path)
+{
+
+}

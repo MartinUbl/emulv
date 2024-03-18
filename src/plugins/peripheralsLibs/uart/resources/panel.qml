@@ -1,7 +1,13 @@
 import QtQuick
 
 Item {
+    // POINTER TO C++ OBJECT CONTAINING SIGNALS (initialized on construction)
     property var uart
+    Connections {
+        target: uart
+        // CONNECT TO C++ SIGNALS HERE
+        function onDataUpdated(data) {resultDisplay.text = data}
+    }
 
     anchors.fill: parent
 

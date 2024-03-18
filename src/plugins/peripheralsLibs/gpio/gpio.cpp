@@ -7,33 +7,23 @@
 //# Dynamic library allocator + deleter
 //##################################################################################################################
 
-#if defined(__linux__) || defined(__APPLE__)
-extern "C"
-{
-peripherals::GPIO_Port *allocator()
-{
-    return new peripherals::GPIO_Port();
-}
-
-void deleter(peripherals::GPIO_Port *ptr)
-{
-    delete ptr;
-}
-}
-#endif
-
 #ifdef WIN32
+#define DLLEXPORT __declspec(dllexport)
+#else
+#define DLLEXPORT
+#endif
+
 extern "C"
 {
-__declspec (dllexport) peripherals::GPIO_Port *allocator() {
+DLLEXPORT peripherals::GPIO_Port *allocator() {
     return new peripherals::GPIO_Port();
 }
 
-__declspec (dllexport) void deleter(peripherals::GPIO_Port *ptr) {
+DLLEXPORT void deleter(peripherals::GPIO_Port *ptr) {
     delete ptr;
 }
 }
-#endif
+
 
 //##################################################################################################################
 //# GPIO_Port

@@ -51,6 +51,9 @@ public Q_SLOTS:
     // Memory request for refrest
     void refreshMemory();
 
+    // For the configuration file
+    void openConfigurationJson(const QString& path);
+
 Q_SIGNALS:
     void disassemblyTextChanged(std::tuple<QList<uint64_t>, QList<QString>> disassembly);
     void errorLoadingFile(QString error);

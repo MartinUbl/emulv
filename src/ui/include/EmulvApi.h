@@ -58,8 +58,4 @@ public:
 
     virtual uint64_t getRamSize() = 0;
 
-    virtual void setPinStatus(std::string module, int pin, bool status) = 0;
-
-    virtual void sendUartMessage(std::string uartName, std::string message) = 0;
-
 };
