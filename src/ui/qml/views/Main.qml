@@ -589,7 +589,11 @@ BorderlessWindow {
 
                          Qt.callLater(()=>{
                                           // Load last opened files from settings
-                                          lastOpenedFiles = JSON.parse(settings.lastOpenedFiles)
+                                          try {
+                                              lastOpenedFiles = JSON.parse(settings.lastOpenedFiles)
+                                          } catch(e) {
+                                              lastOpenedFiles = []
+                                          }
 
                                           //Create Last Opened side bar item
                                           lastOpenedPanel = createSidePanel("../panels/LastOpenedFilesPanel.qml", "Last Opened", "qrc:///assets/folder_blue.svg", Main.SidePanelPositions.LEFT)
