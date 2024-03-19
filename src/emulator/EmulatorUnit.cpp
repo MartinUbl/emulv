@@ -167,7 +167,7 @@ void EmulatorUnit::ClearBreakpoints() {
 //# Memory controller methods
 //##################################################################################################################
 
-void EmulatorUnit::RegisterPeripherals(std::map<std::string, peripherals::PeripheralsApi *> &devices) {
+void EmulatorUnit::RegisterPeripherals(std::map<std::string, std::shared_ptr<peripherals::PeripheralsApi>> &devices) {
     spdlog::info("Peripherals have been registered.");
     peripheral_devices_ = &devices;
 }
@@ -178,16 +178,16 @@ void EmulatorUnit::SetupMemoryTraps_(riscv::Machine<riscv::RISCV64> &machine) {
     for (const auto &p: *peripheral_devices_) {
         spdlog::info("Setting up memory trap for device with name: {0}", p.first);
 
-        peripherals::PeripheralsApi *pDevice = p.second;
+        peripherals::PeripheralsApi *pDevice = p.second.get();
         MapDeviceToPage_(pDevice);
 
         //Check if the address range isn't too big
-        if ((pDevice->GetStartAddress() + RISCV_PAGE_SIZE) < pDevice->GetEndAddress()) {
+        if ((pDevice->getStartAddress() + RISCV_PAGE_SIZE) < pDevice->getEndAddress()) {
             throw std::runtime_error(
                 "EmulatorUnit::RegisterPeripheral: The address range of this peripheral device is greater than the maximal supported page size of 4096 bytes.");
         }
 
-        uint64_t TRAP_PAGE = pDevice->GetStartAddress();
+        uint64_t TRAP_PAGE = pDevice->getStartAddress();
         //Create a trap page - the default size is 4096 bytes
         auto const &trap_page = machine.memory.create_writable_pageno(
             riscv::Memory<riscv::RISCV64>::page_number(TRAP_PAGE));
@@ -202,7 +202,7 @@ void EmulatorUnit::SetupMemoryTraps_(riscv::Machine<riscv::RISCV64> &machine) {
             //auto &page --> is the page object, on which this trap occurred
 
             // Find the real device for which this callback was called for
-            uint64_t page_start = GetPageStart_(pDevice->GetStartAddress());
+            uint64_t page_start = GetPageStart_(pDevice->getStartAddress());
             uint64_t real_address = page_start + offset;
             peripherals::PeripheralsApi *real_device = GetRealDevice_(real_address);
 
@@ -211,7 +211,7 @@ void EmulatorUnit::SetupMemoryTraps_(riscv::Machine<riscv::RISCV64> &machine) {
             }
 
             // Real offset relative to the devices start address
-            uint64_t real_offset = real_address - real_device->GetStartAddress();
+            uint64_t real_offset = real_address - real_device->getStartAddress();
 
             const size_t size = riscv::Page::trap_size(mode);
 
@@ -234,7 +234,7 @@ void EmulatorUnit::SetupMemoryTraps_(riscv::Machine<riscv::RISCV64> &machine) {
 }
 
 void EmulatorUnit::MapDeviceToPage_(peripherals::PeripheralsApi *device) {
-    uint64_t page_start = GetPageStart_(device->GetStartAddress());
+    uint64_t page_start = GetPageStart_(device->getStartAddress());
 
     auto entry = page_peripherals_.find(page_start);
     if (entry != page_peripherals_.end()) {
@@ -251,7 +251,7 @@ peripherals::PeripheralsApi *EmulatorUnit::GetRealDevice_(uint64_t address) {
     auto page_peripherals = this->page_peripherals_[page_start];
 
     for (auto p: page_peripherals) {
-        if (p->GetStartAddress() <= address && address <= p->GetEndAddress()) {
+        if (p->getStartAddress() <= address && address <= p->getEndAddress()) {
             return p;
         }
     }

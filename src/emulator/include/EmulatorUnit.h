@@ -69,7 +69,7 @@ namespace emulator {
         std::unordered_set<uint64_t> breakpoints_;
 
         //Pointer to the peripheral devices map, is passed from controller using the RegisterPeripherals() method
-        std::map<std::string, peripherals::PeripheralsApi *> *peripheral_devices_ = nullptr;
+        std::map<std::string, std::shared_ptr<peripherals::PeripheralsApi>> *peripheral_devices_ = nullptr;
 
         //A map assigning peripheral devices to memory page start addresses
         std::map<uint64_t, std::vector<peripherals::PeripheralsApi *>> page_peripherals_;
@@ -175,7 +175,7 @@ namespace emulator {
          * Key of the map is a name of the peripheral, value is an instance of the PeripheralDevice class.
          * @param devices A map of peripheral devices
          */
-        void RegisterPeripherals(std::map<std::string, peripherals::PeripheralsApi *> &devices);
+        void RegisterPeripherals(std::map<std::string, std::shared_ptr<peripherals::PeripheralsApi>> &devices);
 
         /**
          * Gets values of the currently active machine's registers. Or gets the last known register values if machine is inactive.

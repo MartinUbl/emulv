@@ -22,8 +22,9 @@ Item {
         Image {
             width: 30
             height: 30
-            source: "qrc:///qpio/resources/picture.svg"
+            source: "qrc:///gpio/resources/picture.svg"
         }
+
     }
 
 }

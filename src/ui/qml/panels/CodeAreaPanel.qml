@@ -77,12 +77,18 @@ Rectangle {
 
             model: codeAreaModel
 
-            // Background
+            // Background first layer
+            Rectangle {
+                anchors.fill: parent
+                width: tableView.width
+                color: Colors.primaryWindowBackgroud
+            }
+            // Background second layer
             Rectangle {
                 anchors.top: parent.top
                 anchors.left: parent.left
                 anchors.bottom: parent.bottom
-                width: root.width
+                width: tableView.width
                 color: Colors.primaryWindowBackgroud
             }
 

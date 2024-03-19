@@ -52,7 +52,7 @@ public Q_SLOTS:
     void refreshMemory();
 
     // For the configuration file
-    void openConfigurationJson(const QString& path);
+    void openConfigurationJson(QString path);
 
 Q_SIGNALS:
     void disassemblyTextChanged(std::tuple<QList<uint64_t>, QList<QString>> disassembly);
@@ -70,6 +70,11 @@ Q_SIGNALS:
     void memoryChanged(std::vector<uint8_t> memory, uint64_t startAddress);
     // For highlighting of line during debug stepping
     void steppedTo(uint64_t pc);
+
+    // For adding peripheral's QML panel to the gui
+    void newPanelAdded(QString name, QQuickItem* panel);
+    void removeAllPeripherals();
+    void failedToLoadConfig(QString errorStr);
 
 private:
     const std::unique_ptr<EmulvApi> _emulvApi{std::make_unique<EmulatorInterface>()};

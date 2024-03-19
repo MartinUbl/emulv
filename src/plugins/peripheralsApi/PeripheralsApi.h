@@ -48,15 +48,15 @@ namespace peripherals {
         //# Get + Set
         //##################################################################################################################
 
-        virtual std::string GetName() {
+        virtual std::string getName() {
             return Name;
         }
 
-        virtual uint64_t GetStartAddress() {
+        virtual uint64_t getStartAddress() {
             return Start_Address;
         };
 
-        virtual uint64_t GetEndAddress() {
+        virtual uint64_t getEndAddress() {
             return End_Address;
         };
 

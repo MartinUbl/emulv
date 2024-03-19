@@ -46,7 +46,7 @@ public:
 
     virtual std::vector<std::tuple<std::string, uint32_t>> getRegisters() = 0;
 
-    virtual std::map<std::string, peripherals::PeripheralsApi *> getPeripherals() = 0;
+    virtual std::map<std::string, std::shared_ptr<peripherals::PeripheralsApi>>& getPeripherals() = 0;
 
     virtual uint64_t getMemoryStartAddress() = 0;
 

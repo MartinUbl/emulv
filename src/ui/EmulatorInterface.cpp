@@ -15,7 +15,6 @@ EmulatorInterface::EmulatorInterface() {
 }
 
 EmulatorInterface::~EmulatorInterface() {
-    clearActivePeripherals();
     spdlog::info("An EmulatorInterface instance has been destructed");
 }
 
@@ -24,7 +23,7 @@ EmulatorInterface::~EmulatorInterface() {
 //###############################################################
 
 void EmulatorInterface::loadConfig_(const std::string &path) {
-    const configLoader::ConfigData data = configLoader::configParser(path);
+    const configLoader::ConfigData data = configLoader::parser::loadJSON(path);
 
     emulatorUnit_->SetRamSize(data.ramSize);
     emulatorUnit_->SetRamStartAddress(data.ramStartAddress);
@@ -42,9 +41,6 @@ void EmulatorInterface::registerPeripherals_() {
 //###############################################################
 
 void EmulatorInterface::clearActivePeripherals() {
-    for (auto const &peripheral: activePeripherals_) {
-        delete peripheral.second;
-    }
     activePeripherals_.clear();
     spdlog::info("Active peripheral map has been cleared");
 

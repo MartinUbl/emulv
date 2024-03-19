@@ -1,11 +1,9 @@
-//
-// Created by xPC on 04.05.2023.
-//
-
 #pragma once
 
 #include "nlohmann/json.hpp"
 #include "PeripheralsApi.h"
+#include "LibLoader.h"
+#include <unordered_set>
 
 namespace configLoader {
     /**
@@ -14,15 +12,22 @@ namespace configLoader {
     struct ConfigData {
         uint64_t ramSize;
         uint64_t ramStartAddress;
-        std::vector<std::basic_string<char>> programArgs;
-        std::map<std::basic_string<char>, peripherals::PeripheralsApi *> peripheralDevices;
+        std::vector<std::string> programArgs;
+        std::map<std::string, std::shared_ptr<peripherals::PeripheralsApi>> peripheralDevices;
     };
 
-    /**
-    * Will parse the specified JSON config file. And return it's values.
-    * @param path Filesystem path of the config file
-    * @return A ConfigData object containing loaded data
-    */
-    ConfigData configParser(const std::string &path);
+    class parser {
+    public:
+        /**
+         * Will parse the specified JSON config file. And return it's values.
+         * @param path Filesystem path of the config file
+         * @return A ConfigData object containing loaded data
+        */
+        static ConfigData loadJSON(const std::string &path);
+
+    private:
+        static nlohmann::json _loadFile(const std::string &path);
+        inline static std::unordered_set<std::unique_ptr<LibLoader<peripherals::PeripheralsApi>>> _libLoaders{};
+    };
 
 }

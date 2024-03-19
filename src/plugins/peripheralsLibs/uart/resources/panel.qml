@@ -14,15 +14,9 @@ Item {
     Column {
         spacing: 10
         Text {
-
-            Component.onCompleted: {
-                uart.dataUpdated.connect(function(data) {resultDisplay.text = data})
-            }
-
             id: resultDisplay
-            color: "blue"
+            color: "red"
             text: "No input data."
-
         }
 
         Image {

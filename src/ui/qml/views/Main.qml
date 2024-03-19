@@ -54,7 +54,7 @@ BorderlessWindow {
                     text: qsTr("&Open...")
                     shortcut: "Ctrl+O"
                     onTriggered: {
-                        fileDialog.open()
+                        fileDialogElf.open()
                     }
                 }
                 MenuSeparator { }
@@ -67,7 +67,7 @@ BorderlessWindow {
             }
 
             FileDialog {
-                id: fileDialog
+                id: fileDialogElf
                 currentFolder: StandardPaths.standardLocations(StandardPaths.DocumentsLocation)[0]
                 onAccepted: clickedFile(selectedFile)
                 nameFilters: ["Binary ELF (*.elf)", "All files (*)"]
@@ -82,14 +82,14 @@ BorderlessWindow {
                 }
 
                 Action {
+                    id: selectConfiguration
                     text: qsTr("&Select configuration")
                     shortcut: "Ctrl+S"
+                    onTriggered: {
+                        fileDialogJson.open()
+                    }
+                }
 
-                }
-                Action {
-                    text: qsTr("C&lear configuration")
-                    shortcut: "Ctrl+L"
-                }
             }
             Menu {
                 id: themesMenu
@@ -154,6 +154,13 @@ BorderlessWindow {
                         window.show()
                     }
                 }
+            }
+
+            FileDialog {
+                id: fileDialogJson
+                currentFolder: StandardPaths.standardLocations(StandardPaths.DocumentsLocation)[0]
+                onAccepted: clickedConfigFile(selectedFile)
+                nameFilters: ["JSON (*.json)", "All files (*)"]
             }
         }
     ]
@@ -505,6 +512,8 @@ BorderlessWindow {
 
     property var lastOpenedFiles: []
 
+    property var activePeripheralsPanels: []
+
     //#######################################################
     //############### Settings - remain state after window exit
     //#######################################################
@@ -548,9 +557,32 @@ BorderlessWindow {
                                               stopProgram();
                                           })
 
+                                          // Adding peripherals panels
+                                          UiController.newPanelAdded.connect(function(name, panel) {
+                                              addSideBarItem(name, panel, null, Main.SidePanelPositions.BOTTOM);
+                                              // Save this peripheral panel
+                                              activePeripheralsPanels.push(sidebarItemArray[sidebarItemArray.length-1])
+                                          })
+
+                                          // Removing all peripheral panels
+                                          UiController.removeAllPeripherals.connect(function() {
+                                              if(activePeripheralsPanels.length == 0)
+                                                  return;
+
+                                              for (const panel of activePeripheralsPanels){
+                                                  removeSideBarItem(panel.index);
+                                              }
+
+                                              activePeripheralsPanels = [];
+                                          })
+
+                                          UiController.failedToLoadConfig.connect(function(errorString) {
+                                              statusBarPanel.leftSideModel = [errorString]
+                                          })
+
                                       })
                          Qt.callLater(()=>{
-                                          //Create File Explorer side bar item
+                                          // Create File Explorer side bar item
                                           fileExplorerPanel = createSidePanel("../panels/FileExplorerPanel.qml", "File Explorer", "qrc:///assets/folder_yellow.svg", Main.SidePanelPositions.LEFT)
                                           fileExplorerPanel.fileClicked.connect(clickedFile);
                                       })
@@ -679,6 +711,14 @@ BorderlessWindow {
         UiController.openFile(path)
     }
 
+    function clickedConfigFile(path) {
+        // Make sure path is of string type, and remove the "file:///" prefix, if it's present
+        path = String(path).replace(/^file:\/\/\//, '')
+        print(path)
+
+        UiController.openConfigurationJson(path);
+    }
+
     function clearRecentlyOpenedList() {
         lastOpenedFiles.length = 0
         lastOpenedPanel.itemsModel = lastOpenedFiles
@@ -752,6 +792,35 @@ BorderlessWindow {
 
             sidebarItemArray.push(sidebarItem.createObject(null, {index, position, content, button}))
         }
+    }
+
+    function removeSideBarItem(index) {
+        var sidebarItem = sidebarItemArray[index]
+
+        switch(sidebarItem.position) {
+        case Main.SidePanelPositions.LEFT:
+            if(leftDisplayedItem === index) {
+                closeSidePanel(sidebarItem.position)
+                leftDisplayedItem = -1
+            }
+            break;
+        case Main.SidePanelPositions.RIGHT:
+            if(rightDisplayedItem === index) {
+                closeSidePanel(sidebarItem.position)
+                rightDisplayedItem = -1
+            }
+            break;
+        case Main.SidePanelPositions.BOTTOM:
+            if(bottomDisplayedItem === index) {
+                closeSidePanel(sidebarItem.position)
+                bottomDisplayedItem = -1
+            }
+            break;
+        }
+
+        sidebarItem.content.parent = null;
+        sidebarItem.button.parent = null;
+        sidebarItemArray[index] = null;
     }
 
     // Displays item in one of the side panels (or hides it)
