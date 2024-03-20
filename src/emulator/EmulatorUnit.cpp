@@ -181,26 +181,25 @@ namespace emulator {
 
             peripherals::PeripheralsApi *pDevice = p.second.get();
 
-            //Check if the address range isn't too big TODO: REMOVE?
-            if ((pDevice->getStartAddress() + RISCV_PAGE_SIZE) < pDevice->getEndAddress()) {
-                throw std::runtime_error(
-                        "EmulatorUnit::RegisterPeripheral: The address range of this peripheral device is greater than the maximal supported page size of 4096 bytes.");
+            uint64_t TRAP_PAGE = GetPageStart_(pDevice->getStartAddress());
+            while (TRAP_PAGE < pDevice->getEndAddress()) {
+                MapDeviceToPage_(pDevice, TRAP_PAGE);
+
+                //Create a trap page - the default size is 4096 bytes
+                auto const &trap_page = machine.memory.create_writable_pageno(riscv::Memory<riscv::RISCV64>::page_number(TRAP_PAGE));
+
+                //Sets a callback on this trap page
+                trap_page.set_trap([this, TRAP_PAGE](riscv::Page &page, uint32_t offset, int mode, int64_t value) {
+                    PageTrapHandler(TRAP_PAGE, page, offset, mode, value);
+                });
+
+                TRAP_PAGE += RISCV_PAGE_SIZE; // +-1???
             }
 
-            MapDeviceToPage_(pDevice);
-
-            uint64_t TRAP_PAGE = pDevice->getStartAddress();
-            //Create a trap page - the default size is 4096 bytes
-            auto const &trap_page = machine.memory.create_writable_pageno(riscv::Memory<riscv::RISCV64>::page_number(TRAP_PAGE));
-
-            //Sets a callback on this trap page
-            trap_page.set_trap([pDevice, this](riscv::Page &page, uint32_t offset, int mode, int64_t value) {
-                PageTrapHandler(pDevice, page, offset, mode, value);
-            });
         }
     }
 
-    void EmulatorUnit::PageTrapHandler(peripherals::PeripheralsApi *pDevice, riscv::Page &page, uint32_t offset, int mode, int64_t value) {
+    void EmulatorUnit::PageTrapHandler(const uint64_t pageStart, riscv::Page &page, uint32_t offset, int mode, int64_t value) {
         //int mode --> a bitfield containing MODE and SIZE
         //Page::trap_mode(mode) --> Extracts the MODE (read / write) from the mode bitfield's upper 4 bits
         //Page::trap_size(mode) --> Extracts the SIZE from the mode bitfield's lower 12 bits
@@ -209,8 +208,9 @@ namespace emulator {
         //auto &page --> is the page object, on which this trap occurred
 
         // Find the real device for which this callback was called for
-        uint64_t page_start = GetPageStart_(pDevice->getStartAddress());
-        uint64_t real_address = page_start + offset;
+        //uint64_t page_start = GetPageStart_(pDevice->getStartAddress());
+        uint64_t real_address = pageStart + offset;
+
         peripherals::PeripheralsApi *real_device = GetRealDevice_(real_address);
 
         if (!real_device) {
@@ -238,8 +238,7 @@ namespace emulator {
         }
     }
 
-    void EmulatorUnit::MapDeviceToPage_(peripherals::PeripheralsApi *device) {
-        uint64_t page_start = GetPageStart_(device->getStartAddress());
+    void EmulatorUnit::MapDeviceToPage_(peripherals::PeripheralsApi *device, uint64_t page_start) {
 
         auto entry = page_peripherals_.find(page_start);
         if (entry != page_peripherals_.end()) {

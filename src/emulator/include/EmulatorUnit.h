@@ -93,7 +93,7 @@ namespace emulator {
          * Assigns a peripheral device to the memory page which contains it's start address, results are saved into page_peripherals_.
          * @param device A peripheral device object
          */
-        void MapDeviceToPage_(peripherals::PeripheralsApi *device);
+        void MapDeviceToPage_(peripherals::PeripheralsApi *device, uint64_t page_start);
 
         /**
          * Gets a peripheral device which is mapped to this address. Uses the page_peripherals_ map to find the device.
@@ -263,7 +263,7 @@ namespace emulator {
 
         uint64_t GetRamEndAddress();
 
-        void PageTrapHandler(peripherals::PeripheralsApi *pDevice, riscv::Page &page, uint32_t offset, int mode, int64_t value);
+        void PageTrapHandler(const uint64_t pageStart, riscv::Page &page, uint32_t offset, int mode, int64_t value);
     };
 
 }
