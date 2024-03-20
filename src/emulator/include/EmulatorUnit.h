@@ -262,6 +262,8 @@ namespace emulator {
         uint64_t GetRamSize();
 
         uint64_t GetRamEndAddress();
+
+        void PageTrapHandler(peripherals::PeripheralsApi *pDevice, riscv::Page &page, uint32_t offset, int mode, int64_t value);
     };
 
 }

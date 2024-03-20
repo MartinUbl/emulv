@@ -7,11 +7,16 @@ qt_standard_project_setup(REQUIRES 6.5)
 
 include_directories(../../peripheralsApi)
 
+
 add_library(gpio SHARED
         ../../peripheralsApi/PeripheralsApi.h
+        GpioPort.cpp
+        GpioPort.h
         gpio.h
         gpio.cpp
 )
+
+
 
 qt_add_resources(gpio "gpio"
         PREFIX "/gpio"

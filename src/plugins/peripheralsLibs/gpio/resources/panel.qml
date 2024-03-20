@@ -16,10 +16,11 @@ Item {
     property var gpio
     Connections {
         target: gpio
+
         // CONNECT TO C++ SIGNALS HERE
         function onPinStateChanged(pin, level, mode) {
             var newImageSrc;
-            if(level === false && mode === false) {
+            if (level === false && mode === false) {
                 newImageSrc = gpioInputLowSVG
             } else if (level === false && mode === true) {
                 newImageSrc = gpioOutputLowSVG
@@ -29,7 +30,13 @@ Item {
                 newImageSrc = gpioOutputHighSVG
             }
 
-            gpioRowA.gpioBtnRow.data[pin].imageSource = newImageSrc;
+            if (pin < gpioRowLength) {
+                gpioRowA.gpioBtnRow.data[pin].imageSource = newImageSrc;
+            } else if (pin < gpioRowLength * 2) {
+                gpioRowB.gpioBtnRow.data[pin - gpioRowLength].imageSource = newImageSrc;
+            } else if (pin < gpioRowLength * 3) {
+                gpioRowC.gpioBtnRow.data[pin - gpioRowLength * 2].imageSource = newImageSrc;
+            }
         }
     }
 
@@ -39,20 +46,26 @@ Item {
     anchors.rightMargin: 10
 
     ColumnLayout {
-        GpioRow{
+        GpioRow {
             id: gpioRowA
             title: "GPIO A"
+            btnPinOffset: 0
         }
-        // GpioRow{
-        //     title: "GPIO B"
-        // }
-        // GpioRow{
-        //     title: "GPIO C"
-        // }
+        GpioRow {
+            id: gpioRowB
+            title: "GPIO B"
+            btnPinOffset: gpioRowLength
+        }
+        GpioRow {
+            id: gpioRowC
+            title: "GPIO C"
+            btnPinOffset: gpioRowLength * 2
+        }
     }
 
     component GpioButton: ColumnLayout {
         property int gpioPinIndex: 0
+        property int pinOffset: 0
         property string imageSource: gpioInputLowSVG
 
         Label {
@@ -74,7 +87,7 @@ Item {
             horizontalAlignment: Image.AlignHCenter
             MouseArea {
                 anchors.fill: parent
-                onClicked: root.gpio.togglePinLevel(gpioPinIndex)
+                onClicked: root.gpio.togglePinLevel(pinOffset + gpioPinIndex)
             }
         }
     }
@@ -82,7 +95,7 @@ Item {
     component GpioRow: GroupBox {
         title: "GPIO"
         property alias gpioBtnRow: gpioBtnRow
-
+        property int btnPinOffset: 0
         RowLayout {
             id: gpioBtnRow
             spacing: 10
@@ -90,6 +103,7 @@ Item {
             Repeater {
                 model: gpioRowLength
                 GpioButton {
+                    pinOffset: btnPinOffset
                     gpioPinIndex: index
                 }
             }
