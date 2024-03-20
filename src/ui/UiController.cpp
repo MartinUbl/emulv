@@ -56,6 +56,8 @@ void UiController::EmulatorStateChanged() {
             refreshRegisters();
             // Reset the line highlighting
             Q_EMIT steppedTo(-1);
+            // Reset all peripherals
+            _emulvApi->resetPeripherals();
             break;
     }
 }

@@ -14,7 +14,7 @@
       "dll-path": "libgpio.dll",
       "mapping": {
         "start-address": "0x40010800",
-        "end-address": "0x400113FF"
+        "end-address": "0x40010BFF"
       }
     },
     {

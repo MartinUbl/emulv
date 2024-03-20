@@ -16,7 +16,10 @@ add_library(gpio SHARED
 qt_add_resources(gpio "gpio"
         PREFIX "/gpio"
         FILES
-        resources/picture.svg
+        resources/gpio_input_high.svg
+        resources/gpio_input_low.svg
+        resources/gpio_output_high.svg
+        resources/gpio_output_low.svg
         resources/panel.qml
 )
 
