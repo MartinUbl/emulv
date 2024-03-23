@@ -21,7 +21,7 @@ Item{
     property var currentTheme: {
         if(!settings.currentTheme) {
             print("Setting dark theme (null settings)")
-            return themes.dark
+            return themes.light
         } else {
             if(settings.currentTheme == "dark") {
                 print("setting dark theme (settings)")
@@ -81,8 +81,8 @@ Item{
 
     property var currentPalette: {
         if(!currentTheme) {
-            print("setting dark palette (null)")
-            return darkPalette
+            print("setting light palette (null)")
+            return lightPalette
         }
 
         if(currentTheme == themes.dark) {
@@ -99,21 +99,21 @@ Item{
     Palette {
         id: darkPalette
 
-        alternateBase: Qt.lighter(primaryPanel)
-        base: primaryPanel
-        button: "#111"
-        buttonText: primaryText
-        dark: Qt.darker("#111")
-        highlight: "#6cbdeb"
-        highlightedText: "#000"
-        light: Qt.lighter("#111")
-        mid: "#444"
-        midlight: "#333"
-        placeholderText: "gray"
-        shadow: "#888"
-        text: "#fff"
-        window: primaryWindowBackgroud
-        windowText: "#fff"
+        alternateBase: "#1E1E1E" // Dark background color
+        base: "#333333" // Dark panel color
+        button: "#505050" // Dark button color
+        buttonText: "#FFFFFF" // White text for buttons
+        dark: "#252526" // Darker background color
+        highlight: "#007ACC" // Accent color
+        highlightedText: "#FFFFFF" // White text for highlighted items
+        light: "#3C3C3C" // Lighter background color
+        mid: "#707070" // Medium background color
+        midlight: "#707070" // Slightly lighter background color
+        placeholderText: "#ECECEC" // Light text for placeholders
+        shadow: "#000000" // Black shadow
+        text: "#ECECEC" // Light text color
+        window: "#1E1E1E" // Dark window color
+        windowText: "#ECECEC" // Light text color for window
     }
     Palette {
         id: lightPalette
