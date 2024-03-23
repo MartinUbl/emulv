@@ -14,7 +14,7 @@ import QtCore
 BorderlessWindow {
     id: root
     title: qsTr("EMULV: RISC-V Emulator")
-    minimumWidth: 690
+    minimumWidth: 720
     minimumHeight: 360
 
     //#######################################################

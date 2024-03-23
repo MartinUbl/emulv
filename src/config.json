@@ -16,6 +16,14 @@
         "start-address": "0x40010800",
         "end-address": "0x400113FF"
       }
+    },
+    {
+      "name": "uart",
+      "dll-path": "libuart.dll",
+      "mapping": {
+        "start-address": "0x40013800",
+        "end-address": "0x40013BFF"
+      }
     }
   ]
 }

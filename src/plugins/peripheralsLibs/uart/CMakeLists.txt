@@ -16,7 +16,7 @@ add_library(uart SHARED
 qt_add_resources(uart "uart"
         PREFIX "/uart"
         FILES
-        resources/picture.svg
+        resources/send_icon.svg
         resources/panel.qml
 )
 

@@ -45,23 +45,38 @@ Item {
     anchors.leftMargin: 10
     anchors.rightMargin: 10
 
-    ColumnLayout {
-        GpioRow {
-            id: gpioRowA
-            title: "GPIO A"
-            btnPinOffset: 0
+    // Flickable so it's possible to scroll
+    Flickable {
+        clip: true
+        anchors.fill: parent
+        contentWidth: mainColumn.width
+        contentHeight: mainColumn.height
+        Column {
+            id: mainColumn
+            spacing: 5
+            GpioRow {
+                id: gpioRowA
+                title: "GPIO A"
+                btnPinOffset: 0
+            }
+            GpioRow {
+                id: gpioRowB
+                title: "GPIO B"
+                btnPinOffset: gpioRowLength
+            }
+            GpioRow {
+                id: gpioRowC
+                title: "GPIO C"
+                btnPinOffset: gpioRowLength * 2
+            }
         }
-        GpioRow {
-            id: gpioRowB
-            title: "GPIO B"
-            btnPinOffset: gpioRowLength
-        }
-        GpioRow {
-            id: gpioRowC
-            title: "GPIO C"
-            btnPinOffset: gpioRowLength * 2
-        }
+
+        boundsBehavior: Flickable.StopAtBounds
+        boundsMovement: Flickable.StopAtBounds
+        ScrollBar.vertical: ScrollBar{}
+        ScrollBar.horizontal: ScrollBar{}
     }
+
 
     component GpioButton: ColumnLayout {
         property int gpioPinIndex: 0

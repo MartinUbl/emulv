@@ -193,9 +193,8 @@ namespace emulator {
                     PageTrapHandler(TRAP_PAGE, page, offset, mode, value);
                 });
 
-                TRAP_PAGE += RISCV_PAGE_SIZE; // +-1???
+                TRAP_PAGE += RISCV_PAGE_SIZE;
             }
-
         }
     }
 

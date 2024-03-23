@@ -43,6 +43,8 @@ void UiController::EmulatorStateChanged() {
             Q_EMIT emulatorRunningState();
             break;
         case emulator::kRunningDebug:
+            // _emulvApi->resetPeripherals();
+
             Q_EMIT emulatorRunningDebugState();
             break;
         case emulator::kDebugPaused:
@@ -56,8 +58,6 @@ void UiController::EmulatorStateChanged() {
             refreshRegisters();
             // Reset the line highlighting
             Q_EMIT steppedTo(-1);
-            // Reset all peripherals
-            _emulvApi->resetPeripherals();
             break;
     }
 }

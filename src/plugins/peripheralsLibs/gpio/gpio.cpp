@@ -1,6 +1,5 @@
 #include <stdexcept>
 #include <limits>
-#include <iostream>
 #include "gpio.h"
 //#include "spdlog/spdlog.h"
 
@@ -105,7 +104,7 @@ namespace peripherals {
 
     void GpioController::WriteWord(uint64_t address, uint32_t value) {
         //spdlog::info("Called the WRITE WORD method of GPIO port to address {0} with value {1}", address, value);
-        std::cout << "WRITE WORD - Address: " << address << " Value: " << value << std::endl;
+
         if (address < portAddressSpaceSize) {
             _ports[0]->write(address, value);
         } else if (address < portAddressSpaceSize * 2) {
@@ -117,7 +116,6 @@ namespace peripherals {
 
     uint32_t GpioController::ReadWord(uint64_t address) {
         //spdlog::info("Called the READ WORD method of GPIO port with address {0}", address);
-        std::cout << "READ WORD - Address: " << address << std::endl;
 
         if (address < portAddressSpaceSize) {
             return _ports[0]->read(address);
