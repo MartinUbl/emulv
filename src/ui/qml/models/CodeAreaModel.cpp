@@ -1,4 +1,6 @@
 #include "CodeAreaModel.h"
+#include <filesystem>
+#include <fstream>
 #include <iostream>
 
 //###################################################################
@@ -100,6 +102,37 @@ void CodeAreaModel::stepTo(uint64_t pc)
     }
 
     // Works without beginResetModel(), endResetModel()
+}
+
+void CodeAreaModel::saveAsTxt(QString path)
+{
+    if(_textLines.empty()) {
+        return;
+    }
+
+    // Remove file:/// if it's present;
+    const std::string prefix = "file:///";
+    std::string pathStr = path.toStdString();
+    pathStr = (pathStr.find(prefix) == 0) ? pathStr.substr(prefix.size()) : pathStr;
+
+    std::filesystem::path fsPath{pathStr};
+    if(!std::filesystem::exists(fsPath.parent_path())) {
+        return;
+    }
+
+    std::ofstream ofs(fsPath);
+    if(!ofs.is_open()) {
+        return;
+    }
+
+    for (size_t i = 0; i < _textLines.size(); i++) {
+        if(i < _lineNumbers.size()) {
+            ofs << _intToHex(_lineNumbers[i], 8) << "\t";
+        }
+        ofs << _textLines[i].toStdString() << std::endl;
+    }
+
+    ofs.close();
 }
 
 size_t CodeAreaModel::highlightedLine() const

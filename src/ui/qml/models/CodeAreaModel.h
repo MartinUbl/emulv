@@ -30,6 +30,8 @@ public:
 public Q_SLOTS:
     void updateDisassembly(std::tuple<QList<uint64_t>, QList<QString>>);
     void stepTo(uint64_t pc);
+    // For exporting the code area text to a file
+    void saveAsTxt(QString path);
 
 Q_SIGNALS:
     void removeBreakpoint(uint64_t address);

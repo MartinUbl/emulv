@@ -51,12 +51,13 @@ BorderlessWindow {
                 }
 
                 Action {
-                    text: qsTr("&Open...")
+                    text: qsTr("&Open ELF...")
                     shortcut: "Ctrl+O"
                     onTriggered: {
                         fileDialogElf.open()
                     }
                 }
+
                 MenuSeparator { }
                 MenuItem {
                     text: qsTr("Quit")
@@ -68,8 +69,9 @@ BorderlessWindow {
 
             FileDialog {
                 id: fileDialogElf
-                currentFolder: StandardPaths.standardLocations(StandardPaths.DocumentsLocation)[0]
-                onAccepted: clickedFile(selectedFile)
+                onAccepted: {
+                    clickedFile(selectedFile)
+                }
                 nameFilters: ["Binary ELF (*.elf)", "All files (*)"]
             }
 
@@ -90,7 +92,23 @@ BorderlessWindow {
                     }
                 }
 
+                Action {
+                    text: qsTr("&Export disassembly as text")
+                    shortcut: "Ctrl+E"
+                    enabled: isFileLoaded
+                    onTriggered: {
+                        fileDialogExportTxt.open()
+                    }
+                }
             }
+
+            FileDialog {
+                id: fileDialogExportTxt
+                defaultSuffix: "txt"
+                onAccepted: {UiController.codeAreaModel.saveAsTxt(selectedFile)}
+                fileMode: FileDialog.SaveFile
+            }
+
             Menu {
                 id: themesMenu
                 title: qsTr("T&hemes")
@@ -158,7 +176,6 @@ BorderlessWindow {
 
             FileDialog {
                 id: fileDialogJson
-                currentFolder: StandardPaths.standardLocations(StandardPaths.DocumentsLocation)[0]
                 onAccepted: clickedConfigFile(selectedFile)
                 nameFilters: ["JSON (*.json)", "All files (*)"]
             }
@@ -194,7 +211,7 @@ BorderlessWindow {
                     anchors.fill: parent
                     id: topBarRect
 
-                    //Background of this rect is a gradient indicating if program is stopped or running
+                    // Background of this rect is a gradient indicating if program is stopped or running
                     gradient: Gradient {
                         orientation : Gradient.Horizontal
                         GradientStop { position: 0.33; color: Colors.primaryPanel }
@@ -302,6 +319,7 @@ BorderlessWindow {
                         }
 
                     }
+
                 }
             ]
 
