@@ -280,20 +280,12 @@ namespace emulator {
         return active_machine_->memory.exit_address();
     }
 
-    std::vector<uint8_t> EmulatorUnit::GetMemory(uint64_t from, uint64_t to) {
-        std::vector<uint8_t> memory;
-
+   const PagesMap* EmulatorUnit::GetMemoryPages() {
         if (active_machine_ == nullptr) {
-            //Machine is inactive. Return empty memory.
-            return memory;
+            return nullptr;
         }
 
-        //Get memory content from machine.
-        for (uint64_t i = from; i <= to; ++i) {
-            memory.push_back(active_machine_->memory.read<uint8_t>(i));
-        }
-
-        return memory;
+        return &active_machine_->memory.pages();
     }
 
 //##################################################################################################################
@@ -373,23 +365,23 @@ namespace emulator {
 
         // Taken from libriscv-src\lib\libriscv\memory.cpp - binary_loader()
         //##################################################################
-        if (m_binary.size() < sizeof(typename riscv::Elf<8>::Header)) {
+        if (m_binary.size() < sizeof(typename riscv::Elf<MACHINE_ARCH>::Header)) {
             throw std::runtime_error("ELF program too short");
         }
-        if (!riscv::Elf<8>::validate(m_binary)) {
+        if (!riscv::Elf<MACHINE_ARCH>::validate(m_binary)) {
             throw std::runtime_error("Invalid ELF header! Expected a RISC-V ELF binary");
         }
 
-        const auto *elf = (typename riscv::Elf<8>::Header *) m_binary.data();
+        const auto *elf = (typename riscv::Elf<MACHINE_ARCH>::Header *) m_binary.data();
 
         static constexpr uint32_t ELFHDR_FLAGS_RVC = 0x1;
         static constexpr uint32_t ELFHDR_FLAGS_RVE = 0x8;
-        const bool is_static = elf->e_type == riscv::Elf<8>::Header::ET_EXEC;
-        const bool m_is_dynamic = elf->e_type == riscv::Elf<8>::Header::ET_DYN;
+        const bool is_static = elf->e_type == riscv::Elf<MACHINE_ARCH>::Header::ET_EXEC;
+        const bool m_is_dynamic = elf->e_type == riscv::Elf<MACHINE_ARCH>::Header::ET_DYN;
         if (!is_static && !m_is_dynamic) {
             throw std::runtime_error("ELF program is not an executable type. Trying to load an object file?");
         }
-        if (elf->e_machine != riscv::Elf<8>::Header::EM_RISCV) {
+        if (elf->e_machine != riscv::Elf<MACHINE_ARCH>::Header::EM_RISCV) {
             throw std::runtime_error("ELF program is not a RISC-V executable. Wrong architecture.");
         }
         if ((elf->e_flags & ELFHDR_FLAGS_RVC) != 0 && !riscv::compressed_enabled) {
@@ -410,7 +402,7 @@ namespace emulator {
         if (elf->e_phoff > 0x4000) {
             throw std::runtime_error("ELF program-headers have bogus offset");
         }
-        if (elf->e_phoff + program_headers * sizeof(typename riscv::Elf<8>::ProgramHeader) > m_binary.size()) {
+        if (elf->e_phoff + program_headers * sizeof(typename riscv::Elf<MACHINE_ARCH>::ProgramHeader) > m_binary.size()) {
             throw std::runtime_error("ELF program-headers are outside the binary");
         }
 

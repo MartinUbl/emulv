@@ -40,7 +40,7 @@ public:
 
     virtual emulator::EmulatorState getProgramState() = 0;
 
-    virtual std::vector<uint8_t> getMemory(uint64_t from, uint64_t to) = 0;
+    virtual const emulator::PagesMap* getMemoryPages() = 0;
 
     virtual std::tuple<std::vector<uint64_t>, std::vector<std::string>> getDisassembly() = 0;
 

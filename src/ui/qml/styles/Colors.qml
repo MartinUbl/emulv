@@ -107,8 +107,8 @@ Item{
         highlight: "#007ACC" // Accent color
         highlightedText: "#FFFFFF" // White text for highlighted items
         light: "#3C3C3C" // Lighter background color
-        mid: "#707070" // Medium background color
-        midlight: "#707070" // Slightly lighter background color
+        mid: "#474747" // Medium background color
+        midlight: "#474747" // Slightly lighter background color
         placeholderText: "#ECECEC" // Light text for placeholders
         shadow: "#000000" // Black shadow
         text: "#ECECEC" // Light text color

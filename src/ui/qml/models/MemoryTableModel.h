@@ -2,7 +2,48 @@
 
 #include <qqml.h>
 #include <QAbstractTableModel>
+#include "EmulatorUnit.h"
 
+/**
+ * Helper class wrapping around std::unordered_map (emulator::PagesMap) containing memory pages
+ */
+class MemoryPageModel {
+public:
+    explicit MemoryPageModel() = default;
+    explicit MemoryPageModel(const emulator::PagesMap *memoryPages);
+
+    void setMemoryPages(const emulator::PagesMap *memoryPages);
+    /**
+     * Refreshes content of _pageAddresses, call when the content of _memoryPages changes
+     */
+    void refresh();
+    uint64_t getMemorySizeBytes() const;
+
+    static uint64_t getStartAddress();
+    uint64_t getEndAddress() const;
+
+    uint8_t getByteAtIndex(uint64_t index);
+    /**
+     * Address of the byte might be different than index (when the page space is not continuous)
+     */
+    uint64_t getAddressAtIndex(uint64_t index);
+
+    uint64_t  getOffsetFromStart(uint64_t address);
+
+private:
+    static constexpr uint64_t _startAddress = 0;
+
+    const emulator::PagesMap* _memoryPages = nullptr;
+    // Keeps sorted keys of _memoryPages (updated via refresh())
+    std::set<emulator::MachineAddress> _pageAddresses{};
+
+    emulator::MachineAddress _getNearestPageTo(emulator::MachineAddress addr) const;
+
+};
+
+/**
+ * The model used by GUI table
+ */
 class MemoryTableModel : public QAbstractTableModel
 {
     Q_OBJECT
@@ -34,14 +75,15 @@ public:
 
     Q_INVOKABLE void setMemoryCellColumns(int columnNumber);
     Q_INVOKABLE int getRowFromAddress(uint64_t address);
-    Q_INVOKABLE void refreshModel();
+    Q_INVOKABLE void refreshView();
 
 public Q_SLOTS:
-    void loadMemory(std::vector<uint8_t> memory, uint64_t startAddress);
+    void memoryRefreshed();
+    void memoryPointerChanged(const emulator::PagesMap* pages);
 
 private:
-    std::vector<uint8_t> _memory;
-    uint64_t _startAddress = 0;
+    std::unique_ptr<MemoryPageModel> _memoryPageModel = std::make_unique<MemoryPageModel>();
+
     int _memoryCellColumns = 8;
     int _stringColumns = _memoryCellColumns + 1;
     int _totalColumns = _memoryCellColumns + _stringColumns;

@@ -14,7 +14,8 @@ UiController::UiController() : QObject() {
 
     QObject::connect(this, &UiController::registersChanged, _registersTableModel.get(), &RegistersTableModel::updateRegisters);
 
-    QObject::connect(this, &UiController::memoryChanged, _memoryTableModel.get(), &MemoryTableModel::loadMemory);
+    QObject::connect(this, &UiController::memoryRefreshed, _memoryTableModel.get(), &MemoryTableModel::memoryRefreshed);
+    QObject::connect(this, &UiController::memoryPointerChanged, _memoryTableModel.get(), &MemoryTableModel::memoryPointerChanged);
 
     // Invoke a method when emulator state changes (Switches from running to terminated, etc.)
     EventsLib::globalOn(emulator::State_Changed_Event_Description, [this](EventsLib::EventData data) {
@@ -56,6 +57,7 @@ void UiController::EmulatorStateChanged() {
         case emulator::kTerminated:
             Q_EMIT emulatorTerminatedState();
             refreshRegisters();
+            refreshMemory(); // TODO?
             // Reset the line highlighting
             Q_EMIT steppedTo(-1);
             break;
@@ -98,10 +100,6 @@ void UiController::openFile(const QString &path) {
     if (filePath.empty()) {
         return;
     }
-
-    // TODO?
-    //    emulvApi_->terminateProgram();
-    //    JoinThread();
 
     try {
         _emulvApi->loadFile(filePath);
@@ -187,8 +185,8 @@ void UiController::refreshRegisters() {
 }
 
 void UiController::refreshMemory() {
-    Q_EMIT memoryChanged(_emulvApi->getMemory(_emulvApi->getRamStartAddress(), _emulvApi->getRamEndAddress()),
-                         _emulvApi->getRamStartAddress());
+    //Q_EMIT memoryRefreshed(); TODO: Remove?
+    Q_EMIT memoryPointerChanged(_emulvApi->getMemoryPages());
 }
 
 void UiController::openConfigurationJson(QString path) {

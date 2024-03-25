@@ -62,7 +62,7 @@ public:
 
     emulator::EmulatorState getProgramState() override { return emulatorUnit_->GetState(); }
 
-    std::vector<uint8_t> getMemory(uint64_t from, uint64_t to) override { return emulatorUnit_->GetMemory(from, to); }
+    const emulator::PagesMap* getMemoryPages() override;
 
     std::tuple<std::vector<uint64_t>, std::vector<std::string>> getDisassembly() override { return this->emulatorUnit_->Disassemble(); }
 

@@ -24,10 +24,16 @@
 #include "spdlog/spdlog.h"
 
 namespace emulator {
+
     // Number of CPU's "X-registers"
     constexpr int X_REGISTER_COUNT = 32;
     // 500 MB
     constexpr int MAX_FILE_SIZE = 500 * 1024 * 1024;
+
+    static constexpr int MACHINE_ARCH = riscv::RISCV64;
+
+    typedef riscv::Memory<MACHINE_ARCH>::address_t MachineAddress;
+    typedef std::unordered_map<MachineAddress, riscv::Page> PagesMap;
 
     /**
      * States of the emulator. These are set internally using the SetState_() method.
@@ -60,7 +66,7 @@ namespace emulator {
         std::vector<uint8_t> binary_;
 
         //Pointer to the current active machine, will be equal to nullptr if no machine is running
-        riscv::Machine<riscv::RISCV64> *active_machine_ = nullptr;
+        riscv::Machine<MACHINE_ARCH> *active_machine_ = nullptr;
 
         //Vector saving the last known register values, is set in the GetRegisters() method, is filled with 0 values by default
         std::vector<std::tuple<std::string, uint32_t>> latest_register_values_;
@@ -184,12 +190,10 @@ namespace emulator {
         std::vector<std::tuple<std::string, uint32_t>> GetRegisters();
 
         /**
-         * Reads memory of the currently active machine.
-         * @param from Will start reading from this address
-         * @param to Will stop reading at this address
-         * @return A vector containing memory bytes. Or an empty vector if machine is inactive or invalid values were entered.
+         * Provides a map containing pages of this Machine's virtual memory
+         * @return
          */
-        std::vector<uint8_t> GetMemory(uint64_t from, uint64_t to);
+        const PagesMap* GetMemoryPages();
 
         /**
          * Executes the loaded ELF file in debug mode. Stops at first breakpoint.

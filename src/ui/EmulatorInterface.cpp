@@ -104,3 +104,7 @@ void EmulatorInterface::resetPeripherals() {
     }
     spdlog::info("Active peripherals' state has been reset");
 }
+
+const emulator::PagesMap* EmulatorInterface::getMemoryPages() {
+    return emulatorUnit_->GetMemoryPages();
+}

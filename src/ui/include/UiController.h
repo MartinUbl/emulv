@@ -10,7 +10,8 @@
 #include "CodeAreaModel.h"
 
 class UiController : public QObject {
-    Q_OBJECT
+Q_OBJECT
+
     QML_ELEMENT
     QML_SINGLETON
 
@@ -22,6 +23,7 @@ class UiController : public QObject {
 
 public:
     explicit UiController();
+
     ~UiController();
 
     FileSystemModel *getFileSystemModel() const;
@@ -35,45 +37,69 @@ public:
     Q_INVOKABLE void EmulatorStateChanged();
 
 public Q_SLOTS:
+
     // File explorer / file dialog
-    void openFile(const QString& path);
+    void openFile(const QString &path);
+
     // Code Area
     void removeBreakpoint(uint64_t address);
+
     void addBreakpoint(uint64_t address);
+
     // Run / Debug buttons in QML
     void runProgram();
+
     void debugProgram();
+
     void debugStep();
+
     void debugContinue();
+
     void terminateProgram();
+
     // Registers request for refresh
     void refreshRegisters();
-    // Memory request for refrest
+
+    // Memory request for refresh
     void refreshMemory();
 
     // For the configuration file
     void openConfigurationJson(QString path);
 
 Q_SIGNALS:
+
     void disassemblyTextChanged(std::tuple<QList<uint64_t>, QList<QString>> disassembly);
+
     void errorLoadingFile(QString error);
+
     // Emulator state
     void emulatorDefaultState();
+
     void emulatorReadyState();
+
     void emulatorRunningState();
+
     void emulatorRunningDebugState();
+
     void emulatorDebugPausedState();
+
     void emulatorTerminatedState();
+
     // Registers
     void registersChanged(std::vector<std::tuple<std::string, uint32_t>> registers);
+
     // Memory
-    void memoryChanged(std::vector<uint8_t> memory, uint64_t startAddress);
+    void memoryRefreshed();
+    void memoryPointerChanged(const emulator::PagesMap* pages);
+
     // For highlighting of line during debug stepping
     void steppedTo(uint64_t pc);
 
     // For adding peripheral's QML panel to the gui
-    void newPanelAdded(QString name, QQuickItem* panel);
+    void newPanelAdded(QString name, QQuickItem *panel);
+
     void removeAllPeripherals();
+
     void failedToLoadConfig(QString errorStr);
 
 private:
@@ -86,12 +112,12 @@ private:
 
     // Threading - using std::thread instead of Qt threading for simplicity
     std::unique_ptr<std::thread> _backendThread;
+
     void _joinBackendThread();
 
 };
 
-inline void UiController::_joinBackendThread()
-{
+inline void UiController::_joinBackendThread() {
     if (_backendThread && _backendThread->joinable()) {
         _backendThread->join();
     }
