@@ -65,7 +65,7 @@ Rectangle {
                 source: "qrc:///assets/refresh_icon.svg"
                 iconColor: "#53C2F8" // Fixed color
                 onClicked: {
-                    memoryModel.refreshModel()
+                    memoryModel.refreshView()
                 }
             }
         }

@@ -37,8 +37,6 @@ private:
     // Keeps sorted keys of _memoryPages (updated via refresh())
     std::set<emulator::MachineAddress> _pageAddresses{};
 
-    emulator::MachineAddress _getNearestPageTo(emulator::MachineAddress addr) const;
-
 };
 
 /**
