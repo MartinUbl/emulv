@@ -30,6 +30,8 @@ public:
 
     uint64_t  getOffsetFromStart(uint64_t address);
 
+    const emulator::PagesMap *getMemoryPages() const;
+
 private:
     static constexpr uint64_t _startAddress = 0;
 
@@ -75,6 +77,8 @@ public:
     Q_INVOKABLE int getRowFromAddress(uint64_t address);
     Q_INVOKABLE void refreshView();
 
+    const std::unique_ptr<MemoryPageModel> &getMemoryPageModel() const;
+
 public Q_SLOTS:
     void memoryRefreshed();
     void memoryPointerChanged(const emulator::PagesMap* pages);
@@ -82,6 +86,7 @@ public Q_SLOTS:
 private:
     std::unique_ptr<MemoryPageModel> _memoryPageModel = std::make_unique<MemoryPageModel>();
 
+    int _rowCount = 0;
     int _memoryCellColumns = 8;
     int _stringColumns = _memoryCellColumns + 1;
     int _totalColumns = _memoryCellColumns + _stringColumns;

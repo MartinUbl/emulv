@@ -1,6 +1,7 @@
 #include "UiController.h"
 #include "spdlog/spdlog.h"
 #include <algorithm>
+#include <iostream>
 
 //############################################################
 //# Constructor
@@ -45,7 +46,7 @@ void UiController::EmulatorStateChanged() {
             break;
         case emulator::kRunningDebug:
             // _emulvApi->resetPeripherals();
-
+            refreshMemory();
             Q_EMIT emulatorRunningDebugState();
             break;
         case emulator::kDebugPaused:
@@ -57,7 +58,6 @@ void UiController::EmulatorStateChanged() {
         case emulator::kTerminated:
             Q_EMIT emulatorTerminatedState();
             refreshRegisters();
-            refreshMemory(); // TODO?
             // Reset the line highlighting
             Q_EMIT steppedTo(-1);
             break;
@@ -156,7 +156,7 @@ void UiController::debugStep() {
     if (_emulvApi->getProgramState() == emulator::kDebugPaused) {
         _emulvApi->debugStep();
         refreshRegisters();
-        refreshMemory();
+        refreshMemory();;
         Q_EMIT steppedTo(_emulvApi->getPc());
     }
 }
@@ -185,8 +185,11 @@ void UiController::refreshRegisters() {
 }
 
 void UiController::refreshMemory() {
-    //Q_EMIT memoryRefreshed(); TODO: Remove?
-    Q_EMIT memoryPointerChanged(_emulvApi->getMemoryPages());
+    if(_memoryTableModel->getMemoryPageModel()->getMemoryPages() != _emulvApi->getMemoryPages()) {
+        Q_EMIT memoryPointerChanged(_emulvApi->getMemoryPages());
+    } else {
+        Q_EMIT memoryRefreshed();
+    }
 }
 
 void UiController::openConfigurationJson(QString path) {

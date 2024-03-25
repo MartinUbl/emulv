@@ -97,6 +97,7 @@ namespace emulator {
         spdlog::info("EmulatorUnit started a program in debug mode");
         CreateNewMachine_(machine_arguments);
 
+        SetState_(kRunningDebug);
         //Run until the first breakpoint is reached
         DebugContinue();
     }

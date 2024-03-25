@@ -96,7 +96,7 @@ Rectangle {
                     } else if(currentIndex === 2) {
                         memoryModel.setMemoryCellColumns(32);
                     }
-                    tableView.forceLayout()
+                    memoryModel.refreshView()
                 }
             }
 
@@ -118,7 +118,7 @@ Rectangle {
                     } else if(currentIndex === 2) {
                         memoryModel.switchToBin();
                     }
-                    tableView.forceLayout()
+
                 }
             }
         }

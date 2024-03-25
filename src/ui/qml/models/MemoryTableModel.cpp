@@ -8,8 +8,7 @@
 //###################################################################
 
 int MemoryTableModel::rowCount(const QModelIndex &) const {
-    // TODO?
-    return std::ceil(_memoryPageModel->getMemorySizeBytes() / (double) _memoryCellColumns);
+    return _rowCount;
 }
 
 int MemoryTableModel::columnCount(const QModelIndex &) const {
@@ -104,8 +103,9 @@ void MemoryTableModel::switchToBin() {
 void MemoryTableModel::switchNumberSystem(numberSystem sys) {
     if (sys != _currentNumberSystem) {
         _currentNumberSystem = sys;
-        refreshView();
     }
+    // Not working?
+    refreshView();
 }
 
 template<typename I>
@@ -137,6 +137,8 @@ void MemoryTableModel::setMemoryCellColumns(int columnNumber) {
     _memoryCellColumns = columnNumber;
     _stringColumns = _memoryCellColumns + 1;
     _totalColumns = _memoryCellColumns + _stringColumns;
+
+    _rowCount = std::ceil(_memoryPageModel->getMemorySizeBytes() / (double) _memoryCellColumns);
 }
 
 int MemoryTableModel::getRowFromAddress(uint64_t address) {
@@ -148,22 +150,31 @@ int MemoryTableModel::getRowFromAddress(uint64_t address) {
 
 void MemoryTableModel::refreshView() {
     spdlog::trace("MemoryTableModel::refreshView: Refreshing view...");
-    beginResetModel();
-    endResetModel();
+    Q_EMIT layoutChanged();
     spdlog::trace("MemoryTableModel::refreshView: Refreshing completed.");
 }
 
 void MemoryTableModel::memoryRefreshed() {
+    spdlog::trace("MemoryTableModel::memoryRefreshed: Refreshing model...");
     _memoryPageModel->refresh();
-    refreshView();
+    _rowCount = std::ceil(_memoryPageModel->getMemorySizeBytes() / (double) _memoryCellColumns);
 }
 
 void
 MemoryTableModel::memoryPointerChanged(const emulator::PagesMap *pages) {
     spdlog::trace("MemoryTableModel::memoryPointerChanged: Loading new memory pages...");
     _memoryPageModel->setMemoryPages(pages);
+    memoryRefreshed();
     refreshView();
+
+    beginResetModel();
+    endResetModel();
+
     spdlog::trace("MemoryTableModel::memoryPointerChanged: Loading memory pages completed.");
+}
+
+const std::unique_ptr<MemoryPageModel> &MemoryTableModel::getMemoryPageModel() const {
+    return _memoryPageModel;
 }
 
 
@@ -239,10 +250,10 @@ uint64_t MemoryPageModel::getEndAddress() const {
 
 uint8_t MemoryPageModel::getByteAtIndex(uint64_t index) {
     if (!_memoryPages)
-        return 254;
+        return 0;
 
     if(index > getMemorySizeBytes())
-        return 254;
+        return 0;
 
     // Perform automatic refresh if sizes don't match (won't work if memory pages modified but size stays the same)
     if (_memoryPages->size() != _pageAddresses.size()) {
@@ -254,15 +265,15 @@ uint8_t MemoryPageModel::getByteAtIndex(uint64_t index) {
     auto pageNo = _pageAddresses.begin();
     advance(pageNo, pageIndex);
 
-    return _memoryPages->at(*pageNo).page().buffer8[offsetFromPageStart];
+    return (*(_memoryPages->find(*pageNo))).second.page().buffer8[offsetFromPageStart];
 }
 
 uint64_t MemoryPageModel::getAddressAtIndex(uint64_t index) {
     if (!_memoryPages)
-        return 254;
+        return 0;
 
     if(index > getMemorySizeBytes())
-        return 254;
+        return 0;
 
     // Perform automatic refresh if sizes don't match (won't work if memory pages modified but size stays the same)
     if (_memoryPages->size() != _pageAddresses.size()) {
@@ -286,5 +297,9 @@ uint64_t MemoryPageModel::getOffsetFromStart(uint64_t address) {
     } else {
         return (std::distance(_pageAddresses.begin(), _pageAddresses.find(pageAddress)) * RISCV_PAGE_SIZE) + offsetFromPageStart;
     }
+}
+
+const emulator::PagesMap *MemoryPageModel::getMemoryPages() const {
+    return _memoryPages;
 }
 
