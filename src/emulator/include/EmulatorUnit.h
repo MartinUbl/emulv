@@ -30,7 +30,7 @@ namespace emulator {
     // 500 MB
     constexpr int MAX_FILE_SIZE = 500 * 1024 * 1024;
 
-    static constexpr int MACHINE_ARCH = riscv::RISCV64;
+    static constexpr int MACHINE_ARCH = riscv::RISCV32;
 
     typedef riscv::Memory<MACHINE_ARCH>::address_t MachineAddress;
     typedef std::unordered_map<MachineAddress, riscv::Page> PagesMap;
@@ -113,7 +113,7 @@ namespace emulator {
          * PeripheralDevices must first be registered using the registerPeripherals_() method.
          * @param machine An active machine instance
          */
-        void SetupMemoryTraps_(riscv::Machine<riscv::RISCV64> &machine);
+        void SetupMemoryTraps_(riscv::Machine<MACHINE_ARCH> &machine);
 
         /**
          * Sets state of the emulator.

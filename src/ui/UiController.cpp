@@ -45,7 +45,6 @@ void UiController::EmulatorStateChanged() {
             Q_EMIT emulatorRunningState();
             break;
         case emulator::kRunningDebug:
-            // _emulvApi->resetPeripherals();
             refreshMemory();
             Q_EMIT emulatorRunningDebugState();
             break;
@@ -56,6 +55,8 @@ void UiController::EmulatorStateChanged() {
             Q_EMIT steppedTo(_emulvApi->getPc());
             break;
         case emulator::kTerminated:
+            _emulvApi->resetPeripherals();
+
             Q_EMIT emulatorTerminatedState();
             refreshRegisters();
             // Reset the line highlighting

@@ -155,17 +155,17 @@ Item {
                 ComboBox {
                     Layout.preferredHeight: inputField.height
                     model: ListModel {
-                        ListElement { text: "No line break" }
                         ListElement { text: "LF" }
                         ListElement { text: "CRLF" }
+                        ListElement { text: "No line break" }
                     }
                     onCurrentIndexChanged: {
                         if (currentIndex == 0) {
-                            root.uart.changeLineBreak("NONE");
-                        } else if (currentIndex == 1) {
                             root.uart.changeLineBreak("LF");
-                        } else if (currentIndex == 2) {
+                        } else if (currentIndex == 1) {
                             root.uart.changeLineBreak("CRLF");
+                        } else if (currentIndex == 2) {
+                            root.uart.changeLineBreak("NONE");
                         }
                     }
                 }

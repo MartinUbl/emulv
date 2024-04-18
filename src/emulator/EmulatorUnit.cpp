@@ -70,7 +70,7 @@ namespace emulator {
 
 
         //Use this if ValidateElf_() stops working:
-        //auto *pMachine = new riscv::Machine<riscv::RISCV64>{binary};
+        //auto *pMachine = new riscv::Machine<MACHINE_ARCH>{binary};
         //delete pMachine;
         ValidateElf_(binary);
 
@@ -174,7 +174,7 @@ namespace emulator {
         peripheral_devices_ = &devices;
     }
 
-    void EmulatorUnit::SetupMemoryTraps_(riscv::Machine<riscv::RISCV64> &machine) {
+    void EmulatorUnit::SetupMemoryTraps_(riscv::Machine<MACHINE_ARCH> &machine) {
         page_peripherals_.clear();
 
         for (const auto &p: *peripheral_devices_) {
@@ -187,7 +187,7 @@ namespace emulator {
                 MapDeviceToPage_(pDevice, TRAP_PAGE);
 
                 //Create a trap page - the default size is 4096 bytes
-                auto const &trap_page = machine.memory.create_writable_pageno(riscv::Memory<riscv::RISCV64>::page_number(TRAP_PAGE));
+                auto const &trap_page = machine.memory.create_writable_pageno(riscv::Memory<MACHINE_ARCH>::page_number(TRAP_PAGE));
 
                 //Sets a callback on this trap page
                 trap_page.set_trap([this, TRAP_PAGE](riscv::Page &page, uint32_t offset, int mode, int64_t value) {
@@ -293,7 +293,7 @@ namespace emulator {
 //# Utility methods
 //##################################################################################################################
     std::tuple<std::vector<uint64_t>, std::vector<std::string>> EmulatorUnit::Disassemble() {
-        riscv::Machine<riscv::RISCV64> disassembly_machine{binary_};
+        riscv::Machine<MACHINE_ARCH> disassembly_machine{binary_};
 
         disassembly_machine.setup_linux(
                 {"myprogram"},
@@ -347,8 +347,8 @@ namespace emulator {
             delete active_machine_;
         }
 
-        // Create a new 64-bit RISC-V machine
-        active_machine_ = new riscv::Machine<riscv::RISCV64>{binary_};
+        // Create a new RISC-V machine
+        active_machine_ = new riscv::Machine<MACHINE_ARCH>{binary_};
         // Use string vector as arguments to the RISC-V program
         active_machine_->setup_linux(machine_arguments, {"LC_TYPE=C", "LC_ALL=C", "USER=root"});
         active_machine_->setup_linux_syscalls();

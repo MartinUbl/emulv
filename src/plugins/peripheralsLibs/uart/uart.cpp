@@ -105,8 +105,8 @@ namespace peripherals {
                 break;
 
             case uDATA:
-                reg = Reg_DATA;
                 _handleDataRead();
+                reg = Reg_DATA;
                 break;
 
             case uBAUD:
@@ -230,13 +230,16 @@ namespace peripherals {
 
         //Check if receiver mode is enabled (REN bit)
         if (Reg_CTL0.test(2)) {
-            //Set the RBNE bit to 0 (read buffer IS empty)
-            Reg_STAT.set(5, 0);
 
             //Push next data from the buffer
             if (!_writeBuffer.empty()) {
-                _transmitFrameToDevice(_writeBuffer.front());
+                Reg_DATA = _writeBuffer.front();
                 _writeBuffer.pop();
+            }
+
+            if (_writeBuffer.empty()) {
+                //Set the RBNE bit to 0 (read buffer IS empty)
+                Reg_STAT.set(5, 0);
             }
         }
 
@@ -272,11 +275,8 @@ namespace peripherals {
             _writeBuffer.emplace(0xA);
         }
 
-        // Check if REN bit is enabled (receiver enable bit)
-        if (Reg_CTL0.test(2)) {
-            _transmitFrameToDevice(_writeBuffer.front());
-            _writeBuffer.pop();
-        }
+        //Set RBNE bit to 0 (Read data buffer not empty)
+        Reg_STAT.set(5, 1);
 
     }
 

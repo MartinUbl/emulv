@@ -125,11 +125,12 @@ private:
     void _transmitFrameToDevice(uint8_t frame_data);
 
     std::queue<uint32_t> _writeBuffer;
+    std::queue<uint32_t> _sendBuffer;
 
     // Members associated with displaying text in GUI
     QString _displayText;
     DisplayMode _displayMode = ASCII;
-    LineBreak _lineBreak = NONE;
+    LineBreak _lineBreak = LF;
     void _sendDisplayTextUpate();
 
     std::string _stringToHex(const std::string &input);
