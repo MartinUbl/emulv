@@ -102,6 +102,9 @@ Q_SIGNALS:
 
     void failedToLoadConfig(QString errorStr);
 
+    // General error handling
+    void backendException(QString errorStr);
+
 private:
     const std::unique_ptr<EmulvApi> _emulvApi{std::make_unique<EmulatorInterface>()};
 

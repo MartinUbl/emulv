@@ -108,7 +108,14 @@ namespace emulator {
         }
 
         if (!active_machine_->stopped()) {
-            active_machine_->cpu.step_one();
+            try {
+                active_machine_->cpu.step_one();
+            } catch(const std::exception &e) {
+                spdlog::error("A program error has occurred during the debug step: {0}", e.what());
+                SetState_(kTerminated);
+                // Re-throw exception to higher level
+                throw;
+            }
             spdlog::trace("Debug step has been performed");
         } else {
             SetState_(kTerminated);

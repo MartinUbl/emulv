@@ -575,6 +575,14 @@ BorderlessWindow {
                                               stopProgram();
                                           })
 
+                                          // Error signals
+                                          UiController.failedToLoadConfig.connect(function(errorString) {
+                                              statusBarPanel.leftSideModel = [errorString]
+                                          })
+                                          UiController.backendException.connect(function(errorString) {
+                                              showErrorPopup(errorString)
+                                          })
+
                                           // Adding peripherals panels
                                           UiController.newPanelAdded.connect(function(name, panel) {
                                               addSideBarItem(name, panel, null, Main.SidePanelPositions.BOTTOM);
@@ -592,10 +600,6 @@ BorderlessWindow {
                                               }
 
                                               activePeripheralsPanels = [];
-                                          })
-
-                                          UiController.failedToLoadConfig.connect(function(errorString) {
-                                              statusBarPanel.leftSideModel = [errorString]
                                           })
 
                                       })
@@ -739,6 +743,12 @@ BorderlessWindow {
     function clearRecentlyOpenedList() {
         lastOpenedFiles.length = 0
         lastOpenedPanel.itemsModel = lastOpenedFiles
+    }
+
+    function showErrorPopup(msg) {
+        var component = Qt.createComponent("ErrorBox.qml");
+        var win = component.createObject(null, {"message": msg});
+        win.show();
     }
 
     //###########################

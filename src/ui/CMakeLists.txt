@@ -28,7 +28,7 @@ qt_add_executable(EMULV_Qt_GUI
         EmulatorInterface.cpp
         "./qml/assets/metafile.rc"
 )
-# Name of the compiled EXE will be "Emulv"
+# Name of the compiled executable will be "Emulv"
 set_target_properties(EMULV_Qt_GUI PROPERTIES OUTPUT_NAME Emulv)
 
 # Directory with header files
@@ -60,6 +60,7 @@ qt_add_qml_module(EMULV_Qt_GUI
         QML_FILES ./qml/panels/DebugInfoPanel.qml
         QML_FILES ./qml/panels/CodeAreaPanel.qml
         QML_FILES ./qml/views/About.qml
+        QML_FILES ./qml/views/ErrorBox.qml
         QML_FILES qml/panels/StatusBarPanel.qml
         SOURCES qml/models/FileSystemModel.cpp
         SOURCES qml/models/FileSystemModel.h
