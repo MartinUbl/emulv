@@ -626,11 +626,6 @@ BorderlessWindow {
                                       })
 
                          Qt.callLater(()=>{
-                                          // Create debug information
-                                          debugInfoPanel = createSidePanel("../panels/DebugInfoPanel.qml", "Debug Info", "qrc:///assets/info_icon.svg", Main.SidePanelPositions.RIGHT)
-                                      })
-
-                         Qt.callLater(()=>{
                                           // Create registers
                                           registersPanel = createSidePanel("../panels/RegistersPanel.qml", "Registers", "qrc:///assets/registers_icon.svg", Main.SidePanelPositions.RIGHT)
                                       })
