@@ -309,6 +309,17 @@ BorderlessWindow {
                                 //onClicked: continueProgram();
                             }
 
+                            Shortcut {
+                                context: Qt.ApplicationShortcut
+                                id: stepButtonShortcut
+                                // Click step button when DOWN arrow is pressed
+                                sequences: [StandardKey.MoveToNextLine]
+                                onActivated: {
+                                    stepButton.clicked()
+                                }
+                                enabled: stepButton.visible
+                            }
+
                             ActionButton {
                                 id: stepButton
                                 source: "qrc:///assets/step_button.svg"
