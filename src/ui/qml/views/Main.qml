@@ -713,7 +713,7 @@ BorderlessWindow {
         centerLoader.source = "../panels/CodeAreaPanel.qml"
 
         // Make sure path is of string type, and remove the "file:///" prefix, if it's present
-        path = String(path).replace(/^file:\/\/\//, '')
+        path = urlToPath(String(path))
         print(path)
 
         lastOpenedFile = path
@@ -745,7 +745,7 @@ BorderlessWindow {
 
     function clickedConfigFile(path) {
         // Make sure path is of string type, and remove the "file:///" prefix, if it's present
-        path = String(path).replace(/^file:\/\/\//, '')
+        path = urlToPath(String(path))
         print(path)
 
         UiController.openConfigurationJson(path);
@@ -760,6 +760,18 @@ BorderlessWindow {
         var component = Qt.createComponent("ErrorBox.qml");
         var win = component.createObject(null, {"message": msg});
         win.show();
+    }
+
+    // Utility function (for purpose of file dialogs)
+    function urlToPath(urlString) {
+        var s
+        if (urlString.startsWith("file:///")) {
+            var k = urlString.charAt(9) === ':' ? 8 : 7
+            s = urlString.substring(k)
+        } else {
+            s = urlString
+        }
+        return decodeURIComponent(s);
     }
 
     //###########################
