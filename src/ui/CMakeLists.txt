@@ -26,7 +26,11 @@ qt_add_executable(EMULV_Qt_GUI
         main.cpp
         resources.qrc
         EmulatorInterface.cpp
+        "./qml/assets/metafile.rc"
 )
+# Name of the compiled EXE will be "Emulv"
+set_target_properties(EMULV_Qt_GUI PROPERTIES OUTPUT_NAME Emulv)
+
 # Directory with header files
 target_include_directories(EMULV_Qt_GUI PUBLIC include)
 
@@ -94,4 +98,4 @@ target_link_libraries(EMULV_Qt_GUI PUBLIC config)
 ##########################################################
 # Other
 ##########################################################
-#include(Install)
+include(Install)

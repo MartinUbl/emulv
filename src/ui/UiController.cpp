@@ -55,7 +55,6 @@ void UiController::EmulatorStateChanged() {
             Q_EMIT steppedTo(_emulvApi->getPc());
             break;
         case emulator::kTerminated:
-            _emulvApi->resetPeripherals();
 
             Q_EMIT emulatorTerminatedState();
             refreshRegisters();
@@ -121,14 +120,6 @@ void UiController::openFile(const QString &path) {
     Q_EMIT disassemblyTextChanged({lineNumbers, disassembly});
 
     EventsLib::globalEmit(emulator::State_Changed_Event_Description);
-
-    // TODO?
-    //    memory_widget_->Clear();
-    //    registers_widget_->SetRegisters({});
-    //    emulvApi_->resetPeripherals();
-    //    peripherals_tab_widget_->UpdateWidgets();
-    //    lbl_file_->setText(QString::fromStdString(path));
-
 }
 
 void UiController::removeBreakpoint(uint64_t address) {
@@ -142,6 +133,8 @@ void UiController::addBreakpoint(uint64_t address) {
 void UiController::runProgram() {
     if (_emulvApi->getProgramState() == emulator::kReady || _emulvApi->getProgramState() == emulator::kTerminated) {
         _joinBackendThread();
+
+        _emulvApi->resetPeripherals();
         _backendThread = std::make_unique<std::thread>(&EmulvApi::runProgram, _emulvApi.get());
     }
 }
@@ -149,6 +142,8 @@ void UiController::runProgram() {
 void UiController::debugProgram() {
     if (_emulvApi->getProgramState() == emulator::kReady || _emulvApi->getProgramState() == emulator::kTerminated) {
         _joinBackendThread();
+
+        _emulvApi->resetPeripherals();
         _backendThread = std::make_unique<std::thread>(&EmulvApi::debugProgram, _emulvApi.get());
     }
 }
@@ -157,7 +152,7 @@ void UiController::debugStep() {
     if (_emulvApi->getProgramState() == emulator::kDebugPaused) {
         _emulvApi->debugStep();
         refreshRegisters();
-        refreshMemory();;
+        refreshMemory();
         Q_EMIT steppedTo(_emulvApi->getPc());
     }
 }

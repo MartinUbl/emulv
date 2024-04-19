@@ -1,11 +1,6 @@
-# This script should be able to deploy the QtApp. All of our own libraries should be
+# This script should be able to deploy the EMULV_Qt_GUI. All of our own libraries should be
 # statically linked (they have the .a file extension), so there should be no need to include
 # them with the program itself.
-
-# TODO - Add Linux install support
-# https://stackoverflow.com/questions/2036873/static-library-install-under-linux-should-it-be-similar-to-dynamic-library-ins
-# https://github.com/ttroy50/cmake-examples/blob/master/06-installer/deb/CMakeLists.txt
-# https://www.qt.io/blog/deploying-to-linux-with-cmake
 
 #########################################################################
 # Start this script only on Release, this avoids exporting Qt dependencies every build
@@ -32,23 +27,24 @@ if (WIN32)
     # Try to find the windeploy executable, it should be in the binary folder
     find_program(WINDEPLOYQT_EXECUTABLE windeployqt HINTS "${_qt_bin_dir}")
 
-    # Run qtdeploy after target QtApp is built (qtDeploy folder will be created in the build directory)
-    add_custom_command(TARGET QtApp POST_BUILD
+    # Run qtdeploy after target EMULV_Qt_GUI is built (qtDeploy folder will be created in the build directory)
+    add_custom_command(TARGET EMULV_Qt_GUI POST_BUILD
             COMMAND "${CMAKE_COMMAND}" -E
             env PATH="${_qt_bin_dir}" "${WINDEPLOYQT_EXECUTABLE}"
             --verbose 0
             --dir "${CMAKE_CURRENT_BINARY_DIR}/qtDeploy/"
-            --no-compiler-runtime
-            \"$<TARGET_FILE:QtApp>\"
+            --qmldir "${CMAKE_SOURCE_DIR}/src/ui/qml/"
+            \"$<TARGET_FILE:EMULV_Qt_GUI>\"
             COMMENT "Deploying Qt..."
             )
 
     #########################################################################
     include(GNUInstallDirs)
     # Install the main target
-    install(TARGETS QtApp
+    install(TARGETS EMULV_Qt_GUI
             RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
-            )
+    )
+
     # Install Qt dependencies
     install(
             DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/qtDeploy/"
@@ -60,7 +56,7 @@ if (WIN32)
     set(CPACK_PACKAGE_VENDOR "JD")
     set(CPACK_PACKAGE_CONTACT "jonasd@students.zcu.cz")
     set(CPACK_PACKAGE_DESCRIPTION "RISC-V emulator")
-
+    set(CPACK_PACKAGE_EXECUTABLES "Emulv" "Emulv")
     include(CPack)
     # Run terminal, go to CMAKE BUILD directory, and execute the "cpack" command to build an installer for your OS.
 

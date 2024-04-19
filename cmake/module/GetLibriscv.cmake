@@ -7,6 +7,6 @@ include(FetchContent)
 FetchContent_Declare(
         libriscv
         GIT_REPOSITORY https://github.com/fwsGonzo/libriscv
-        GIT_TAG v1.1
+        GIT_TAG 06f2baf14aa98eb1a5ddc48a463af0bf1f6974e0 # This commit fixed CSRRCI bug
 )
 FetchContent_MakeAvailable(libriscv)
