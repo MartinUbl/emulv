@@ -50,14 +50,11 @@ namespace emulator {
 
     class EmulatorUnit {
     private:
-        //Maximal allowed memory for the virtual machine
-        uint64_t maxMemory_ = 128uLL << 20; // 128MB
-
-        //Starting address of the virtual machine's RAM (currently unimplemented)
-        uint64_t ramStartAddress_ = 0x20000000;
+        //Starting address of the virtual machine's RAM
+        uint64_t ramStartAddress_ = 0x0;
 
         //Size of for the virtual machine's RAM
-        uint64_t ramSize_ = 1 << 15; // 32kB
+        uint64_t ramSize_ = 128uLL << 20; // 128MB
 
         //Current state of the emulator
         EmulatorState state_ = kDefault;
@@ -136,6 +133,7 @@ namespace emulator {
          */
         static void ValidateElf_(std::vector<uint8_t> &binary);
 
+        void PageTrapHandler_(const uint64_t pageStart, riscv::Page &page, uint32_t offset, int mode, int64_t value);
     public:
 
         /**
@@ -266,8 +264,6 @@ namespace emulator {
         uint64_t GetRamSize();
 
         uint64_t GetRamEndAddress();
-
-        void PageTrapHandler(const uint64_t pageStart, riscv::Page &page, uint32_t offset, int mode, int64_t value);
     };
 
 }

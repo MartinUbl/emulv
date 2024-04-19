@@ -191,7 +191,7 @@ namespace emulator {
 
                 //Sets a callback on this trap page
                 trap_page.set_trap([this, TRAP_PAGE](riscv::Page &page, uint32_t offset, int mode, int64_t value) {
-                    PageTrapHandler(TRAP_PAGE, page, offset, mode, value);
+                    PageTrapHandler_(TRAP_PAGE, page, offset, mode, value);
                 });
 
                 TRAP_PAGE += RISCV_PAGE_SIZE;
@@ -199,7 +199,7 @@ namespace emulator {
         }
     }
 
-    void EmulatorUnit::PageTrapHandler(const uint64_t pageStart, riscv::Page &page, uint32_t offset, int mode, int64_t value) {
+    void EmulatorUnit::PageTrapHandler_(const uint64_t pageStart, riscv::Page &page, uint32_t offset, int mode, int64_t value) {
         //int mode --> a bitfield containing MODE and SIZE
         //Page::trap_mode(mode) --> Extracts the MODE (read / write) from the mode bitfield's upper 4 bits
         //Page::trap_size(mode) --> Extracts the SIZE from the mode bitfield's lower 12 bits
@@ -353,6 +353,7 @@ namespace emulator {
         active_machine_->setup_linux(machine_arguments, {"LC_TYPE=C", "LC_ALL=C", "USER=root"});
         active_machine_->setup_linux_syscalls();
         active_machine_->set_max_instructions(std::numeric_limits<uint64_t>::max());
+
 
         // Setup memory traps for peripherals
         if (peripheral_devices_ != nullptr)
