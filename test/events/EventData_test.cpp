@@ -1,7 +1,3 @@
-//
-// Created by xPC on 13.09.2023.
-//
-
 #include "test_base.h"
 
 class EventsTestSuiteEmitter : public EventsTestSuite {

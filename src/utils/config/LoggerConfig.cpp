@@ -1,8 +1,3 @@
-//
-// Created by xPC on 11.09.2023.
-// Modified: 08.11.2023
-//
-
 #include "LoggerConfig.h"
 #include "spdlog/sinks/daily_file_sink.h"
 #include "spdlog/sinks/stdout_color_sinks.h"

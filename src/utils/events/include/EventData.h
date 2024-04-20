@@ -1,7 +1,3 @@
-//
-// Created by xPC on 12.09.2023.
-//
-
 #pragma once
 
 #include <any>

@@ -1,11 +1,3 @@
-//
-// Created by xPC on 12.09.2023.
-//
-// "Every type in C++ is determined at compile-time."
-// "The auto keyword is a type inference feature in C++ that allows the compiler to deduce the type of variable from its initializer expression. The type of the variable is then automatically determined at compile time."
-//
-//
-
 #include "Events.h"
 #include "spdlog/spdlog.h"
 
