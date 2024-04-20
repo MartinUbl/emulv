@@ -36,7 +36,6 @@ namespace peripherals {
         _ports[0] = std::make_unique<GpioPort>(0, *this);
         _ports[1] = std::make_unique<GpioPort>(portPinCount * 1, *this);
         _ports[2] = std::make_unique<GpioPort>(portPinCount * 2, *this);
-
     }
 
 //##################################################################################################################

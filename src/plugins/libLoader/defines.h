@@ -12,7 +12,7 @@ using HANDLE_TYPE = HMODULE;
 #define my_dlclose(handle) FreeLibrary(handle)
 #define has_dlclose_failed(return_value) return_value == 0
 
-#define error_msg std::string("Dll error: ") + std::system_category().message(GetLastError())
+#define error_msg std::string("LoadLibrary / CloseLibrary error code: ") + std::to_string(GetLastError())
 
 #elif defined(__linux__)
 #include <dlfcn.h>

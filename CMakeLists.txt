@@ -31,4 +31,4 @@ include(GetSpdlog)
 link_libraries(spdlog::spdlog)
 
 add_subdirectory(src bin)
-#add_subdirectory(test)
+add_subdirectory(test)

@@ -39,7 +39,7 @@ namespace EventsLib {
          */
         void removeData(const std::string &key);
 
-        EventData();
+        EventData() = default;
 
         /**
          * Easier way to create this object.

@@ -1,4 +1,5 @@
 #include "test_base.h"
+#include "ConfigLoader.h"
 
 
 class Test_UART_Device_Transmitter : public Test_UART_Device {
@@ -8,14 +9,14 @@ class Test_UART_Device_Transmitter : public Test_UART_Device {
         static constexpr uint32_t CTL1 = 0b00000000000000000000000000000000;
 
         void SetUp() override {
-            UART_Device = new peripherals::UART_Device {"UART", kStart_Address, kEnd_Address};
+            const configLoader::ConfigData data = configLoader::parser::loadJSON("./testUartConfig.json");
+            auto devices = data.peripheralDevices;
+            UART_Device = devices["uart"];
+
             UART_Device->WriteWord(kOffset_CTL0, CTL0);
             UART_Device->WriteWord(kOffset_CTL1, CTL1);
         }
 
-        void TearDown() override {
-            delete UART_Device;
-        }
 };
 
 TEST_F(Test_UART_Device_Transmitter, Is_Reset_TBE) {

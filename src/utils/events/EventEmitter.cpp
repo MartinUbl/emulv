@@ -12,11 +12,6 @@ namespace EventsLib {
 
         spdlog::info("EventEmitter {0} registered a new listener to the event: {1}", name_, evt_name);
 
-        auto it = eventMap_.find(evt_name);
-        if (it != eventMap_.end()) {
-            it->second.push_back(listener);
-            return;
-        }
         eventMap_[evt_name] = std::vector<std::function<void(EventData)>>();
         eventMap_[evt_name].push_back(listener);
     }
@@ -43,8 +38,4 @@ namespace EventsLib {
     }
 
     EventEmitter::EventEmitter(const std::string &name) : name_(name) {}
-
-
 }
-
-

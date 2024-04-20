@@ -8,7 +8,10 @@ namespace peripherals {
 //##################################################################################################################
 
     GpioPort::GpioPort(int pinsIndexOffset, GpioController &parentController) : _pinsIndexOffset(pinsIndexOffset),
-                                                                                _parentController(parentController) {}
+                                                                                _parentController(parentController) {
+        // Initialize port
+        reset();
+    }
 
     void GpioPort::write(uint64_t address, uint32_t value) {
         switch (address) {
@@ -18,6 +21,10 @@ namespace peripherals {
 
             case GPIO_Port_Reg_Offset::CTL1:
                 _handle_Reg_CTL_Write(_reg_CTL1, 1, value);
+                break;
+
+            case GPIO_Port_Reg_Offset::ISTAT:
+                _reg_ISTAT = value;
                 break;
 
             case GPIO_Port_Reg_Offset::OCTL: {
@@ -101,7 +108,6 @@ namespace peripherals {
             case GPIO_Port_Reg_Offset::OCTL:
                 reg = _reg_OCTL;
                 break;
-
             default:
                 return 0;
         }

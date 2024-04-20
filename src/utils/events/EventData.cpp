@@ -6,8 +6,6 @@
 
 #include <utility>
 
-EventsLib::EventData::EventData() = default;
-
 EventsLib::EventData::EventData(std::initializer_list<std::pair<const std::string, std::any>> args) : data_(args) {}
 
 void EventsLib::EventData::addData(const std::string &key, std::any value) {

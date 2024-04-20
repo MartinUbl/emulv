@@ -20,6 +20,8 @@ namespace EventsLib {
     void removeEmitter(const std::string &name) {
         spdlog::trace("EventsLib: The emitter {0} was removed", name);
         EmitterStore::getInstance().emitters.erase(name);
+        if(name == EmitterStore::getInstance().globalName)
+            EmitterStore::getInstance().globalName.clear();
     }
 
     void setGlobalEmitter(const std::shared_ptr<EventEmitter> &emitter) {

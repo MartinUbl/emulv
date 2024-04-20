@@ -1,0 +1,21 @@
+{
+  "device": {
+    "ram": {
+      "size": 32768,
+      "start-address": "0x20000000"
+    },
+    "program-arguments": [
+      "program","30"
+    ]
+  },
+  "peripherals": [
+    {
+      "name": "gpio",
+      "dll-path": "./libgpio.so",
+      "mapping": {
+        "start-address": "0x40010800",
+        "end-address": "0x400113FF"
+      }
+    }
+  ]
+}

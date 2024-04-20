@@ -1,15 +1,14 @@
 #include "test_base.h"
+#include "ConfigLoader.h"
 
 
 class Test_UART_Device_Configuration : public Test_UART_Device {
     protected:
 
         void SetUp() override {
-            UART_Device = new peripherals::UART_Device {"UART", kStart_Address, kEnd_Address};
-        }
-
-        void TearDown() override {
-            delete UART_Device;
+            const configLoader::ConfigData data = configLoader::parser::loadJSON("./testUartConfig.json");
+            auto devices = data.peripheralDevices;
+            UART_Device = devices["uart"];
         }
 };
 

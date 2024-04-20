@@ -12,3 +12,4 @@
 /cmake/build-release-windows/
 /extern/cmake_deps/
 CMakeLists.txt.user
+/cmake-build-debug-windows-coverage/

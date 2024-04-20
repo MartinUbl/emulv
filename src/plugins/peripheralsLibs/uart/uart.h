@@ -125,7 +125,6 @@ private:
     void _transmitFrameToDevice(uint8_t frame_data);
 
     std::queue<uint32_t> _writeBuffer;
-    std::queue<uint32_t> _sendBuffer;
 
     // Members associated with displaying text in GUI
     QString _displayText;

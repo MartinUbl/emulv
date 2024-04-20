@@ -7,7 +7,7 @@
 class EventsTestSuite : public ::testing::Test {
 protected:
     EventsLib::EventData* testData;
-    EventsLib::EventEmitter* testEmitter;
+    std::shared_ptr<EventsLib::EventEmitter> testEmitter;
 
     bool testEventHandlerCalled;
     bool testEventHandlerDataOk;

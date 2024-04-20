@@ -1,9 +1,7 @@
 #pragma once
 
 #include <gtest/gtest.h>
-
-#include "uart.h"
-#include "EventEmitter.h"
+#include "PeripheralsApi.h"
 
 constexpr uint64_t kOffset_STAT = 0x00;
 constexpr uint64_t kOffset_DATA = 0x04;
@@ -17,6 +15,5 @@ protected:
 
     static constexpr uint64_t kStart_Address = 0x40013800;
     static constexpr uint64_t kEnd_Address = 0x40013BFF;
-
-    peripherals::UART_Device *UART_Device;
+    std::shared_ptr<peripherals::PeripheralsApi> UART_Device;
 };
