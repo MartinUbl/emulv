@@ -8,9 +8,9 @@ if (WIN32)
 
     # Attempt to copy QT CORE DLL
     if(EXISTS ${CMAKE_PREFIX_PATH}/bin/Qt6Core.dll)
-        add_custom_command(TARGET gpio_test POST_BUILD
-                COMMAND ${CMAKE_COMMAND} -E copy
-                ${CMAKE_PREFIX_PATH}/bin/Qt6Core.dll ${CMAKE_BINARY_DIR}/bin/ui/)
+#        add_custom_command(TARGET gpio_test POST_BUILD
+#                COMMAND ${CMAKE_COMMAND} -E copy
+#                ${CMAKE_PREFIX_PATH}/bin/Qt6Core.dll ${CMAKE_BINARY_DIR}/bin/ui/)
         add_custom_command(TARGET gpio_test POST_BUILD
                 COMMAND ${CMAKE_COMMAND} -E copy
                 ${CMAKE_PREFIX_PATH}/bin/Qt6Core.dll ${CMAKE_BINARY_DIR}/test/gpio/)

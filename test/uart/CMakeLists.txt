@@ -6,9 +6,9 @@ if (WIN32)
     file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/testUartConfig/windows/testUartConfig.json DESTINATION ${CMAKE_BINARY_DIR}/test/uart/)
     # Attempt to copy QT CORE DLL
     if(EXISTS ${CMAKE_PREFIX_PATH}/bin/Qt6Core.dll)
-        add_custom_command(TARGET uart_test POST_BUILD
-                COMMAND ${CMAKE_COMMAND} -E copy
-                ${CMAKE_PREFIX_PATH}/bin/Qt6Core.dll ${CMAKE_BINARY_DIR}/bin/ui/)
+#        add_custom_command(TARGET uart_test POST_BUILD
+#                COMMAND ${CMAKE_COMMAND} -E copy
+#                ${CMAKE_PREFIX_PATH}/bin/Qt6Core.dll ${CMAKE_BINARY_DIR}/bin/ui/)
         add_custom_command(TARGET uart_test POST_BUILD
                 COMMAND ${CMAKE_COMMAND} -E copy
                 ${CMAKE_PREFIX_PATH}/bin/Qt6Core.dll ${CMAKE_BINARY_DIR}/test/uart/)
